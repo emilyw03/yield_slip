@@ -1,0 +1,7 @@
+#!/bin/sh
+#SBATCH -p et2024
+#SBATCH --mem=30000
+#SBATCH -t 100
+#SBATCH -n 16
+sleep 100000000
+
