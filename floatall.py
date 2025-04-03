@@ -53,12 +53,10 @@ def obj_func_full(potentials):
     # extract floating potentials
     pL1 = potentials[0][0]
     pL2 = potentials[0][1]
-    pL3 = potentials[0][2]
-    pD1 = potentials[0][3] # first reduction potential (negative)
+    pD1 = potentials[0][2] # first reduction potential (negative)
     pD2 = -pD1 # second reduction potential is set to negative of first (positive)
-    pH1 = potentials[0][4]
-    pH2 = potentials[0][5]
-    pH3 = potentials[0][6]
+    pH1 = potentials[0][3]
+    pH2 = potentials[0][4]
 
     # run MEK - currently set to open conformation for open flow to low potential branch
     # fixed hyperparameters
@@ -74,47 +72,34 @@ def obj_func_full(potentials):
     # Cofactor names and potentials
     L1 = Cofactor("L1", [pL1])
     L2 = Cofactor("L2", [pL2])
-    L3 = Cofactor("L3", [pL3])
     D = Cofactor("D", [pD1, pD2])
     H1 = Cofactor("H1", [pH1])
     H2 = Cofactor("H2", [pH2])
-    H3 = Cofactor("H3", [pH3])
 
     # Telling the network about the cofactors. Naming cofactors to add to network.
     net.addCofactor(L1)
     net.addCofactor(L2)
-    net.addCofactor(L3)
     net.addCofactor(D)
     net.addCofactor(H1)
     net.addCofactor(H2)
-    net.addCofactor(H3)
 
     # Pairwise distances between cofactors. State the distances between cofactor pairs. angstroms
     net.addConnection(D, L1, 10)
     net.addConnection(L1, L2, 10)
-    net.addConnection(L2, L3, 10)
     net.addConnection(D, H1, 10)
     net.addConnection(H1, H2, 10)
-    net.addConnection(H2, H3, 10)
     net.addConnection(D, L2, 20)  
     net.addConnection(D, H2, 20)
-    net.addConnection(D, L3, 30)  
-    net.addConnection(D, H3, 30)
     net.addConnection(L1, H1, 20)
     net.addConnection(L1, H2, 30)
-    net.addConnection(L1, H3, 40)
     net.addConnection(L2, H1, 30)
     net.addConnection(L2, H2, 40)
-    net.addConnection(L2, H3, 50)
-    net.addConnection(L3, H1, 40)
-    net.addConnection(L3, H2, 50)
-    net.addConnection(L3, H3, 60)
 
     # Infinite reservoirs
     # names, cofactor it is connected to, Redox state of the cofactor, number of electrons transferred, dG between reservoir and cofactor, rate from the cofactor to the reservoir
     net.addReservoir("DR", D, 2, 2, 0.20, res_rate)
-    net.addReservoir("LR", L3, 1, 1, 0, res_rate)
-    net.addReservoir("HR", H3, 1, 1, 0, res_rate)
+    net.addReservoir("LR", L2, 1, 1, 0, res_rate)
+    net.addReservoir("HR", H2, 1, 1, 0, res_rate)
 
     # Build matrix describing all connections and the rate matrix
     net.constructAdjacencyMatrix()
@@ -198,16 +183,14 @@ def run_single_job(alpha):
     alpha = alpha
     
     # need to change the iteration count based on t test
-    for t in range(200):
+    for t in range(400):
         seed(t * 100 + 500)
         bounds = [
             {'name': 'L1', 'type': 'continuous', 'domain': (-0.400, -0.05)},
             {'name': 'L2', 'type': 'continuous', 'domain': (-0.400, -0.05)},
-            {'name': 'L3', 'type': 'continuous', 'domain': (-0.400, -0.05)},
             {'name': 'D1', 'type': 'continuous', 'domain': (-0.500, -0.300)},
             {'name': 'H1', 'type': 'continuous', 'domain': (0.05, 0.400)},
-            {'name': 'H2', 'type': 'continuous', 'domain': (0.05, 0.400)},
-            {'name': 'H3', 'type': 'continuous', 'domain': (0.05, 0.400)}]
+            {'name': 'H2', 'type': 'continuous', 'domain': (0.05, 0.400)}]
 
         maxiter = 30
 
@@ -256,8 +239,8 @@ def run_single_job(alpha):
     best_potentials = potentials[min_idx]
 
     return [alpha, F_t, F_eff_best, F_amnt_best, fluxD_best, fluxHR_best, fluxLR_best, 
-            best_potentials[0][3], best_potentials[0][0], best_potentials[0][1], best_potentials[0][2],
-            best_potentials[0][4], best_potentials[0][5], best_potentials[0][6]]
+            best_potentials[0][2], best_potentials[0][0], best_potentials[0][1], 
+            best_potentials[0][3], best_potentials[0][4]]
 
 if __name__ == '__main__':
     t_start = time.time()
@@ -272,10 +255,10 @@ if __name__ == '__main__':
     # save data
     columns = ["alpha", "F_t", "F_eff_best", "F_amnt_best", 
                 "abs(fluxD)", "fluxHR", "fluxLR", 
-                "potential_D1", "potential_L1", "potential_L2", "potential_L3",
-                "potential_H1", "potential_H2", "potential_H3"]
+                "potential_D1", "potential_L1", "potential_L2",
+                "potential_H1", "potential_H2"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv("potentials_floatall_20250328.csv", index=False)
+    df.to_csv("potentials_floatall_20250403.csv", index=False)
 
     t_end = time.time()
     runtime = t_end - t_start

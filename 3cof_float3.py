@@ -200,7 +200,7 @@ def run_single_job(alpha):
     alpha = alpha
     
     # need to change the iteration count based on t test
-    for t in range(200):
+    for t in range(250):
         seed(t * 100 + 500)
         bounds = [
             {'name': 'L3', 'type': 'continuous', 'domain': (-0.400, -0.05)},
@@ -267,7 +267,7 @@ if __name__ == '__main__':
     # save data
     columns = ["alpha", "F_t", "F_eff_best", "F_amnt_best", "abs(fluxD)", "fluxHR", "fluxLR", "potential_D1", "potential_L3", "potential_H3"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv("3cof_float3_20250328.csv", index=False)
+    df.to_csv("3cof_float3_20250403.csv", index=False)
     
     t_end = time.time()
     runtime = t_end - t_start

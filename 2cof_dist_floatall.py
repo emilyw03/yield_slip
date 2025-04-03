@@ -185,7 +185,7 @@ def run_single_job(alpha):
     alpha = alpha
     
     # need to change the iteration count based on t test
-    for t in range(250):
+    for t in range(350):
         seed(t * 100 + 500)
         bounds = [
             {'name': 'L1', 'type': 'continuous', 'domain': (-0.400, 0.05)},
@@ -264,7 +264,7 @@ if __name__ == '__main__':
                 "potential_D1", "potential_L1", "potential_L2", "potential_H1", "potential_H2",
                 "dist_DL1", "dist_L1L2", "dist_DH1", "dist_H1H2"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv("2cof_dist_floatall_20250401.csv", index=False)
+    df.to_csv("2cof_dist_floatall_20250403.csv", index=False)
     
     t_end = time.time()
     runtime = t_end - t_start
