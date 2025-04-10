@@ -68,7 +68,7 @@ plt.show()
 
 
 # 50alphas
-df = pd.read_csv("DHLOpt_50alphas_gamma100_20250220.csv")
+df = pd.read_csv("2cof_float3_20250401.csv")
 
 alphas = df["alpha"]
 F = df['F_t']
@@ -95,7 +95,6 @@ plt.yticks(fontsize = 16)
 plt.legend(fontsize = 16)
 plt.show()
 
-'''
 # objective function F vs. alpha
 plt.figure(figsize=(8, 5))
 plt.plot(alphas, F, linewidth = 3, color = 'blue')
@@ -104,9 +103,9 @@ plt.ylabel('F', fontsize=22)
 plt.title(r'F vs. $\alpha$', fontsize=22)
 plt.xticks(fontsize = 16)
 plt.yticks(fontsize = 16)
-plt.show()'''
+plt.show()
 
-'''
+
 # plot dG vs. alpha for unrestricted dG
 dG = -(pL2 + pH2)
 plt.figure(figsize=(8, 5))
@@ -116,10 +115,8 @@ plt.ylabel(r'$\Delta$G', fontsize=22)
 plt.title(r'$\Delta$G vs. $\alpha$', fontsize=22)
 plt.xticks(fontsize = 16)
 plt.yticks(fontsize = 16)
-plt.legend(fontsize = 16)
-plt.show()'''
+plt.show()
 
-'''
 ratio = fluxLR/fluxHR
 
 # plot ratio vs. alpha
@@ -130,7 +127,6 @@ plt.ylabel('FluxLR/FluxHR', fontsize=22)
 plt.title(r'LR:HR Electron Partitioning vs. $\alpha$: $\Delta$G = -0.1 eV', fontsize=22)
 plt.xticks(fontsize = 16)
 plt.yticks(fontsize = 16)
-plt.legend(fontsize = 16)
 plt.show()
 
 # Plot of fluxes vs. alpha
@@ -152,8 +148,8 @@ plt.show()
 plt.figure(figsize=(8, 5))
 plt.plot(alphas, pD1, label=r'D/D$^{-}$', linestyle='-', color='purple', linewidth = 3)
 plt.plot(alphas, pD2, label=r'D$^{-}$/D$^{=}$', linestyle='-', color='cyan', linewidth = 3)
-plt.plot(alphas, pL3, label='L3', linestyle='-', color='red', linewidth = 3)
-plt.plot(alphas, pH3, label='H3', linestyle='-', color='blue', linewidth = 3)
+plt.plot(alphas, pL2, label='L2', linestyle='-', color='red', linewidth = 3)
+plt.plot(alphas, pH2, label='H2', linestyle='-', color='blue', linewidth = 3)
 plt.xlabel(r'$\alpha$', fontsize=22)
 plt.ylabel('Reduction potentials (eV)', fontsize=22)
 plt.title(r'Optimized cofactor reduction potentials vs. $\alpha$: $\Delta$G = -0.1 eV', fontsize=22)
@@ -161,10 +157,7 @@ plt.xticks(fontsize = 16)
 plt.yticks(fontsize = 16)
 plt.legend(loc = 'best', fontsize = 16)
 #plt.grid(True)
-plt.show()'''
-
-'''
-df = pd.read_csv("DHLOpt_50alphas_gamma100_20250220.csv")
+plt.show()
 
 ## in-set plots
 alphas_sub = df["alpha"][10:41]
@@ -205,12 +198,12 @@ plt.show()
 plt.figure(figsize=(8, 5))
 plt.plot(alphas_sub, pD1_sub, label=r'D/D$^{-}$', linestyle='-', color='purple', linewidth = 3)
 plt.plot(alphas_sub, pD2_sub, label=r'D$^{-}$/D$^{=}$', linestyle='-', color='cyan', linewidth = 3)
-plt.plot(alphas_sub, pL2_sub, label='L3', linestyle='-', color='red', linewidth = 3)
-plt.plot(alphas_sub, pH2_sub, label='H3', linestyle='-', color='blue', linewidth = 3)
+plt.plot(alphas_sub, pL2_sub, label='L2', linestyle='-', color='red', linewidth = 3)
+plt.plot(alphas_sub, pH2_sub, label='H2', linestyle='-', color='blue', linewidth = 3)
 plt.xlabel(r'$\alpha$', fontsize=22)
 plt.ylabel('Reduction potentials (eV)', fontsize=22)
 plt.title(r'Optimized cofactor reduction potentials vs. $\alpha$', fontsize=22)
 plt.xticks(fontsize = 16)
 plt.yticks(fontsize = 16)
 plt.legend(loc = 'best', fontsize = 16)
-plt.show()'''
+plt.show()

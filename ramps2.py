@@ -131,7 +131,7 @@ def obj_func_full(slope):
 
     # metric for bifurcation amount: 1000 / (# of events)
     # numerator selected so that events is of similar magnitude to SSR
-    events = 10 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
+    events = 1 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
 
     return SSR, events, fluxD, fluxHR, fluxLR
 
@@ -182,8 +182,8 @@ def run_single_job(alpha):
     for t in range(200):
         seed(t * 100 + 500)
         bounds = [
-            {'name': 'slopeL', 'type': 'continuous', 'domain': (0.01, 0.099)},
-            {'name': 'slopeH', 'type': 'continuous', 'domain': (-0.099, -0.01)}]
+            {'name': 'slopeL', 'type': 'continuous', 'domain': (-0.099, 0.099)},
+            {'name': 'slopeH', 'type': 'continuous', 'domain': (-0.099, 0.099)}]
 
         maxiter = 30
 
@@ -245,7 +245,7 @@ if __name__ == '__main__':
     # save data
     columns = ["alpha", "F_t", "F_eff_best", "F_amnt_best", "abs(fluxD)", "fluxHR", "fluxLR", "slopeL", "slopeH"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv("ramps2_20250402.csv", index=False)
+    df.to_csv("ramps2_20250410.csv", index=False)
 
     t_end = time.time()
     runtime = t_end - t_start

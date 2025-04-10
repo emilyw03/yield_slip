@@ -132,7 +132,7 @@ def obj_func_full(potentials):
 
     # metric for bifurcation amount: 1000 / (# of events)
     # numerator selected so that events is of similar magnitude to SSR
-    events = 10 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
+    events = 1 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
 
     return SSR, events, fluxD, fluxHR, fluxLR
 
@@ -248,7 +248,7 @@ if __name__ == '__main__':
     # save data
     columns = ["alpha", "F_t", "F_eff_best", "F_amnt_best", "abs(fluxD)", "fluxHR", "fluxLR", "potential_D1", "potential_L2", "potential_H2"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv("2cof_float3_20250403.csv", index=False)
+    df.to_csv("2cof_float3_20250410.csv", index=False)
     
     t_end = time.time()
     runtime = t_end - t_start
