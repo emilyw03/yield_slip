@@ -128,7 +128,7 @@ def obj_func_full(potentials):
     fluxLR_norm = fluxLR / abs(max_flux)
 
     # metric for efficiency: SSR from 100% efficient bifurcation flux ratio -1:0.5:0.5
-    SSR = (fluxD_norm + 1) ** 2 + (fluxHR_norm - 0.5) ** 2 + (fluxLR_norm - 0.5) ** 2
+    SSR = math.sqrt((fluxD_norm + 1) ** 2 + (fluxHR_norm - 0.5) ** 2 + (fluxLR_norm - 0.5) ** 2)
 
     # metric for bifurcation amount: 1000 / (# of events)
     # numerator selected so that events is of similar magnitude to SSR
@@ -248,7 +248,7 @@ if __name__ == '__main__':
     # save data
     columns = ["alpha", "F_t", "F_eff_best", "F_amnt_best", "abs(fluxD)", "fluxHR", "fluxLR", "potential_D1", "potential_L2", "potential_H2"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv("2cof_float3_20250410.csv", index=False)
+    df.to_csv("2cof_float3_20250414.csv", index=False)
     
     t_end = time.time()
     runtime = t_end - t_start
