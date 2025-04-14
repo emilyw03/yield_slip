@@ -130,11 +130,11 @@ def obj_func_full(potentials):
     fluxLR_norm = fluxLR / abs(max_flux)
 
     # metric for efficiency: SSR from 100% efficient bifurcation flux ratio -1:0.5:0.5
-    SSR = (fluxD_norm + 1) ** 2 + (fluxHR_norm - 0.5) ** 2 + (fluxLR_norm - 0.5) ** 2
+    SSR = math.sqrt((fluxD_norm + 1) ** 2 + (fluxHR_norm - 0.5) ** 2 + (fluxLR_norm - 0.5) ** 2)
 
     # metric for bifurcation amount: 1000 / (# of events)
     # numerator selected so that events is of similar magnitude to SSR
-    events = 10 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
+    events = 1 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
 
     return SSR, events, fluxD, fluxHR, fluxLR
 
