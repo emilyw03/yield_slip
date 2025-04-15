@@ -159,7 +159,7 @@ plt.legend(loc = 'best', fontsize = 16)
 plt.show()'''
 
 # === ramps ===
-df = pd.read_csv("ramps2_grid_20250415.csv")
+df = pd.read_csv("ramps2_grid_400_20250415.csv")
 
 slopeL = df["slopeL"]
 slopeH = df["slopeH"]
@@ -170,29 +170,30 @@ fluxHR = df["fluxHR"]
 fluxLR = df["fluxLR"]
 
 df_bif = df[(fluxD < 0 ) & (fluxHR > 0) & (fluxLR > 0)]
+df_bif.to_csv("ramps2_grid_400_bif_20250415.csv", index=False)
 x_min, x_max = slopeL.min() - 0.01, slopeL.max() + 0.01
 y_min, y_max = slopeH.min() - 0.01, slopeH.max() + 0.01
 
 # color by F_slip
 plt.figure(figsize=(8, 5))
-sc = plt.scatter(df_bif['slopeL'], df_bif['slopeH'], c=df_bif['F_slip'], cmap='viridis', s=60, edgecolor='k')
+sc = plt.scatter(slopeL, slopeH, c=F_slip, cmap='viridis', s=60, edgecolor='k')
 cbar = plt.colorbar(sc)
 cbar.set_label(r'$F_{slip}$', fontsize=12)
 plt.xlim(x_min, x_max)
 plt.ylim(y_min, y_max)
-plt.title(r'$F_{slip}$ by ET branch slopes (bifurcating only)')
+plt.title(r'$F_{slip}$ by ET branch slopes')
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.show()
 
 # color by F_yield
 plt.figure(figsize=(8, 5))
-sc = plt.scatter(df_bif['slopeL'], df_bif['slopeH'], c=df_bif['F_yield'], cmap='viridis', s=60, edgecolor='k')
+sc = plt.scatter(slopeL, slopeH, c=F_yield, cmap='viridis', s=60, edgecolor='k')
 cbar = plt.colorbar(sc)
 cbar.set_label(r'$F_{yield}$', fontsize=12)
 plt.xlim(x_min, x_max)
 plt.ylim(y_min, y_max)
-plt.title(r'$F_{yield}$ by ET branch slopes (bifurcating only)')
+plt.title(r'$F_{yield}$ by ET branch slopes')
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.show()
