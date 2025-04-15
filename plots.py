@@ -13,7 +13,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 '''
-# gamma
+# === gamma ===
 df = pd.read_csv("gamma1.csv")
 
 alphas = df["alpha"]
@@ -35,7 +35,7 @@ plt.grid(True)
 plt.show()'''
 
 '''
-# plot optimizer convergence
+# === plot optimizer convergence ===
 df = pd.read_csv("DHLOpt_runs_serial_20250220.csv")
 
 F_t = df["F_(t)"]
@@ -65,9 +65,8 @@ plt.legend(loc = 'best')
 plt.grid(True)
 plt.show()
 '''
-
-
-# 50alphas
+'''
+# === 50alphas ===
 df = pd.read_csv("2cof_float3_20250401.csv")
 
 alphas = df["alpha"]
@@ -157,53 +156,43 @@ plt.xticks(fontsize = 16)
 plt.yticks(fontsize = 16)
 plt.legend(loc = 'best', fontsize = 16)
 #plt.grid(True)
+plt.show()'''
+
+# === ramps ===
+df = pd.read_csv("ramps2_grid_20250415.csv")
+
+slopeL = df["slopeL"]
+slopeH = df["slopeH"]
+F_slip = df["F_slip"]
+F_yield = df["F_yield"]
+fluxD = df["fluxD"]
+fluxHR = df["fluxHR"]
+fluxLR = df["fluxLR"]
+
+df_bif = df[(fluxD < 0 ) & (fluxHR > 0) & (fluxLR > 0)]
+x_min, x_max = slopeL.min() - 0.01, slopeL.max() + 0.01
+y_min, y_max = slopeH.min() - 0.01, slopeH.max() + 0.01
+
+# color by F_slip
+plt.figure(figsize=(8, 5))
+sc = plt.scatter(df_bif['slopeL'], df_bif['slopeH'], c=df_bif['F_slip'], cmap='viridis', s=60, edgecolor='k')
+cbar = plt.colorbar(sc)
+cbar.set_label(r'$F_{slip}$', fontsize=12)
+plt.xlim(x_min, x_max)
+plt.ylim(y_min, y_max)
+plt.title(r'$F_{slip}$ by ET branch slopes (bifurcating only)')
+plt.xlabel('slopeL (eV/cofactor)')
+plt.ylabel('slopeH (eV/cofactor)')
 plt.show()
 
-## in-set plots
-alphas_sub = df["alpha"][10:41]
-fluxD_sub = df["abs(fluxD)"][10:41]
-fluxHR_sub = df["fluxHR"][10:41]
-fluxLR_sub = df["fluxLR"][10:41]
-pD1_sub = df["potential_D1"][10:41]
-pD2_sub = -pD1_sub
-pL2_sub = df["potential_L2"][10:41]
-pH2_sub = df["potential_H2"][10:41]
-
-# plot ratio vs. alpha
-ratio = fluxLR_sub/fluxHR_sub
-
+# color by F_yield
 plt.figure(figsize=(8, 5))
-plt.plot(alphas_sub, ratio, linewidth = 3, color = 'blue')
-plt.xlabel(r'$\alpha$', fontsize=22)
-plt.ylabel('FluxLR/FluxHR', fontsize=22)
-plt.title(r'LR:HR Electron Partitioning vs. $\alpha$', fontsize=22)
-plt.xticks(fontsize = 16)
-plt.yticks(fontsize = 16)
-plt.show()
-
-# Plot of fluxes vs. alpha
-plt.figure(figsize=(8, 5))
-plt.plot(alphas_sub, fluxD_sub, label='|DR|', linestyle='-', color='green', linewidth = 3)
-plt.plot(alphas_sub, fluxHR_sub, label='HR', linestyle='-', color='blue', linewidth = 3)
-plt.plot(alphas_sub, fluxLR_sub, label='LR', linestyle='-', color='red', linewidth = 3)
-plt.xlabel(r'$\alpha$', fontsize=22)
-plt.ylabel(r'Flux (s$^{-1}$)', fontsize=22)
-plt.title(r'Fluxes at reservoirs (s$^{-1}$) vs. $\alpha$', fontsize=22)
-plt.xticks(fontsize = 16)
-plt.yticks(fontsize = 16)
-plt.legend(fontsize = 16)
-plt.show()
-
-# plot potentials vs. alpha
-plt.figure(figsize=(8, 5))
-plt.plot(alphas_sub, pD1_sub, label=r'D/D$^{-}$', linestyle='-', color='purple', linewidth = 3)
-plt.plot(alphas_sub, pD2_sub, label=r'D$^{-}$/D$^{=}$', linestyle='-', color='cyan', linewidth = 3)
-plt.plot(alphas_sub, pL2_sub, label='L2', linestyle='-', color='red', linewidth = 3)
-plt.plot(alphas_sub, pH2_sub, label='H2', linestyle='-', color='blue', linewidth = 3)
-plt.xlabel(r'$\alpha$', fontsize=22)
-plt.ylabel('Reduction potentials (eV)', fontsize=22)
-plt.title(r'Optimized cofactor reduction potentials vs. $\alpha$', fontsize=22)
-plt.xticks(fontsize = 16)
-plt.yticks(fontsize = 16)
-plt.legend(loc = 'best', fontsize = 16)
+sc = plt.scatter(df_bif['slopeL'], df_bif['slopeH'], c=df_bif['F_yield'], cmap='viridis', s=60, edgecolor='k')
+cbar = plt.colorbar(sc)
+cbar.set_label(r'$F_{yield}$', fontsize=12)
+plt.xlim(x_min, x_max)
+plt.ylim(y_min, y_max)
+plt.title(r'$F_{yield}$ by ET branch slopes (bifurcating only)')
+plt.xlabel('slopeL (eV/cofactor)')
+plt.ylabel('slopeH (eV/cofactor)')
 plt.show()
