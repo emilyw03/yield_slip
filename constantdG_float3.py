@@ -64,7 +64,7 @@ def obj_func_full(potentials):
 
     # run MEK - currently set to open conformation for open flow to low potential branch
     # fixed hyperparameters
-    res_rate = 10**3 # rate for cofactor --> reservoir ET; adjusted for V_0 = 0.01
+    res_rate = 50 # Ortiz JBC 2023
     res_rate_red = 2*10**3 # increased rate for enhanced binding affinity of NAD when B2/C1 reduced
         
     # Time step variables

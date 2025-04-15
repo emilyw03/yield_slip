@@ -56,7 +56,7 @@ def obj_func_full(slope):
 
     # run MEK
     # fixed hyperparameters
-    res_rate = 10**3 # rate for cofactor --> reservoir ET; adjusted for V_0 = 0.01
+    res_rate = 50 # Ortiz JBC 2023
         
     # Time step variables
     N = 20 # time steps
