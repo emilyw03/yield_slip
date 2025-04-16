@@ -65,9 +65,9 @@ plt.legend(loc = 'best')
 plt.grid(True)
 plt.show()
 '''
-'''
+
 # === 50alphas ===
-df = pd.read_csv("2cof_float3_20250401.csv")
+df = pd.read_csv("2cof_float3_20250414.csv")
 
 alphas = df["alpha"]
 F = df['F_t']
@@ -81,7 +81,6 @@ pH2 = df["potential_H2"]
 
 # fluxes vs. H2
 plt.figure(figsize=(8, 5))
-plt.yscale("log")
 plt.xlim(max(pH2) + 0.01, min(pH2) - 0.01)  # reverse x-axis to be consistent with alpha plots
 plt.plot(pH2, fluxD, label='|DR|', linestyle='-', color='green', linewidth = 3)
 plt.plot(pH2, fluxHR, label='HR', linestyle='-', color='blue', linewidth = 3)
@@ -123,7 +122,7 @@ plt.figure(figsize=(8, 5))
 plt.plot(alphas, ratio, linewidth = 3, color = 'blue')
 plt.xlabel(r'$\alpha$', fontsize=22)
 plt.ylabel('FluxLR/FluxHR', fontsize=22)
-plt.title(r'LR:HR Electron Partitioning vs. $\alpha$: $\Delta$G = -0.1 eV', fontsize=22)
+plt.title(r'LR:HR Electron Partitioning vs. $\alpha$', fontsize=22)
 plt.xticks(fontsize = 16)
 plt.yticks(fontsize = 16)
 plt.show()
@@ -136,7 +135,7 @@ plt.plot(alphas, fluxHR, label='HR', linestyle='-', color='blue', linewidth = 3)
 plt.plot(alphas, fluxLR, label='LR', linestyle='-', color='red', linewidth = 3)
 plt.xlabel(r'$\alpha$', fontsize=22)
 plt.ylabel(r'Flux (s$^{-1}$)', fontsize=22)
-plt.title(r'Fluxes at reservoirs (s$^{-1}$) vs. $\alpha$: $\Delta$G = -0.1 eV', fontsize=22)
+plt.title(r'Fluxes at reservoirs (s$^{-1}$) vs. $\alpha$', fontsize=22)
 plt.xticks(fontsize = 16)
 plt.yticks(fontsize = 16)
 plt.legend(fontsize = 16)
@@ -151,13 +150,14 @@ plt.plot(alphas, pL2, label='L2', linestyle='-', color='red', linewidth = 3)
 plt.plot(alphas, pH2, label='H2', linestyle='-', color='blue', linewidth = 3)
 plt.xlabel(r'$\alpha$', fontsize=22)
 plt.ylabel('Reduction potentials (eV)', fontsize=22)
-plt.title(r'Optimized cofactor reduction potentials vs. $\alpha$: $\Delta$G = -0.1 eV', fontsize=22)
+plt.title(r'Optimized cofactor reduction potentials vs. $\alpha$', fontsize=22)
 plt.xticks(fontsize = 16)
 plt.yticks(fontsize = 16)
 plt.legend(loc = 'best', fontsize = 16)
 #plt.grid(True)
-plt.show()'''
+plt.show()
 
+'''
 # === ramps ===
 df = pd.read_csv("ramps2_grid_400_20250415.csv")
 
@@ -196,4 +196,4 @@ plt.ylim(y_min, y_max)
 plt.title(r'$F_{yield}$ by ET branch slopes')
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
-plt.show()
+plt.show()'''
