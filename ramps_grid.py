@@ -41,11 +41,11 @@ def obj_func_full(slopeL, slopeH):
     net = Network()
 
     # Cofactor names and potentials
-    D = Cofactor("D", [-0.4, 0.4])   #inverted
-    L1 = Cofactor("L1", [-0.4 + slopeL*1])
-    L2 = Cofactor("L2", [-0.4 + slopeL*2])
-    H1 = Cofactor("H1", [0.4 + slopeH*1])
-    H2 = Cofactor("H2", [0.4 + slopeH*2])
+    D = Cofactor("D", [-0.3, 0.3])   #inverted
+    L1 = Cofactor("L1", [-0.3 + slopeL*1])
+    L2 = Cofactor("L2", [-0.3 + slopeL*2])
+    H1 = Cofactor("H1", [0.3 + slopeH*1])
+    H2 = Cofactor("H2", [0.3 + slopeH*2])
 
     # Telling the network about the cofactors. Naming cofactors to add to network.
     net.addCofactor(L1)
@@ -112,7 +112,7 @@ def obj_func_full(slopeL, slopeH):
 
 if __name__ == '__main__':
     t_start = time.time()
-    grid_size = 7 # 7x7 for 49 points
+    grid_size = 100 # 7x7 for 49 points
     slope_vals = np.linspace(-0.200, 0.200, grid_size)
     slopeL_grid, slopeH_grid = np.meshgrid(slope_vals, slope_vals)
     slope_pairs = np.column_stack([slopeL_grid.ravel(), slopeH_grid.ravel()])
@@ -125,7 +125,7 @@ if __name__ == '__main__':
     # save data
     columns = ["slopeL", "slopeH", "F_slip", "F_yield", "fluxD", "fluxHR", "fluxLR"]
     df = pd.DataFrame(results_all, columns=columns)
-    df.to_csv("ramps2_grid_400_20250415.csv", index=False)
+    df.to_csv("ramps2_grid_300_20250415.csv", index=False)
 
     t_end = time.time()
     runtime = t_end - t_start
