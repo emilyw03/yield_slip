@@ -112,9 +112,10 @@ def obj_func_full(slopeL, slopeH):
 
 if __name__ == '__main__':
     t_start = time.time()
-    grid_size = 100 # 7x7 for 49 points
-    slope_vals = np.linspace(-0.200, 0.200, grid_size)
-    slopeL_grid, slopeH_grid = np.meshgrid(slope_vals, slope_vals)
+    grid_size = 100  # 100x100 grid for 10,000 points
+    slopeL_vals = np.linspace(0.100, 0.200, grid_size)
+    slopeH_vals = np.linspace(-0.200, -0.100, grid_size)
+    slopeL_grid, slopeH_grid = np.meshgrid(slopeL_vals, slopeH_vals)
     slope_pairs = np.column_stack([slopeL_grid.ravel(), slopeH_grid.ravel()])
 
     results_all = []
@@ -125,7 +126,7 @@ if __name__ == '__main__':
     # save data
     columns = ["slopeL", "slopeH", "F_slip", "F_yield", "fluxD", "fluxHR", "fluxLR"]
     df = pd.DataFrame(results_all, columns=columns)
-    df.to_csv("ramps2_grid_300_20250415.csv", index=False)
+    df.to_csv("ramps2_grid_300_corner_20250504.csv", index=False)
 
     t_end = time.time()
     runtime = t_end - t_start
