@@ -13,7 +13,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
-'''
 # === ramps ===
 ramps = pd.read_csv('ramps2_grid_300_bif_20250415.csv')
 fluxD = ramps["fluxD"]
@@ -23,10 +22,10 @@ ramps2 = ramps[(fluxD < 0 ) & (fluxHR > 0) & (fluxLR > 0) & (fluxLR <= fluxHR)]
 ramps2.to_csv("ramps2_grid_300_bif_noback_20250415.csv", index=False)
 
 # flux
-rflux_min_idx = ramps['fluxD'].idxmax() # flipped since ramps data does not have abs value
-rflux_max_idx = ramps['fluxD'].idxmin()
-rflux_min_row = ramps.loc[rflux_min_idx, ['slopeL', 'slopeH', 'fluxD']]
-rflux_max_row = ramps.loc[rflux_max_idx, ['slopeL', 'slopeH', 'fluxD']]
+rflux_min_idx = ramps2['fluxD'].idxmax() # flipped since ramps data does not have abs value
+rflux_max_idx = ramps2['fluxD'].idxmin()
+rflux_min_row = ramps2.loc[rflux_min_idx, ['slopeL', 'slopeH', 'fluxD']]
+rflux_max_row = ramps2.loc[rflux_max_idx, ['slopeL', 'slopeH', 'fluxD']]
 print(rflux_min_row)
 print(rflux_max_row)
 
@@ -34,11 +33,12 @@ print(rflux_max_row)
 ratio = ramps2['fluxLR'] / ramps2['fluxHR']
 rslip_min_idx = ratio.idxmin()
 rslip_max_idx = ratio.idxmax()
-rslip_min_row = ramps.loc[rslip_min_idx, ['slopeH', 'slopeL', 'fluxLR', 'fluxHR']]
-rslip_max_row = ramps.loc[rslip_max_idx, ['slopeH', 'slopeL', 'fluxLR', 'fluxHR']]
+rslip_min_row = ramps2.loc[rslip_min_idx, ['slopeH', 'slopeL', 'fluxLR', 'fluxHR']]
+rslip_max_row = ramps2.loc[rslip_max_idx, ['slopeH', 'slopeL', 'fluxLR', 'fluxHR']]
 print(rslip_min_row)
 print(rslip_max_row)
 
+'''
 # === bumpy ===
 bumpy = pd.read_csv('2cof_float3_gamma1_all_20250421.csv')
 
