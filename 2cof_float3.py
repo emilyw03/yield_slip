@@ -26,9 +26,6 @@ from numpy.random import seed
 import GPyOpt
 from GPyOpt.methods import BayesianOptimization
 
-# for parallelizing
-from multiprocessing import Pool, cpu_count
-
 # standard packages
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -238,18 +235,19 @@ def run_single_job(alpha):
 
 if __name__ == '__main__':
     t_start = time.time()
-    num_cpus = detect_cpus()
-    #print(num_cpus)
+    timestr = time.strftime("%Y%m%d")
+    task_id = int(os.environ.get("SLURM_ARRAY_TASK_ID", 0))
+    num_tasks = int(os.environ.get("SLURM_ARRAY_TASK_COUNT", 1))
     
-    alphas = np.linspace(0, 0.06, 200)
+    alphas = np.linspace(0, 0.06, 500)
+    chunk = np.array_split(alphas, num_tasks)[task_id]
 
-    with Pool(processes = num_cpus) as pool:
-        results = pool.map(run_single_job, alphas)
+    results = [run_single_job(alpha) for alpha in chunk]
 
     # save data
     columns = ["alpha", "F_t", "F_eff_best", "F_amnt_best", "abs(fluxD)", "fluxHR", "fluxLR", "potential_D1", "potential_L2", "potential_H2"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv("2cof_float3_interval_20250504.csv", index=False)
+    df.to_csv(f"2cof_float3_interval_{task_id}_"+timestr+".csv", index=False)
     
     t_end = time.time()
     runtime = t_end - t_start
