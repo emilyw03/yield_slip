@@ -178,9 +178,9 @@ if __name__ == '__main__':
     '''
     
     # coarsely plot F in 3D parameter space where axes are the potentials on the three cofactors
-    D_vals = np.linspace(-0.5, -0.3, 50)
-    H2_vals = np.linspace(0.05, 0.4, 50)
-    L2_vals = np.linspace(-0.4, -0.05, 50)
+    D_vals = np.linspace(-0.5, -0.3, 10)
+    H2_vals = np.linspace(0.05, 0.4, 10)
+    L2_vals = np.linspace(-0.4, -0.05, 10)
     F_vals = np.zeros((len(D_vals), len(H2_vals), len(L2_vals)))
 
     for i, d in enumerate(D_vals):
@@ -189,10 +189,17 @@ if __name__ == '__main__':
                 potentials = np.array([l, d, h])
                 F, *_ = obj_func(potentials, alpha=0)
                 F_vals[j, i, k] = F
+    
+    data = []
+    for i, d in enumerate(D_vals):
+        for j, h in enumerate(H2_vals):
+            for k, l in enumerate(L2_vals):
+                F = F_vals[i, j, k]
+                data.append([l, d, h, F]) # x=L2, y=D, z=H2, F=objective
 
-    columsn = ["x", "y", "z"]
+    columns = ["L2", "D", "H2", "F"]
     df = pd.DataFrame(F_vals, columns=columns)
-    df.to_csv("F_near_alpha0.csv")
+    df.to_csv("F_near_alpha0.csv", index=False)
 
     '''
     plt.imshow(F_vals, origin='lower', extent=[0.05, 0.4, -0.5, -0.3, -0.4, -0.05], aspect='auto')
