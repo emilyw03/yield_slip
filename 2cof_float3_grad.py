@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import time
 import os
+from mpl_toolkits.mplot3d import Axes3D  # noqa: F401, required for 3D plotting
 
 # === Full Objective Function ===
 def obj_func(potentials, alpha):
@@ -109,6 +110,7 @@ def obj_func(potentials, alpha):
     F_yield = 1 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
 
     # Combined objective
+    # Third term adds a small curvature element
     F = alpha * F_slip + (1 - alpha) * F_yield
 
     return F, alpha, F_slip, F_yield, fluxD, fluxHR, fluxLR
@@ -123,7 +125,7 @@ def make_wrapped_obj(alpha):
 # === Optimization Routine ===
 def optimization(bounds, alpha, x0):
     wrapped = make_wrapped_obj(alpha)
-    result = minimize(wrapped, x0, method='L-BFGS-B', bounds=bounds, options={'maxiter': 500, 'ftol': 1e-12, 'gtol': 1e-8})
+    result = minimize(wrapped, x0, method='L-BFGS-B', bounds=bounds, options={'ftol': 1e-12, 'gtol': 1e-10})
 
     best_potentials = result.x
     F, alpha_out, F_slip, F_yield, fluxD, fluxHR, fluxLR = obj_func(best_potentials, alpha)
@@ -143,28 +145,36 @@ def optimization(bounds, alpha, x0):
         'message': result.message,
     }
 
+def random_x0(bounds):
+    return np.array([np.random.uniform(low, high) for (low, high) in bounds])
+
 # === Main Block ===
 if __name__ == '__main__':
-    '''
     t_start = time.time()
     date = time.strftime("%Y%m%d")
 
-    alphas = np.linspace(0, 1, 2)
-    x0 = np.array([-0.25, -0.450, 0.150])
+    alphas = np.linspace(0, 1, 4)
     bounds = [(-0.400, -0.05), (-0.500, -0.300), (0.05, 0.400)]  # L2, D, H2
 
-    results = [optimization(bounds, alpha, x0) for alpha in alphas]
+    results_best = []
+    for alpha in alphas:
+        results = []
+        for i in range(5):
+            x0 = random_x0(bounds)
+            result = optimization(bounds, alpha, x0)
+            results.append(result)
+        best_result = min(results, key=lambda r: r['F'])
+        results_best.append(best_result)
 
     # Save results
     columns = ["alpha", "F", "F_slip", "F_yield", 
                "abs(fluxD)", "fluxHR", "fluxLR", 
                "potential_D1", "potential_L2", "potential_H2",
                "success", "message"]
-    df = pd.DataFrame(results, columns=columns)
+    df = pd.DataFrame(results_best, columns=columns)
     df.to_csv(f"2cof_float3_grad_{date}.csv", index=False)
 
     print("Runtime (s):", time.time() - t_start)
-    '''
 
     '''
     x0 = np.array([-0.25, -0.450, 0.150])
@@ -176,7 +186,7 @@ if __name__ == '__main__':
         dx[i] = eps
         print(f"F(x0[{i}]+eps):", obj_func(x0 + dx, alpha=0)[0], "F(x0):", obj_func(x0, alpha=0)[0])
     '''
-    
+    '''
     # coarsely plot F in 3D parameter space where axes are the potentials on the three cofactors
     D_vals = np.linspace(-0.5, -0.3, 10)
     H2_vals = np.linspace(0.05, 0.4, 10)
@@ -198,16 +208,30 @@ if __name__ == '__main__':
                 data.append([l, d, h, F]) # x=L2, y=D, z=H2, F=objective
 
     columns = ["L2", "D", "H2", "F"]
-    df = pd.DataFrame(F_vals, columns=columns)
+    df = pd.DataFrame(data, columns=columns)
     df.to_csv("F_near_alpha0.csv", index=False)
 
-    '''
-    plt.imshow(F_vals, origin='lower', extent=[0.05, 0.4, -0.5, -0.3, -0.4, -0.05], aspect='auto')
-    plt.xlabel("H2")
-    plt.ylabel("D")
-    plt.zlabel("L2")
-    plt.title("Objective F_yield at alpha = 0")
-    plt.colorbar(label="F")
+    # Load the data
+    df = pd.read_csv("F_near_alpha0.csv")
+
+    # Set up the plot
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Scatter plot
+    sc = ax.scatter(df['L2'], df['D'], df['H2'], c=df['F'], cmap='viridis')
+
+    # Add color bar
+    cbar = plt.colorbar(sc, ax=ax, shrink=0.6)
+    cbar.set_label('F value', rotation=270, labelpad=15)
+
+    # Axis labels
+    ax.set_xlabel('L2 Potential')
+    ax.set_ylabel('D Potential')
+    ax.set_zlabel('H2 Potential')
+    ax.set_title('3D Scatter of F (alpha = 0)')
+
+    plt.tight_layout()
     plt.show()'''
 
 
