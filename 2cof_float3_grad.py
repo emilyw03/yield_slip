@@ -123,7 +123,7 @@ def make_wrapped_obj(alpha):
 # === Optimization Routine ===
 def optimization(bounds, alpha, x0):
     wrapped = make_wrapped_obj(alpha)
-    result = minimize(wrapped, x0, method='L-BFGS-B', bounds=bounds, options={'maxiter': 500})
+    result = minimize(wrapped, x0, method='L-BFGS-B', bounds=bounds, options={'maxiter': 500, 'ftol': 1e-12, 'gtol': 1e-8})
 
     best_potentials = result.x
     F, alpha_out, F_slip, F_yield, fluxD, fluxHR, fluxLR = obj_func(best_potentials, alpha)
@@ -145,6 +145,7 @@ def optimization(bounds, alpha, x0):
 
 # === Main Block ===
 if __name__ == '__main__':
+    '''
     t_start = time.time()
     date = time.strftime("%Y%m%d")
 
@@ -163,3 +164,44 @@ if __name__ == '__main__':
     df.to_csv(f"2cof_float3_grad_{date}.csv", index=False)
 
     print("Runtime (s):", time.time() - t_start)
+    '''
+
+    '''
+    x0 = np.array([-0.25, -0.450, 0.150])
+    bounds = [(-0.400, -0.05), (-0.500, -0.300), (0.05, 0.400)]  # L2, D, H2
+    x0 = np.array([-0.25, -0.450, 0.150])
+    eps = 1e-5
+    for i in range(len(x0)):
+        dx = np.zeros_like(x0)
+        dx[i] = eps
+        print(f"F(x0[{i}]+eps):", obj_func(x0 + dx, alpha=0)[0], "F(x0):", obj_func(x0, alpha=0)[0])
+    '''
+    
+    # coarsely plot F in 3D parameter space where axes are the potentials on the three cofactors
+    D_vals = np.linspace(-0.5, -0.3, 50)
+    H2_vals = np.linspace(0.05, 0.4, 50)
+    L2_vals = np.linspace(-0.4, -0.05, 50)
+    F_vals = np.zeros((len(D_vals), len(H2_vals), len(L2_vals)))
+
+    for i, d in enumerate(D_vals):
+        for j, h in enumerate(H2_vals):
+            for k, l in enumerate(L2_vals):
+                potentials = np.array([l, d, h])
+                F, *_ = obj_func(potentials, alpha=0)
+                F_vals[j, i, k] = F
+
+    columsn = ["x", "y", "z"]
+    df = pd.DataFrame(F_vals, columns=columns)
+    df.to_csv("F_near_alpha0.csv")
+
+    '''
+    plt.imshow(F_vals, origin='lower', extent=[0.05, 0.4, -0.5, -0.3, -0.4, -0.05], aspect='auto')
+    plt.xlabel("H2")
+    plt.ylabel("D")
+    plt.zlabel("L2")
+    plt.title("Objective F_yield at alpha = 0")
+    plt.colorbar(label="F")
+    plt.show()'''
+
+
+
