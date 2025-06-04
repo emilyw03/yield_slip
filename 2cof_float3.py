@@ -183,7 +183,7 @@ def run_single_job(alpha):
         bounds = [
             {'name': 'L2', 'type': 'continuous', 'domain': (-0.400, -0.05)},
             {'name': 'D1', 'type': 'continuous', 'domain': (-0.500, -0.300)},
-            {'name': 'H2', 'type': 'continuous', 'domain': (0.05, 0.500)}]
+            {'name': 'H2', 'type': 'continuous', 'domain': (0.05, 0.400)}]
 
         maxiter = 30
 
