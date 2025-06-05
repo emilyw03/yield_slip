@@ -195,7 +195,7 @@ if __name__ == '__main__':
                "potential_D1", "potential_L2", "potential_H2",
                "success", "message"]
     df = pd.DataFrame(results_best, columns=columns)
-    df.to_csv(f"2cof_float3_LSpeed_{date}.csv", index=False)
+    df.to_csv(f"2cof_float3_LSpeed.csv", index=False)
     best_index, best_result = min(enumerate(results), key=lambda r: r[1]['F'])
     print(best_index)
     print(best_result)
