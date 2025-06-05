@@ -1,16 +1,9 @@
 '''
-2cof_float3
+bumpOpt_Bay
 Author: Emily Wang
-Feb 2025
-Bayesian Optimization on simple toy bifurcator DHL from Kiriko's finite reservoir manuscript/Jon Yuly's paper
-main script for running the optimizer and plotting a graph of fluxes vs. alpha (relative weight of efficiency factor)
-For a given alpha, t runs are serial
-Alpha loop is parallelized
-Optimizer specs: 
-    - uses Gaussian process Bayesian Optimization
-    - For each optimization, choose 20 random initial points to construct the likelihood function. Run 30 iterations of optimizer.
-    - For one full optimization process, run t = 20 separate optimizations. 
-      The final result is the taken from the run that yields the minimum F of 20 runs.
+June 5, 2025
+Optimize bump size (H1) for a grid of effective slope values. Uses Bayesian Optimization.
+Selected alpha = 0.03 for objective function.
 '''
 
 # Import Modules
@@ -33,25 +26,19 @@ import time
 
 import os
 
-def obj_func_full(potentials):
+def obj_func_full(potentials, slopes):
     '''
-    Run MEK and return Euclidean distance to optimize
-    Arguments:
-        potentials {list} -- Contains the passed parameters
-    Returns:
-        SSR {float} -- (measure of bifurcation efficiency) SSR for distance from 100% efficient bifurcation -1 : 0.5 : 0.5 for flux_D : flux_HR : flux_LR
-        events {float} -- number of total bifurcation events 
-        flux_ {float} -- fluxes at the reservoirs
+    full objective function, takes BayOpt parameter(s) and effective slopes on LPB and HPB
     '''
-    # fixed potentials
-    pL1 = -0.25
-    pH1 = 0.25
+    # floating potential (bump)
+    pH1 = potentials[0][0]
 
     # extract floating potentials
-    pL2 = potentials[0][0]
-    pD1 = potentials[0][1] # first reduction potential (negative)
+    pD1 = -0.300 # first reduction potential (negative)
     pD2 = -pD1 # second reduction potential is set to negative of first (positive)
-    pH2 = potentials[0][2]
+    pL1 = -0.25
+    pL2 = pD1 + 2 * slopes[0]
+    pH2 = pD2 + 2 * slopes[1]
 
     # run MEK - currently set to open conformation for open flow to low potential branch
     # fixed hyperparameters
@@ -59,8 +46,8 @@ def obj_func_full(potentials):
         
     # Time step variables
     N = 20 # time steps
-    ztime = 0.00001 # intial time
-    dt = 7/(N-1) # controls the orders of magntidue explored (7 in this case)
+    ztime = 0.00001 # initial time
+    dt = 7/(N-1) # controls the orders of magnitude explored (7 in this case)
 
     net = Network()
 
@@ -125,36 +112,29 @@ def obj_func_full(potentials):
     fluxLR_norm = fluxLR / abs(max_flux)
 
     # metric for efficiency: SSR from 100% efficient bifurcation flux ratio -1:0.5:0.5
-    SSR = math.sqrt((fluxD_norm + 1) ** 2 + (fluxHR_norm - 0.5) ** 2 + (fluxLR_norm - 0.5) ** 2)
+    F_slip = math.sqrt((fluxD_norm + 1) ** 2 + (fluxHR_norm - 0.5) ** 2 + (fluxLR_norm - 0.5) ** 2)
 
     # metric for bifurcation amount: 1000 / (# of events)
     # numerator selected so that events is of similar magnitude to SSR
-    events = 1 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
+    F_yield = 1 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
 
-    return SSR, events, fluxD, fluxHR, fluxLR
+    alpha = 0.03
+    F = alpha * F_slip + (1-alpha) * F_yield
 
-def obj_func_weighted(potentials, alpha):
-    '''
-    Tradeoff function to optimize (supports batch inputs)
-    Arguments:
-        potentials {list (1 searcher) or array (multiple searchers)} -- potentials proposed in an iteration of the optimizer
-        alpha {float} -- value in [0,1] denoting the weights of importance for bifurcation efficiency vs. number of bifurcation events. 
-                         alpha (efficiency) and (1 - alpha) (events). Default 0.5
-    '''
-    opt_results = []
-    for p in potentials:
-        SSR, events, _, _, _, = obj_func_full([p])
-        weighted_result = (alpha * SSR) + ((1 - alpha) * (events)) # minimize
-        opt_results.append([weighted_result])
-    return np.array(opt_results)
+    return F, F_slip, F_yield, fluxD, fluxHR, fluxLR
 
-def wrapped_obj_func(potentials, alpha):
+def make_wrapped_obj(slopes):
     '''
-    wrapped function for optimizer
+    wrapper function for obj_func_full
     '''
-    output = obj_func_weighted(potentials, alpha = alpha)
-    #output = obj_func_weighted(potentials, alpha = user_alpha) # use this for user input alpha
-    return output
+    def wrapped_obj(potentials):
+        results = []
+        for i in range(potentials.shape[0]):
+            pH1_array = [[potentials[i, 0]]]  # shape (1,1) to match original func
+            F, *_ = obj_func_full(pH1_array, slopes)
+            results.append([F])  # must be a list of lists
+        return np.array(results)
+    return wrapped_obj
 
 def detect_cpus():
     '''
@@ -163,40 +143,38 @@ def detect_cpus():
     '''
     return int(os.environ.get("SLURM_NTASKS", cpu_count()))
 
-def run_single_job(alpha):
+def run_single_job(slopes):
     '''
     scripts for t serial runs
+    slopes is a row vector of the form [slopeL slopeH]
     '''
     # store data for plotting
     F_output = [] # output F for each of the t trials
-    F_eff = []
-    F_amnt = []
+    F_slip = []
+    F_yield = []
     FluxD = []
     FluxHR = []
     FluxLR = []
     potentials = []
-    alpha = alpha
     
     # need to change the iteration count based on t test
     for t in range(300):
         seed(t * 100 + 500)
-        bounds = [
-            {'name': 'L2', 'type': 'continuous', 'domain': (-0.400, -0.05)},
-            {'name': 'D1', 'type': 'continuous', 'domain': (-0.500, -0.300)},
-            {'name': 'H2', 'type': 'continuous', 'domain': (0.05, 0.400)}]
+        bounds = [{'name': 'H1', 'type': 'continuous', 'domain': (0.05, 0.400)}]
 
         maxiter = 30
+        wrapped = make_wrapped_obj(slopes)
 
         # Initialize the optimizer
         optimizer = BayesianOptimization(
-            f = lambda x: wrapped_obj_func(x, alpha), 
+            f = wrapped, 
             domain = bounds,
             acquisition_type = 'EI',
             initial_design_num = 20,
             initial_design_type = 'random'
         )
 
-        # modify acquisition function to include exploratin parameter (jitter)
+        # modify acquisition function to include exploration parameter (jitter)
         optimizer.acquisition = GPyOpt.acquisitions.AcquisitionMPI(
             model = optimizer.model,
             space = optimizer.space,
@@ -209,13 +187,12 @@ def run_single_job(alpha):
 
         # Evaluate the fluxes using the optimized parameters
         best_potentials = [optimizer.x_opt]
-        SSR, events, fluxD, fluxHR, fluxLR = obj_func_full(best_potentials)
-        F = (alpha * SSR) + ((1 - alpha) * events)
+        F_val, F_slip_val, F_yield_val, fluxD, fluxHR, fluxLR = obj_func_full(best_potentials, slopes)
 
         # add data to storage vectors
-        F_output.append(F) # F for t-th iteration
-        F_eff.append(SSR)
-        F_amnt.append(events)
+        F_output.append(F_val) # F for t-th iteration
+        F_slip.append(F_slip_val)
+        F_yield.append(F_yield_val)
         FluxD.append(abs(fluxD))
         FluxHR.append(fluxHR)
         FluxLR.append(fluxLR)
@@ -224,30 +201,34 @@ def run_single_job(alpha):
     # find best trial and save data
     min_idx, F_t = min(enumerate(F_output), key=lambda x: x[1])
     min_idx = int(min_idx)
-    F_eff_best = F_eff[min_idx]
-    F_amnt_best = F_amnt[min_idx]
+    F_slip_best = F_slip[min_idx]
+    F_yield_best = F_yield[min_idx]
     fluxD_best = FluxD[min_idx]
     fluxHR_best = FluxHR[min_idx]
     fluxLR_best = FluxLR[min_idx]
     best_potentials = potentials[min_idx]
 
-    return [alpha, F_t, F_eff_best, F_amnt_best, fluxD_best, fluxHR_best, fluxLR_best, best_potentials[0][1], best_potentials[0][0], best_potentials[0][2]]
+    return [slopes[0], slopes[1], F_t, F_slip_best, F_yield_best, fluxD_best, fluxHR_best, fluxLR_best, best_potentials[0][0]]
 
 if __name__ == '__main__':
     t_start = time.time()
     timestr = time.strftime("%Y%m%d")
     task_id = int(os.environ.get("SLURM_ARRAY_TASK_ID", 0))
     num_tasks = int(os.environ.get("SLURM_ARRAY_TASK_COUNT", 1))
-    
-    alphas = np.linspace(0, 1, 5)
-    chunk = np.array_split(alphas, num_tasks)[task_id]
 
-    results = [run_single_job(alpha) for alpha in chunk]
+    grid_size = 25  # 25x25 grid for 625 points
+    slopeL_vals = np.linspace(0.100, 0.200, grid_size)
+    slopeH_vals = np.linspace(-0.200, -0.100, grid_size)
+    slopeL_grid, slopeH_grid = np.meshgrid(slopeL_vals, slopeH_vals)
+    slope_pairs = np.column_stack([slopeL_grid.ravel(), slopeH_grid.ravel()])
+    chunk = np.array_split(slope_pairs, num_tasks)[task_id]
+
+    results = [run_single_job(slopes) for slopes in chunk]
 
     # save data
-    columns = ["alpha", "F_t", "F_eff_best", "F_amnt_best", "abs(fluxD)", "fluxHR", "fluxLR", "potential_D1", "potential_L2", "potential_H2"]
+    columns = ["slopesL", "slopeH", "F_t", "F_eff_best", "F_amnt_best", "abs(fluxD)", "fluxHR", "fluxLR", "potential_H1"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv(f"2cof_float3_time_{task_id}_"+timestr+".csv", index=False)
+    df.to_csv(f"BestBump_{task_id}_"+timestr+".csv", index=False)
     
     t_end = time.time()
     runtime = t_end - t_start
