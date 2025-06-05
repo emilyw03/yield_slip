@@ -125,7 +125,7 @@ def make_wrapped_obj(alpha):
 # === Optimization Routine ===
 def optimization(bounds, alpha, x0):
     wrapped = make_wrapped_obj(alpha)
-    result = minimize(wrapped, x0, method='L-BFGS-B', bounds=bounds, options={'ftol': 1e-7, 'gtol': 1e-5})
+    result = minimize(wrapped, x0, method='L-BFGS-B', bounds=bounds, options={'maxiter': 30, 'ftol': 1e-7, 'gtol': 1e-5})
 
     best_potentials = result.x
     F, alpha_out, F_slip, F_yield, fluxD, fluxHR, fluxLR = obj_func(best_potentials, alpha)
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     results = []
     for i in range(20):
         x0 = random_x0(bounds)
-        result = optimization(bounds, alpha, x0)
+        result = optimization(bounds, 0, x0)
         result["point"]=str(x0)
         results_best.append(result)
     

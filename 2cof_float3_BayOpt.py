@@ -178,7 +178,7 @@ def run_single_job(alpha):
     alpha = alpha
     
     # need to change the iteration count based on t test
-    for t in range(300):
+    for t in range(1):
         seed(t * 100 + 500)
         bounds = [
             {'name': 'L2', 'type': 'continuous', 'domain': (-0.400, -0.05)},
