@@ -150,6 +150,7 @@ def random_x0(bounds):
 
 # === Main Block ===
 if __name__ == '__main__':
+    '''
     t_start = time.time()
     date = time.strftime("%Y%m%d")
 
@@ -177,64 +178,30 @@ if __name__ == '__main__':
     df.to_csv(f"2cof_float3_grad_{date}.csv", index=False)
 
     print("Runtime (s):", time.time() - t_start)
-
     '''
-    x0 = np.array([-0.25, -0.450, 0.150])
+
+    t_start = time.time()
     bounds = [(-0.400, -0.05), (-0.500, -0.300), (0.05, 0.400)]  # L2, D, H2
-    x0 = np.array([-0.25, -0.450, 0.150])
-    eps = 1e-5
-    for i in range(len(x0)):
-        dx = np.zeros_like(x0)
-        dx[i] = eps
-        print(f"F(x0[{i}]+eps):", obj_func(x0 + dx, alpha=0)[0], "F(x0):", obj_func(x0, alpha=0)[0])
-    '''
-    '''
-    # coarsely plot F in 3D parameter space where axes are the potentials on the three cofactors
-    D_vals = np.linspace(-0.5, -0.3, 10)
-    H2_vals = np.linspace(0.05, 0.4, 10)
-    L2_vals = np.linspace(-0.4, -0.05, 10)
-    F_vals = np.zeros((len(D_vals), len(H2_vals), len(L2_vals)))
-
-    for i, d in enumerate(D_vals):
-        for j, h in enumerate(H2_vals):
-            for k, l in enumerate(L2_vals):
-                potentials = np.array([l, d, h])
-                F, *_ = obj_func(potentials, alpha=0)
-                F_vals[j, i, k] = F
+    results_best = []
+    results = []
+    for i in range(20):
+        x0 = random_x0(bounds)
+        result = optimization(bounds, alpha, x0)
+        result["point"]=str(x0)
+        results_best.append(result)
     
-    data = []
-    for i, d in enumerate(D_vals):
-        for j, h in enumerate(H2_vals):
-            for k, l in enumerate(L2_vals):
-                F = F_vals[i, j, k]
-                data.append([l, d, h, F]) # x=L2, y=D, z=H2, F=objective
+    # Save results
+    columns = ["point","alpha", "F", "F_slip", "F_yield", 
+               "abs(fluxD)", "fluxHR", "fluxLR", 
+               "potential_D1", "potential_L2", "potential_H2",
+               "success", "message"]
+    df = pd.DataFrame(results_best, columns=columns)
+    df.to_csv(f"2cof_float3_grad_{date}.csv", index=False)
+    best_index, best_result = min(enumerate(results), key=lambda r: r[1]['F'])
+    print(best_index)
+    print(best_result)
 
-    columns = ["L2", "D", "H2", "F"]
-    df = pd.DataFrame(data, columns=columns)
-    df.to_csv("F_near_alpha0.csv", index=False)
-
-    # Load the data
-    df = pd.read_csv("F_near_alpha0.csv")
-
-    # Set up the plot
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection='3d')
-
-    # Scatter plot
-    sc = ax.scatter(df['L2'], df['D'], df['H2'], c=df['F'], cmap='viridis')
-
-    # Add color bar
-    cbar = plt.colorbar(sc, ax=ax, shrink=0.6)
-    cbar.set_label('F value', rotation=270, labelpad=15)
-
-    # Axis labels
-    ax.set_xlabel('L2 Potential')
-    ax.set_ylabel('D Potential')
-    ax.set_zlabel('H2 Potential')
-    ax.set_title('3D Scatter of F (alpha = 0)')
-
-    plt.tight_layout()
-    plt.show()'''
+    print("Runtime (s):", time.time() - t_start)
 
 
 
