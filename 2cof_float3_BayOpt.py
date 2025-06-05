@@ -178,7 +178,7 @@ def run_single_job(alpha):
     alpha = alpha
     
     # need to change the iteration count based on t test
-    for t in range(1):
+    for t in range(300):
         seed(t * 100 + 500)
         bounds = [
             {'name': 'L2', 'type': 'continuous', 'domain': (-0.400, -0.05)},
@@ -234,7 +234,6 @@ def run_single_job(alpha):
     return [alpha, F_t, F_eff_best, F_amnt_best, fluxD_best, fluxHR_best, fluxLR_best, best_potentials[0][1], best_potentials[0][0], best_potentials[0][2]]
 
 if __name__ == '__main__':
-    '''
     t_start = time.time()
     timestr = time.strftime("%Y%m%d")
     task_id = int(os.environ.get("SLURM_ARRAY_TASK_ID", 0))
@@ -250,13 +249,6 @@ if __name__ == '__main__':
     df = pd.DataFrame(results, columns=columns)
     df.to_csv(f"2cof_float3_time_{task_id}_"+timestr+".csv", index=False)
     
-    t_end = time.time()
-    runtime = t_end - t_start
-    print("runtime: ", runtime)'''
-
-    t_start = time.time()
-    results = [run_single_job(0)]
-    print(results)
     t_end = time.time()
     runtime = t_end - t_start
     print("runtime: ", runtime)
