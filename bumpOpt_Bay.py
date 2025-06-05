@@ -145,8 +145,10 @@ def detect_cpus():
 
 def run_single_job(slopes):
     '''
-    scripts for t serial runs
-    slopes is a row vector of the form [slopeL slopeH]
+    Runs t serial runs of the Bayesian Optimizer and returns the best optimization results
+
+    Args:
+    slopes (array-like): [slopeL, slopeH]
     '''
     # store data for plotting
     F_output = [] # output F for each of the t trials
@@ -193,7 +195,7 @@ def run_single_job(slopes):
         F_output.append(F_val) # F for t-th iteration
         F_slip.append(F_slip_val)
         F_yield.append(F_yield_val)
-        FluxD.append(abs(fluxD))
+        FluxD.append(fluxD)
         FluxHR.append(fluxHR)
         FluxLR.append(fluxLR)
         potentials.append(best_potentials)
@@ -226,10 +228,12 @@ if __name__ == '__main__':
     results = [run_single_job(slopes) for slopes in chunk]
 
     # save data
-    columns = ["slopesL", "slopeH", "F_t", "F_eff_best", "F_amnt_best", "abs(fluxD)", "fluxHR", "fluxLR", "potential_H1"]
+    columns = ["slopesL", "slopeH", "F_t", "F_slip_best", "F_yield_best", "fluxD", "fluxHR", "fluxLR", "potential_H1"]
     df = pd.DataFrame(results, columns=columns)
     df.to_csv(f"BestBump_{task_id}_"+timestr+".csv", index=False)
     
     t_end = time.time()
     runtime = t_end - t_start
-    print("runtime: ", runtime)
+    print(f"Total runtime: {runtime:.2f} seconds")
+    
+
