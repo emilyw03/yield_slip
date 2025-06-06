@@ -212,11 +212,6 @@ vmin = min(np.min(F_slip), np.min(F_yield))
 vmax = max(np.max(F_slip), np.max(F_yield))
 norm = LogNorm(vmin=vmin, vmax=vmax)
 
-# create color map for bumpy points
-#norm = PowerNorm(gamma=0.4, vmin=indices.min(), vmax=indices.max())
-#cmap = cm.get_cmap('Blues')
-#colors = cmap(norm(indices))
-
 # Base grid plot
 plt.figure(figsize=(8, 6))
 sc = plt.scatter(
@@ -226,13 +221,6 @@ sc = plt.scatter(
 cbar = plt.colorbar(sc)
 cbar.set_label(r'$\mathrm{F}_{\mathrm{slip}}$', fontsize=12)
 
-# Overlay gradient-colored Xs for bumpy
-#plt.scatter(slopeL_eff, slopeH_eff, c=colors, marker='x', s=80, linewidths=1.5, label='bumpy')
-#plt.scatter(*ramps_minflux, c='blue', marker='^', s=80, label='ramps min flux')
-#plt.scatter(*ramps_maxflux, c='magenta', marker='^', s=80, label='ramps max flux')
-#plt.scatter(*ramps_mineff, c='orange', marker='^', s=80, label='ramps max slip')
-#plt.scatter(*ramps_maxeff, c='cyan', marker='^', s=80, label='ramps min slip')
-
 # labels
 plt.title(r'$\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
 plt.xlabel('slopeL (eV/cofactor)')
@@ -240,12 +228,6 @@ plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
 plt.legend()
 plt.show()
-
-# color by F_yield, points
-# create color map for bumpy points
-#norm = PowerNorm(gamma=0.4, vmin=indices.min(), vmax=indices.max())
-#cmap = cm.get_cmap('Blues')
-#colors = cmap(norm(indices))
 
 # Base grid plot
 plt.figure(figsize=(8, 6))
@@ -255,13 +237,6 @@ sc = plt.scatter(
 )
 cbar = plt.colorbar(sc)
 cbar.set_label(r'$\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
-
-# Annotated points
-#plt.scatter(slopeL_eff, slopeH_eff, c=colors, marker='x', s=80, linewidths=1.5, label='bumpy')
-#plt.scatter(*ramps_minflux, c='blue', marker='^', s=80, label='ramps min flux')
-#plt.scatter(*ramps_maxflux, c='magenta', marker='^', s=80, label='ramps max flux')
-#plt.scatter(*ramps_mineff, c='orange', marker='^', s=80, label='ramps max slip')
-#plt.scatter(*ramps_maxeff, c='cyan', marker='^', s=80, label='ramps min slip')
 
 # labels
 plt.title(r'$\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes')
