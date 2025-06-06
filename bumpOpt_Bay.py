@@ -118,7 +118,7 @@ def obj_func_full(potentials, slopes):
     # numerator selected so that events is of similar magnitude to SSR
     F_yield = 1 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
 
-    alpha = 0.03
+    alpha = 1
     F = alpha * F_slip + (1-alpha) * F_yield
 
     return F, F_slip, F_yield, fluxD, fluxHR, fluxLR
@@ -230,7 +230,7 @@ if __name__ == '__main__':
     # save data
     columns = ["slopesL", "slopeH", "F_t", "F_slip_best", "F_yield_best", "fluxD", "fluxHR", "fluxLR", "potential_H1"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv(f"BestBump_{task_id}_"+timestr+".csv", index=False)
+    df.to_csv(f"BestBump_slip_{task_id}_"+timestr+".csv", index=False)
     
     t_end = time.time()
     runtime = t_end - t_start
