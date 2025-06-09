@@ -162,7 +162,7 @@ def run_single_job(slopes):
     # need to change the iteration count based on t test
     for t in range(300):
         seed(t * 100 + 500)
-        bounds = [{'name': 'H1', 'type': 'continuous', 'domain': (0.05, 0.400)}]
+        bounds = [{'name': 'H1', 'type': 'continuous', 'domain': (0.05, 0.500)}]
 
         maxiter = 30
         wrapped = make_wrapped_obj(slopes)
@@ -230,7 +230,7 @@ if __name__ == '__main__':
     # save data
     columns = ["slopesL", "slopeH", "F_t", "F_slip_best", "F_yield_best", "fluxD", "fluxHR", "fluxLR", "potential_H1"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv(f"BestBump_slip_{task_id}_"+timestr+".csv", index=False)
+    df.to_csv(f"BestBump_alpha1_{task_id}_"+timestr+".csv", index=False)
     
     t_end = time.time()
     runtime = t_end - t_start
