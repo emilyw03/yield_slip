@@ -198,14 +198,14 @@ plt.xlabel('slopeH (eV/cofactor)')
 plt.ylabel(r'$F_{slip}$')
 plt.show()
 '''
-
+'''
 # color by F_slip
 vmin = min(np.min(F_slip_w), np.min(F_yield_w))
 vmax = max(np.max(F_slip_w), np.max(F_yield_w))
 norm = LogNorm(vmin=vmin, vmax=vmax)
 
 # Base grid plot
-plt.figure(figsize=(8, 6))
+plt.figure(figsize=(7, 6))
 sc = plt.scatter(
     slopeL_w, slopeH_w, c=F_slip_w, cmap='viridis',
     s=60, edgecolor='none', norm=norm
@@ -243,7 +243,8 @@ plt.title(r'Overlay bump optimization for $\alpha=0$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.legend()
-plt.show()
+plt.tight_layout()
+plt.show()'''
 
 '''
 # color by fluxH
@@ -269,6 +270,26 @@ plt.title(r'$\mathrm{Flux}_{\mathrm{LR}}$ by ET branch slopes')
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.show()'''
+
+'''
+# === additional bump optimization plots ===
+bump_alpha0 = pd.read_csv('BestBump_alpha0_20250606.csv')
+filtered = bump_alpha0[bump_alpha0['slopeL'] == 0]
+slopeL = filtered['slopeL']
+slopeH = filtered['slopeH']
+pH1 = filtered['potential_H1']
+pH1_ramp = filtered['potential_H1_ramp']
+
+plt.figure(figsize=(7, 6))
+plt.scatter(slopeH, pH1, color='blue', label='bump')
+plt.scatter(slopeH, pH1_ramp, color='red', label='ramp')
+plt.title('Potential on H1 vs. HPB Slope (slopeL = 0 eV/cofactor)')
+plt.xlabel('slopeH (eV/cofactor)')
+plt.ylabel('Potential on H1 (eV)')
+plt.tight_layout()
+plt.legend()
+plt.show()
+'''
 
 '''
 # === ramps BayOpt search === 
