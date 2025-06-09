@@ -168,15 +168,18 @@ plt.show()
 '''
 
 # === ramps ===
-df = pd.read_csv("ramps2_grid_300_20250415.csv")
+ramps_w = pd.read_csv("ramps2_grid_300_20250415.csv")
 
-slopeL = df["slopeL"]
-slopeH = df["slopeH"]
-F_slip = df["F_slip"]
-F_yield = df["F_yield"]
-fluxD = df["fluxD"]
-fluxHR = df["fluxHR"]
-fluxLR = df["fluxLR"]
+slopeL_w = ramps_w["slopeL"]
+slopeH_w = ramps_w["slopeH"]
+F_slip_w = ramps_w["F_slip"]
+F_yield_w = ramps_w["F_yield"]
+
+bump_alpha0 = pd.read_csv('BestBump_alpha0_20250606.csv')
+slopeL_b_yield = bump_alpha0['slopeL']
+slopeH_b_yield = bump_alpha0['slopeH']
+F_slip_b_yield = bump_alpha0["F_slip"]
+F_yield_b_yield = bump_alpha0["F_yield"]
 
 '''
 # F_yield vs. slopeH
@@ -197,19 +200,8 @@ plt.show()
 '''
 
 # color by F_slip
-'''
-# === for annotating points ===
-bumpy = pd.read_csv("2cof_float3_gamma1_all_20250421.csv")
-slopeL_eff = bumpy["slopeL_eff"].to_numpy()
-slopeH_eff = bumpy["slopeH_eff"].to_numpy()
-ramps_minflux = (0.0990, -0.1960)
-ramps_maxflux = (-0.2, -0.0949)
-ramps_mineff = (0.0626, -0.0869)
-ramps_maxeff = (0.1192,  -0.1838)
-'''
-
-vmin = min(np.min(F_slip), np.min(F_yield))
-vmax = max(np.max(F_slip), np.max(F_yield))
+vmin = min(np.min(F_slip_w), np.min(F_yield_w))
+vmax = max(np.max(F_slip_w), np.max(F_yield_w))
 norm = LogNorm(vmin=vmin, vmax=vmax)
 
 # Base grid plot
@@ -221,8 +213,12 @@ sc = plt.scatter(
 cbar = plt.colorbar(sc)
 cbar.set_label(r'$\mathrm{F}_{\mathrm{slip}}$', fontsize=12)
 
+# overlay bump points
+plt.scatter(slopeL_b_yield, slopeH_b_yield, c=F_slip_b_yield, cmap='viridis', norm=norm, marker='o', edgecolor='black', linewidths=0.5)
+
 # labels
-plt.title(r'$\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
+plt.suptitle(r'$\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
+plt.title(r'Overlay bump optimization for $\alpha=0$')
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
@@ -238,8 +234,12 @@ sc = plt.scatter(
 cbar = plt.colorbar(sc)
 cbar.set_label(r'$\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
 
+# overlay bump points
+plt.scatter(slopeL_b_yield, slopeH_b_yield, c=F_yield_b_yield, cmap='viridis', norm=norm, marker='o', edgecolor='black', linewidths=0.5)
+
 # labels
 plt.title(r'$\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes')
+plt.title(r'Overlay bump optimization for $\alpha=0$')
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.legend()
