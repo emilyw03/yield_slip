@@ -228,7 +228,7 @@ if __name__ == '__main__':
     results = [run_single_job(slopes) for slopes in chunk]
 
     # save data
-    columns = ["slopeL", "slopeH", "F_t", "F_slip_best", "F_yield_best", "fluxD", "fluxHR", "fluxLR", "potential_H1"]
+    columns = ["slopeL", "slopeH", "F_t", "F_slip", "F_yield", "fluxD", "fluxHR", "fluxLR", "potential_H1"]
     df = pd.DataFrame(results, columns=columns)
     df.to_csv(f"BestBump_alpha1_{task_id}_"+timestr+".csv", index=False)
     
