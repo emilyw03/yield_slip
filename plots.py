@@ -207,7 +207,7 @@ norm = LogNorm(vmin=vmin, vmax=vmax)
 # Base grid plot
 plt.figure(figsize=(8, 6))
 sc = plt.scatter(
-    slopeL, slopeH, c=F_slip, cmap='viridis',
+    slopeL_w, slopeH_w, c=F_slip_w, cmap='viridis',
     s=60, edgecolor='none', norm=norm
 )
 cbar = plt.colorbar(sc)
@@ -218,7 +218,7 @@ plt.scatter(slopeL_b_yield, slopeH_b_yield, c=F_slip_b_yield, cmap='viridis', no
 
 # labels
 plt.suptitle(r'$\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
-plt.title(r'Overlay bump optimization for $\alpha=0$')
+plt.title(r'Overlay bump optimization for $\alpha=0$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
@@ -228,7 +228,7 @@ plt.show()
 # Base grid plot
 plt.figure(figsize=(8, 6))
 sc = plt.scatter(
-    slopeL, slopeH, c=F_yield, cmap='viridis',
+    slopeL_w, slopeH_w, c=F_yield_w, cmap='viridis',
     s=60, edgecolor='none', norm=norm
 )
 cbar = plt.colorbar(sc)
@@ -238,8 +238,8 @@ cbar.set_label(r'$\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
 plt.scatter(slopeL_b_yield, slopeH_b_yield, c=F_yield_b_yield, cmap='viridis', norm=norm, marker='o', edgecolor='black', linewidths=0.5)
 
 # labels
-plt.title(r'$\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes')
-plt.title(r'Overlay bump optimization for $\alpha=0$')
+plt.suptitle(r'$\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes')
+plt.title(r'Overlay bump optimization for $\alpha=0$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.legend()
