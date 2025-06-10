@@ -219,8 +219,8 @@ if __name__ == '__main__':
     num_tasks = int(os.environ.get("SLURM_ARRAY_TASK_COUNT", 1))
 
     grid_size = 25  # 25x25 grid for 625 points
-    slopeL_vals = np.linspace(-0.200, 0.200, grid_size)
-    slopeH_vals = np.linspace(-0.200, 0.200, grid_size)
+    slopeL_vals = np.linspace(0.100, 0.200, grid_size)
+    slopeH_vals = np.linspace(-0.200, -0.100, grid_size)
     slopeL_grid, slopeH_grid = np.meshgrid(slopeL_vals, slopeH_vals)
     slope_pairs = np.column_stack([slopeL_grid.ravel(), slopeH_grid.ravel()])
     chunk = np.array_split(slope_pairs, num_tasks)[task_id]
