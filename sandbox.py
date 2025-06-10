@@ -1,4 +1,6 @@
 # sandbox.py
 # for testing
 
-print('testing clone')
+import time
+timestr = time.strftime("%Y%m%d")
+print(timestr)
