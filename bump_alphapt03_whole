@@ -1,0 +1,11 @@
+#!/bin/sh
+#SBATCH -p et2024
+#SBATCH --mem-per-cpu=30G
+#SBATCH -t 20:00:00
+#SBATCH --array=0-29        # launch 30 jobs, 20-21 slope combos per job
+#SBATCH -n 1                # 1 task per job
+pwd; hostname; date
+
+~/Software/python_virtualenv/bin/python3.11 bump_alphapt03_whole.py > bump_alpha03_whole.out
+
+date
