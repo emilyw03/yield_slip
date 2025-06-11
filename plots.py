@@ -12,6 +12,7 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
+from scipy.spatial import cKDTree
 import matplotlib.colors as mcolors
 from matplotlib.colors import Normalize
 from matplotlib.colors import LogNorm, PowerNorm
@@ -168,6 +169,7 @@ plt.show()
 '''
 
 # === ramps ===
+'''
 ramps_w = pd.read_csv("ramps2_grid_300_20250415.csv")
 
 slopeL_w = ramps_w["slopeL"]
@@ -179,7 +181,7 @@ bump = pd.read_csv('BestBump_alpha1_20250609.csv')
 slopeL_b = bump['slopeL']
 slopeH_b = bump['slopeH']
 F_slip_b = bump["F_slip"]
-F_yield_b = bump["F_yield"]
+F_yield_b = bump["F_yield"]'''
 
 '''
 # F_yield vs. slopeH
@@ -295,6 +297,8 @@ plt.show()
 bump_0 = pd.read_csv('BestBump_alpha0_20250606.csv')
 bump_1 = pd.read_csv('BestBump_alpha1_20250609.csv')
 
+'''
+# === difference plots ===
 # both datasets have the same slope grid search combinations, so slopes from either bump_0 or bump_1 work
 slopeL = bump_0['slopeL']
 slopeH = bump_0['slopeH']
@@ -329,7 +333,35 @@ plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
 plt.legend()
+plt.show()'''
+
+# === bump vs ramp plots ===
+ramps_w = pd.read_csv("ramps2_grid_300_20250415.csv")
+ramps_coords = ramps_w[["slopeL", "slopeH"]].to_numpy()
+bump_coords = bump_1[["slopeL", "slopeH"]].to_numpy() # starting with alpha = 1 (check other alphas later)
+
+pH1 = bump_1['potential_H1']
+
+# nearest neighbor matching (since grid searches aren't the same size)
+tree = cKDTree(ramps_coords)
+dists, indices = tree.query(bump_coords)
+F_slip_b = bump_1["F_slip"].to_numpy()
+F_slip_r_matched = ramps_w["F_slip"].to_numpy()[indices]
+F_yield_b = bump_1["F_yield"].to_numpy()
+F_yield_r_matched = ramps_w["F_yield"].to_numpy()[indices]
+
+F_slip_diff = F_slip_b / F_slip_r_matched
+F_yield_diff = F_yield_b / F_yield_r_matched
+
+plt.figure(figsize=(8, 6))
+plt.scatter(pH1, F_slip_diff, color='blue', s=60)
+plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Potential')
+plt.title(r'(bump, $\alpha=1$)/(ramp)', fontsize=10)
+plt.xlabel('H1 potential (eV)')
+plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$')
+plt.tight_layout()
 plt.show()
+
 '''
 # === ramps BayOpt search === 
 df = pd.read_csv('ramps2_iters_20250419.csv')
