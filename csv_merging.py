@@ -22,6 +22,17 @@ df_all.to_csv("BestBump_alphapt03_20250610.csv", index=False)
 print("csv merged")
 '''
 
-ramps = pd.read_csv("ramps2_grid_300_20250415.csv")
-ramps["potential_H1"] = 0.300 + ramps["slopeH"]
-ramps.to_csv("ramps2_grid_300_20250415.csv", index=False)
+df = pd.read_csv("BestBump_alphapt03_corner_20250605.csv")
+slopeL = df['slopeL']
+slopeH = df['slopeH']
+fluxLR = df['fluxLR']
+fluxHR = df['fluxHR']
+pLR = -0.3 + 2*slopeL
+pHR = 0.3 + 2*slopeH
+dG1 = -(pLR + pHR)
+dG2 = -(2*pHR)
+eff = fluxLR / fluxHR
+
+dG = (eff * dG1) + ((1 - eff) * dG2)
+df['dG'] = dG
+df.to_csv("BestBump_alphapt03_corner_20250605.csv", index=False)
