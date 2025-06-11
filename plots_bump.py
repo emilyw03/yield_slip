@@ -16,7 +16,7 @@ from matplotlib.colors import Normalize
 from matplotlib.colors import LogNorm, PowerNorm
 import matplotlib.cm as cm
 
-'''
+
 # === ramps ===
 ramps_w = pd.read_csv("ramps2_grid_300_20250415.csv")
 F_slip_w = ramps_w["F_slip"]
@@ -27,13 +27,39 @@ slopeL_r = ramps["slopeL"]
 slopeH_r = ramps["slopeH"]
 F_slip_r = ramps["F_slip"]
 F_yield_r = ramps["F_yield"]
+dG_r = ramps['dG']
 
 bump = pd.read_csv('BestBump_alpha1_corner_20250610.csv')
 slopeL_b = bump['slopeL']
 slopeH_b = bump['slopeH']
 F_slip_b = bump["F_slip"]
 F_yield_b = bump["F_yield"]
+dG_b = bump['dG']
 
+# === color by dG === 
+all_dG = pd.concat([dG_r, dG_b])
+vmin = -all_dG.max()
+vmax = -all_dG.min()
+
+# Base grid plot
+plt.figure(figsize=(8, 6))
+sc = plt.scatter(slopeL_r, slopeH_r, c=-dG_r, cmap='viridis', s=60, edgecolor='none', vmin=-0.5, vmax=0.5)
+cbar = plt.colorbar(sc)
+cbar.set_label(r'Energy loss (-$\Delta\mathrm{G}$)', fontsize=12)
+
+# overlay bump points
+plt.scatter(slopeL_b, slopeH_b, c=-dG_b, cmap='viridis', marker='o', edgecolor='black', linewidths=0.5, vmin=-0.5, vmax=0.5)
+
+# labels
+plt.suptitle(r'Energy loss (-$\Delta\mathrm{G}$) by ET branch slopes')
+plt.title(r'Overlay bump optimization for $\alpha=1$', fontsize=10)
+plt.xlabel('slopeL (eV/cofactor)')
+plt.ylabel('slopeH (eV/cofactor)')
+plt.tight_layout()
+plt.legend()
+plt.show()
+
+'''
 # === color by F_slip and F_yield ===
 # color by F_slip
 # color bar is based on the ranges of F_slip and F_yield for ramps whole square
@@ -154,6 +180,7 @@ plt.show()'''
 
 
 # === bump vs ramp plots ===
+'''
 ramps = pd.read_csv("ramps2_grid_300_corner_20250504.csv")
 bump = pd.read_csv("BestBump_alpha1_corner_20250610.csv")
 ramps_coords = ramps[["slopeL", "slopeH"]].to_numpy()
@@ -176,7 +203,7 @@ F_yield_b = bump["F_yield"].to_numpy()
 F_yield_r = ramps["F_yield"].to_numpy()[indices]
 
 F_slip_diff = F_slip_b / F_slip_r
-F_yield_diff = F_yield_b / F_yield_r
+F_yield_diff = F_yield_b / F_yield_r'''
 
 '''
 plt.figure(figsize=(8, 6))
