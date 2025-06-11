@@ -4,41 +4,39 @@ Author: Emily Wang
 Date: June 11, 2025
 plots for assessing the advantage of a bump in HPB vs. ramps
 '''
+import numpy as np
+from numpy.linalg import eig
+
+import pandas as pd
+
+import matplotlib.pyplot as plt
+from scipy.interpolate import griddata
+from scipy.spatial import cKDTree
+import matplotlib.colors as mcolors
+from matplotlib.colors import Normalize
+from matplotlib.colors import LogNorm, PowerNorm
+import matplotlib.cm as cm
 
 # === ramps ===
-'''
 ramps_w = pd.read_csv("ramps2_grid_300_20250415.csv")
-
-slopeL_w = ramps_w["slopeL"]
-slopeH_w = ramps_w["slopeH"]
 F_slip_w = ramps_w["F_slip"]
 F_yield_w = ramps_w["F_yield"]
 
-bump = pd.read_csv('BestBump_alpha1_20250609.csv')
+ramps = pd.read_csv("ramps2_grid_300_corner_20250504.csv")
+slopeL_r = ramps["slopeL"]
+slopeH_r = ramps["slopeH"]
+F_slip_r = ramps["F_slip"]
+F_yield_r = ramps["F_yield"]
+
+bump = pd.read_csv('BestBump_alpha1_corner_20250610.csv')
 slopeL_b = bump['slopeL']
 slopeH_b = bump['slopeH']
 F_slip_b = bump["F_slip"]
-F_yield_b = bump["F_yield"]'''
+F_yield_b = bump["F_yield"]
 
-'''
-# F_yield vs. slopeH
-plt.figure(figsize=(8, 5))
-plt.plot(slopeH_z, F_yield_z, color = 'blue', linewidth=3)
-plt.title(r'$F_{yield}$ vs. slopeH')
-plt.xlabel('slopeH (eV/cofactor)')
-plt.ylabel(r'$F_{yield}$ (s)')
-plt.show()
-
-# F_slip vs. slopeH
-plt.figure(figsize=(8, 5))
-plt.plot(slopeH_z, F_slip_z, color = 'blue', linewidth=3)
-plt.title(r'$F_{slip}$ vs. slopeH')
-plt.xlabel('slopeH (eV/cofactor)')
-plt.ylabel(r'$F_{slip}$')
-plt.show()
-'''
-'''
+# === color by F_slip and F_yield ===
 # color by F_slip
+# color bar is based on the ranges of F_slip and F_yield for ramps whole square
 vmin = min(np.min(F_slip_w), np.min(F_yield_w))
 vmax = max(np.max(F_slip_w), np.max(F_yield_w))
 norm = LogNorm(vmin=vmin, vmax=vmax)
@@ -46,7 +44,7 @@ norm = LogNorm(vmin=vmin, vmax=vmax)
 # Base grid plot
 plt.figure(figsize=(8, 6))
 sc = plt.scatter(
-    slopeL_w, slopeH_w, c=F_slip_w, cmap='viridis',
+    slopeL_r, slopeH_r, c=F_slip_r, cmap='viridis',
     s=60, edgecolor='none', norm=norm
 )
 cbar = plt.colorbar(sc)
@@ -57,7 +55,7 @@ plt.scatter(slopeL_b, slopeH_b, c=F_slip_b, cmap='viridis', norm=norm, marker='o
 
 # labels
 plt.suptitle(r'$\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
-plt.title(r'Overlay bump optimization for $\alpha=1$', fontsize=10)
+plt.title(r'Overlay bump optimization for $\alpha=0.03$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
@@ -67,7 +65,7 @@ plt.show()
 # Base grid plot
 plt.figure(figsize=(8, 6))
 sc = plt.scatter(
-    slopeL_w, slopeH_w, c=F_yield_w, cmap='viridis',
+    slopeL_r, slopeH_r, c=F_yield_r, cmap='viridis',
     s=60, edgecolor='none', norm=norm
 )
 cbar = plt.colorbar(sc)
@@ -78,13 +76,13 @@ plt.scatter(slopeL_b, slopeH_b, c=F_yield_b, cmap='viridis', norm=norm, marker='
 
 # labels
 plt.suptitle(r'$\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes')
-plt.title(r'Overlay bump optimization for $\alpha=1$', fontsize=10)
+plt.title(r'Overlay bump optimization for $\alpha=0.03$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
 plt.legend()
 plt.show()
-'''
+
 '''
 # color by fluxH
 plt.figure(figsize=(8, 6))
@@ -135,6 +133,7 @@ bump_0 = pd.read_csv('BestBump_alpha0_20250606.csv')
 bump_1 = pd.read_csv('BestBump_alpha1_20250609.csv')
 
 '''
+'''
 # === difference plots ===
 # both datasets have the same slope grid search combinations, so slopes from either bump_0 or bump_1 work
 slopeL = bump_0['slopeL']
@@ -172,6 +171,7 @@ plt.tight_layout()
 plt.legend()
 plt.show()'''
 
+'''
 # === bump vs ramp plots ===
 ramps_w = pd.read_csv("ramps2_grid_300_20250415.csv")
 ramps_coords = ramps_w[["slopeL", "slopeH"]].to_numpy()
@@ -197,7 +197,7 @@ plt.title(r'(bump, $\alpha=1$)/(ramp)', fontsize=10)
 plt.xlabel('H1 potential (eV)')
 plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$')
 plt.tight_layout()
-plt.show()
+plt.show()'''
 
 '''
 # === ramps BayOpt search === 
