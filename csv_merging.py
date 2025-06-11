@@ -10,18 +10,12 @@ import pandas as pd
 import glob
 
 # Find all matching CSV files
-csv_files = sorted(glob.glob("BestBump_alpha1_*_20250609.csv"))
+csv_files = sorted(glob.glob("BestBump_alphapt03_*_20250610.csv"))
 
 # Load and concatenate all CSVs
 df_all = pd.concat((pd.read_csv(f) for f in csv_files), ignore_index=True)
-df_all = df_all.sort_values(by='slopesL', ascending=True)
-df_all = df_all.rename(columns={
-    'slopesL': 'slopeL',
-    'F_t': 'F',
-    'F_slip_best': 'F_slip',
-    'F_yield_best': 'F_yield'
-})
+df_all = df_all.sort_values(by='slopeL', ascending=True)
 
 # Save to a single merged file
-df_all.to_csv("BestBump_alpha1_20250609.csv", index=False)
+df_all.to_csv("BestBump_alphapt03_20250610.csv", index=False)
 print("csv merged")
