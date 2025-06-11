@@ -293,32 +293,23 @@ plt.show()
 '''
 '''
 bump_0 = pd.read_csv('BestBump_alpha0_20250606.csv')
-slopeL_0 = bump_0['slopeL']
-slopeH_0 = bump_0['slopeH']
-F_slip_0 = bump_0['F_slip']
-F_yield_0 = bump_0['F_yield']
+bump_1 = pd.read_csv('BestBump_alpha1_20250609.csv')
 
-bump_pt03 = pd.read_csv('BestBump_alphapt03_20250606.csv')
-slopeL_pt03 = bump_pt03['slopeL']
-slopeH_pt03 = bump_pt03['slopeH']
-F_slip_pt03 = bump_pt03['F_slip']
-F_yield_pt03 = bump_pt03['F_yield']
-
-F_slip_diff = F_slip_pt03 - F_slip_0
-F_yield_diff = F_yield_pt03 - F_yield_pt03
-
-vmin = min(np.min(F_slip_0), np.min(F_yield_0), np.min(F_slip_pt03), np.min(F_yield_pt03))
-vmax = max(np.max(F_slip_0), np.max(F_yield_0), np.max(F_slip_pt03), np.max(F_yield_pt03))
+# both datasets have the same slope grid search combinations, so slopes from either bump_0 or bump_1 work
+slopeL = bump_0['slopeL']
+slopeH = bump_0['slopeH']
+F_slip_diff = bump_1['F_slip'] / bump_0['F_slip']
+F_yield_diff = bump_1['F_yield'] / bump_0['F_yield']
 
 # F_slip diff
 plt.figure(figsize=(8, 6))
-sc = plt.scatter(slopeL_0, slopeH_0, c=F_slip_diff, cmap='viridis', s=60, edgecolor='none')
+sc = plt.scatter(slopeL, slopeH, c=F_slip_diff, cmap='viridis', s=60, edgecolor='none', vmin = 0, vmax = 1)
 cbar = plt.colorbar(sc)
-cbar.set_label(r'$\mathrm{F}_{\mathrm{slip}}$', fontsize=12)
+cbar.set_label(r'Relative $\Delta \mathrm{F}_{\mathrm{slip}}$', fontsize=12)
 
 # labels
-plt.suptitle(r'$\Delta\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
-plt.title(r'$(\alpha=0.03) - (\alpha=0)$', fontsize=10)
+plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
+plt.title(r'$(\alpha=1) / (\alpha=0)$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
@@ -327,18 +318,18 @@ plt.show()
 
 # F_yield diff
 plt.figure(figsize=(8, 6))
-sc = plt.scatter(slopeL_0, slopeH_0, c=F_yield_diff, cmap='viridis', s=60, edgecolor='none')
+sc = plt.scatter(slopeL, slopeH, c=F_yield_diff, cmap='viridis', s=60, edgecolor='none', vmin = 1, vmax = 2)
 cbar = plt.colorbar(sc)
-cbar.set_label(r'$\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
+cbar.set_label(r'$\Delta \mathrm{F}_{\mathrm{yield}}$', fontsize=12)
 
 # labels
 plt.suptitle(r'$\Delta\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes')
-plt.title(r'$(\alpha=0.03) - (\alpha=0)$', fontsize=10)
+plt.title(r'$(\alpha=1) / (\alpha=0)$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
 plt.legend()
-plt.show()'''
+plt.show()
 '''
 # === ramps BayOpt search === 
 df = pd.read_csv('ramps2_iters_20250419.csv')
