@@ -293,7 +293,7 @@ plt.tight_layout()
 plt.legend()
 plt.show()
 '''
-
+'''
 bump_0 = pd.read_csv('BestBump_alpha0_20250606.csv')
 bump_1 = pd.read_csv('BestBump_alpha1_20250609.csv')
 
@@ -307,13 +307,13 @@ F_yield_diff = bump_1['F_yield'] / bump_0['F_yield']
 
 # F_slip diff
 plt.figure(figsize=(8, 6))
-sc = plt.scatter(slopeL, slopeH, c=F_slip_diff, cmap='viridis', s=60, edgecolor='none', vmin = 0, vmax = 1)
+sc = plt.scatter(slopeL_0, slopeH_0, c=F_slip_diff, cmap='viridis', s=60, edgecolor='none')
 cbar = plt.colorbar(sc)
-cbar.set_label(r'Relative $\Delta \mathrm{F}_{\mathrm{slip}}$', fontsize=12)
+cbar.set_label(r'$\mathrm{F}_{\mathrm{slip}}$', fontsize=12)
 
 # labels
-plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
-plt.title(r'$(\alpha=1) / (\alpha=0)$', fontsize=10)
+plt.suptitle(r'$\Delta\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
+plt.title(r'$(\alpha=0.03) - (\alpha=0)$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
@@ -322,13 +322,13 @@ plt.show()
 
 # F_yield diff
 plt.figure(figsize=(8, 6))
-sc = plt.scatter(slopeL, slopeH, c=F_yield_diff, cmap='viridis', s=60, edgecolor='none', vmin = 1, vmax = 2)
+sc = plt.scatter(slopeL_0, slopeH_0, c=F_yield_diff, cmap='viridis', s=60, edgecolor='none')
 cbar = plt.colorbar(sc)
-cbar.set_label(r'$\Delta \mathrm{F}_{\mathrm{yield}}$', fontsize=12)
+cbar.set_label(r'$\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
 
 # labels
 plt.suptitle(r'$\Delta\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes')
-plt.title(r'$(\alpha=1) / (\alpha=0)$', fontsize=10)
+plt.title(r'$(\alpha=0.03) - (\alpha=0)$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
