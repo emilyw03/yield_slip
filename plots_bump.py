@@ -8,7 +8,6 @@ import numpy as np
 from numpy.linalg import eig
 
 import pandas as pd
-
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 from scipy.spatial import cKDTree
@@ -17,6 +16,7 @@ from matplotlib.colors import Normalize
 from matplotlib.colors import LogNorm, PowerNorm
 import matplotlib.cm as cm
 
+'''
 # === ramps ===
 ramps_w = pd.read_csv("ramps2_grid_300_20250415.csv")
 F_slip_w = ramps_w["F_slip"]
@@ -81,7 +81,7 @@ plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
 plt.legend()
-plt.show()
+plt.show()'''
 
 '''
 # color by fluxH
@@ -109,25 +109,6 @@ plt.ylabel('slopeH (eV/cofactor)')
 plt.show()'''
 
 # === additional bump optimization plots ===
-# pH1 vs. slopeH w/ slopeL held constant
-'''
-bump_alpha0 = pd.read_csv('BestBump_alpha0_20250606.csv')
-filtered = bump_alpha0[bump_alpha0['slopeL'] == 0]
-slopeL = filtered['slopeL']
-slopeH = filtered['slopeH']
-pH1 = filtered['potential_H1']
-pH1_ramp = filtered['potential_H1_ramp']
-
-plt.figure(figsize=(7, 6))
-plt.scatter(slopeH, pH1, color='blue', label='bump')
-plt.scatter(slopeH, pH1_ramp, color='red', label='ramp')
-plt.title('Potential on H1 vs. HPB Slope (slopeL = 0 eV/cofactor)')
-plt.xlabel('slopeH (eV/cofactor)')
-plt.ylabel('Potential on H1 (eV)')
-plt.tight_layout()
-plt.legend()
-plt.show()
-'''
 '''
 bump_0 = pd.read_csv('BestBump_alpha0_20250606.csv')
 bump_1 = pd.read_csv('BestBump_alpha1_20250609.csv')
@@ -171,33 +152,55 @@ plt.tight_layout()
 plt.legend()
 plt.show()'''
 
-'''
-# === bump vs ramp plots ===
-ramps_w = pd.read_csv("ramps2_grid_300_20250415.csv")
-ramps_coords = ramps_w[["slopeL", "slopeH"]].to_numpy()
-bump_coords = bump_1[["slopeL", "slopeH"]].to_numpy() # starting with alpha = 1 (check other alphas later)
 
-pH1 = bump_1['potential_H1']
+# === bump vs ramp plots ===
+ramps = pd.read_csv("ramps2_grid_300_corner_20250504.csv")
+bump = pd.read_csv("BestBump_alpha1_corner_20250610.csv")
+ramps_coords = ramps[["slopeL", "slopeH"]].to_numpy()
+bump_coords = bump[["slopeL", "slopeH"]].to_numpy()
+
+pH1_disp = bump['potential_H1'] - ramps['potential_H1']
 
 # nearest neighbor matching (since grid searches aren't the same size)
 tree = cKDTree(ramps_coords)
 dists, indices = tree.query(bump_coords)
-F_slip_b = bump_1["F_slip"].to_numpy()
-F_slip_r_matched = ramps_w["F_slip"].to_numpy()[indices]
-F_yield_b = bump_1["F_yield"].to_numpy()
-F_yield_r_matched = ramps_w["F_yield"].to_numpy()[indices]
 
-F_slip_diff = F_slip_b / F_slip_r_matched
-F_yield_diff = F_yield_b / F_yield_r_matched
+pH1_b = bump['potential_H1'].to_numpy()
+pH1_r = ramps['potential_H1'].to_numpy()[indices]
+pH1_disp = pH1_b - pH1_r
 
+F_slip_b = bump["F_slip"].to_numpy()
+F_slip_r = ramps["F_slip"].to_numpy()[indices]
+
+F_yield_b = bump["F_yield"].to_numpy()
+F_yield_r = ramps["F_yield"].to_numpy()[indices]
+
+F_slip_diff = F_slip_b / F_slip_r
+F_yield_diff = F_yield_b / F_yield_r
+
+'''
 plt.figure(figsize=(8, 6))
-plt.scatter(pH1, F_slip_diff, color='blue', s=60)
-plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Potential')
+plt.scatter(pH1_disp, F_slip_diff, color='blue')
+plt.yscale('log')
+plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Displacement')
 plt.title(r'(bump, $\alpha=1$)/(ramp)', fontsize=10)
-plt.xlabel('H1 potential (eV)')
+plt.xlabel('H1 displacement (bump - ramp) (eV)')
 plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$')
 plt.tight_layout()
-plt.show()'''
+plt.show()
+'''
+
+'''
+plt.figure(figsize=(8, 6))
+plt.scatter(pH1_disp, F_yield_diff, color='blue')
+plt.yscale('log')
+plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{yield}}$ vs. H1 Displacement')
+plt.title(r'(bump, $\alpha=1$)/(ramp)', fontsize=10)
+plt.xlabel('H1 displacement (bump - ramp) (eV)')
+plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{yield}}$')
+plt.tight_layout()
+plt.show()
+'''
 
 '''
 # === ramps BayOpt search === 
