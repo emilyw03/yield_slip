@@ -71,7 +71,7 @@ class Network():
         self.hbar = 6.5821 * 10 ** (-16)  # unit: eV sec
         self.beta = 39.06  # unit: 1/kT in 1/eV
         self.reorgE = 0.7
-        self.V = 0.1
+        self.V = 0.01 # change from 0.1
         # self.reservoir_rate = 10**7 #This is the default rate constant for electron flow INTO the reservoirs. It is currently an input to allow more flexibility
         # self.cofactor_distance = 10 #distance between neighboring cofactors
         # self.slope = 0.1 #this is the "slope" of the energy landscapes (i.e. the difference in reduction potentials of neighboring cofactors)
