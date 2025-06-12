@@ -12,14 +12,14 @@ import glob
 
 # === merged parallelized files ===
 # Find all matching CSV files
-csv_files = sorted(glob.glob("BestBump_alphapt03_whole_*_20250612.csv"))
+csv_files = sorted(glob.glob("BestBump_alphapt03_corner_*_20250612.csv"))
 
 # Load and concatenate all CSVs
 df_all = pd.concat((pd.read_csv(f) for f in csv_files), ignore_index=True)
 df_all = df_all.sort_values(by='slopeL', ascending=True)
 
 # Save to a single merged file
-df_all.to_csv("BestBump_alphapt03_whole_20250612.csv", index=False)
+df_all.to_csv("BestBump_alphapt03_corner_20250612.csv", index=False)
 print("csv merged")
 
 '''
