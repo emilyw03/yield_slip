@@ -112,22 +112,40 @@ def obj_func_full(slopeL, slopeH):
 
 if __name__ == '__main__':
     t_start = time.time()
-    grid_size = 100  # 100x100 grid for 10,000 points
-    slopeL_vals = np.linspace(0.100, 0.200, grid_size)
-    slopeH_vals = np.linspace(-0.200, -0.100, grid_size)
+    timestr = time.strftime("%Y%m%d")
+    task_id = int(os.environ.get("SLURM_ARRAY_TASK_ID", 0))
+    num_tasks = int(os.environ.get("SLURM_ARRAY_TASK_COUNT", 1))
+
+    grid_size = 1  # 100x100 grid for 10,000 points #####
+    slopeL_vals = np.linspace(-0.200, 0.200, grid_size)
+    slopeH_vals = np.linspace(-0.200, 0.200, grid_size)
     slopeL_grid, slopeH_grid = np.meshgrid(slopeL_vals, slopeH_vals)
     slope_pairs = np.column_stack([slopeL_grid.ravel(), slopeH_grid.ravel()])
+    #chunk = np.array_split(slope_pairs, num_tasks)[task_id]
 
     results_all = []
-    for slopeL, slopeH in slope_pairs:
+    for slopeL, slopeH in slope_pairs: ######
         result = obj_func_full(slopeL, slopeH)
+
+        # adding two extra columns for pH1 and dG
+        potential_H1 = 0.300 + slopeH
+        pLR = -0.3 + 2*slopeL
+        pHR = 0.3 + 2*slopeH
+        dG1 = -(pLR + pHR)
+        dG2 = -(2*pHR)
+        eff = result[6] / result[5]
+        dG = (eff * dG1) + ((1 - eff) * dG2)
+
+        result.extend([potential_H1, dG])
         results_all.append(result)
 
+    print(results)
+    '''
     # save data
-    columns = ["slopeL", "slopeH", "F_slip", "F_yield", "fluxD", "fluxHR", "fluxLR"]
+    columns = ["slopeL", "slopeH", "F_slip", "F_yield", "fluxD", "fluxHR", "fluxLR", "potential_H1", "dG"]
     df = pd.DataFrame(results_all, columns=columns)
-    df.to_csv("ramps2_grid_300_corner_20250504.csv", index=False)
-
+    df.to_csv(f"ramps_whole_{task_id}_"+timestr+".csv", index=False)
+    
     t_end = time.time()
     runtime = t_end - t_start
-    print("runtime: ", runtime)
+    print(f"Total runtime: {runtime:.2f} seconds")'''
