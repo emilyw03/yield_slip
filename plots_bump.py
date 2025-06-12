@@ -27,15 +27,16 @@ slopeL_r = ramps["slopeL"]
 slopeH_r = ramps["slopeH"]
 F_slip_r = ramps["F_slip"]
 F_yield_r = ramps["F_yield"]
-dG_r = ramps['dG']
+#dG_r = ramps['dG']
 
-bump = pd.read_csv('BestBump_alpha1_corner_20250610.csv')
+bump = pd.read_csv('BestBump_alpha0_corner_20250611.csv')
 slopeL_b = bump['slopeL']
 slopeH_b = bump['slopeH']
 F_slip_b = bump["F_slip"]
 F_yield_b = bump["F_yield"]
-dG_b = bump['dG']
+#dG_b = bump['dG']
 
+'''
 # === color by dG === 
 all_dG = pd.concat([dG_r, dG_b])
 vmin = -all_dG.max()
@@ -58,8 +59,8 @@ plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
 plt.legend()
 plt.show()
-
 '''
+
 # === color by F_slip and F_yield ===
 # color by F_slip
 # color bar is based on the ranges of F_slip and F_yield for ramps whole square
@@ -81,7 +82,7 @@ plt.scatter(slopeL_b, slopeH_b, c=F_slip_b, cmap='viridis', norm=norm, marker='o
 
 # labels
 plt.suptitle(r'$\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
-plt.title(r'Overlay bump optimization for $\alpha=0.03$', fontsize=10)
+plt.title(r'Overlay bump optimization for $\alpha=0$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
@@ -102,12 +103,12 @@ plt.scatter(slopeL_b, slopeH_b, c=F_yield_b, cmap='viridis', norm=norm, marker='
 
 # labels
 plt.suptitle(r'$\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes')
-plt.title(r'Overlay bump optimization for $\alpha=0.03$', fontsize=10)
+plt.title(r'Overlay bump optimization for $\alpha=0$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
 plt.legend()
-plt.show()'''
+plt.show()
 
 '''
 # color by fluxH
