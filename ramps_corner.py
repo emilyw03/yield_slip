@@ -134,7 +134,7 @@ if __name__ == '__main__':
         pHR = 0.3 + 2*slopeH
         dG1 = -(pLR + pHR)
         dG2 = -(2*pHR)
-        eff = result[6] / result[5] if fluxHR != 0 else 0
+        eff = result[6] / result[5] if result[5] != 0 else 0
         dG = (eff * dG1) + ((1 - eff) * dG2)
 
         result.extend([potential_H1, dG])
