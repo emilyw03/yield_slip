@@ -24,14 +24,14 @@ ramps_w = pd.read_csv("ramps_whole_20250612.csv")
 F_slip_w = ramps_w["F_slip"]
 F_yield_w = ramps_w["F_yield"]
 
-ramps = pd.read_csv("ramps_whole_20250612.csv")
+ramps = pd.read_csv("ramps_corner_bif_20250612.csv")
 slopeL_r = ramps["slopeL"]
 slopeH_r = ramps["slopeH"]
 F_slip_r = ramps["F_slip"]
 F_yield_r = ramps["F_yield"]
 #dG_r = ramps['dG']
 
-bump = pd.read_csv('BestBump_alpha1_whole_20250612.csv')
+bump = pd.read_csv('BestBump_alpha1_corner_bif_20250611.csv')
 slopeL_b = bump['slopeL']
 slopeH_b = bump['slopeH']
 F_slip_b = bump["F_slip"]
@@ -178,8 +178,8 @@ plt.show()'''
 
 # === bump vs ramp plots ===
 
-ramps = pd.read_csv("ramps_corner_20250612.csv")
-bump = pd.read_csv("BestBump_alpha1_corner_20250611.csv")
+ramps = pd.read_csv("ramps_corner_bif_20250612.csv")
+bump = pd.read_csv("BestBump_alpha1_corner_bif_20250611.csv")
 ramps_coords = ramps[["slopeL", "slopeH"]].to_numpy()
 bump_coords = bump[["slopeL", "slopeH"]].to_numpy()
 
@@ -196,6 +196,7 @@ pH1_disp = pH1_b - pH1_r
 F_slip_b = bump["F_slip"].to_numpy()
 F_slip_r = ramps["F_slip"].to_numpy()[indices]
 F_slip_diff = F_slip_b / F_slip_r
+
 
 # bin data
 df = pd.DataFrame({"pH1_disp": pH1_disp, "F_slip_diff": F_slip_diff})
@@ -215,22 +216,25 @@ plt.errorbar(
     yerr=grouped["std_diff"], fmt='o', capsize=4, color='blue'
 )
 
-plt.axhline(1, linestyle='--', color='gray')  # Reference line: no improvement
+plt.axhline(1, linestyle='--', color='red')  # Reference line: no improvement
+plt.text(x=grouped["mean_disp"].max(), y=1 - 0.02, s='no improvement', ha='right', va='top', fontsize=10, color='red')
+plt.yscale('log')
 plt.xlabel('H1 displacement (bump - ramp) (eV)')
 plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ (bump/ramp)')
-plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Displacement')
+plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Displacement (trend)')
+plt.legend(loc='best')
 plt.tight_layout()
 plt.show()
 
-'''
+
 plt.figure(figsize=(8, 6))
 plt.scatter(pH1_disp, F_slip_diff, color='blue')
+plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Displacement (all points)')
 plt.yscale('log')
-plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Displacement')
 plt.xlabel('H1 displacement (bump - ramp) (eV)')
 plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ (bump/ramp)')
 plt.tight_layout()
-plt.show()'''
+plt.show()
 
 '''
 plt.figure(figsize=(8, 6))
