@@ -19,19 +19,19 @@ import seaborn as sns
 
 
 # === ramps ===
-'''
+
 ramps_w = pd.read_csv("ramps_whole_20250612.csv")
 F_slip_w = ramps_w["F_slip"]
 F_yield_w = ramps_w["F_yield"]
 
-ramps = pd.read_csv("ramps_corner_bif_20250612.csv")
+ramps = pd.read_csv("ramps_whole_20250612.csv")
 slopeL_r = ramps["slopeL"]
 slopeH_r = ramps["slopeH"]
 F_slip_r = ramps["F_slip"]
 F_yield_r = ramps["F_yield"]
 #dG_r = ramps['dG']
 
-bump = pd.read_csv('BestBump_alpha1_corner_bif_20250611.csv')
+bump = pd.read_csv('BestBump_alphapt03_whole_20250612.csv')
 slopeL_b = bump['slopeL']
 slopeH_b = bump['slopeH']
 F_slip_b = bump["F_slip"]
@@ -62,7 +62,7 @@ plt.tight_layout()
 plt.legend()
 plt.show()
 '''
-'''
+
 # === color by F_slip and F_yield ===
 # color by F_slip
 # color bar is based on the ranges of F_slip and F_yield for ramps whole square
@@ -81,7 +81,7 @@ plt.scatter(slopeL_b, slopeH_b, c=F_slip_b, cmap='viridis', norm=norm, marker='o
 
 # labels
 plt.suptitle(r'$\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
-plt.title(r'Overlay bump optimization for $\alpha=1$', fontsize=10)
+plt.title(r'Overlay bump optimization for $\alpha=0.03$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
@@ -99,12 +99,12 @@ plt.scatter(slopeL_b, slopeH_b, c=F_yield_b, cmap='viridis', norm=norm, marker='
 
 # labels
 plt.suptitle(r'$\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes')
-plt.title(r'Overlay bump optimization for $\alpha=1$', fontsize=10)
+plt.title(r'Overlay bump optimization for $\alpha=0.03$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
 plt.legend()
-plt.show()'''
+plt.show()
 
 '''
 # color by fluxH
@@ -177,7 +177,7 @@ plt.show()'''
 
 
 # === bump vs ramp plots ===
-
+'''
 ramps = pd.read_csv("ramps_corner_bif_20250612.csv")
 bump = pd.read_csv("BestBump_alpha1_corner_bif_20250611.csv")
 ramps_coords = ramps[["slopeL", "slopeH"]].to_numpy()
@@ -234,7 +234,7 @@ plt.yscale('log')
 plt.xlabel('H1 displacement (bump - ramp) (eV)')
 plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ (bump/ramp)')
 plt.tight_layout()
-plt.show()
+plt.show()'''
 
 '''
 plt.figure(figsize=(8, 6))
