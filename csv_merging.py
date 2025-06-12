@@ -11,7 +11,7 @@ import glob
 
 
 # Find all matching CSV files
-csv_files = sorted(glob.glob("BestBump_alpha1_corner_*_20250611.csv"))
+csv_files = sorted(glob.glob("BestBump_alpha1_corner_*.csv"))
 
 # Load and concatenate all CSVs
 df_all = pd.concat((pd.read_csv(f) for f in csv_files), ignore_index=True)
