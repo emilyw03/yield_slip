@@ -18,18 +18,18 @@ import matplotlib.cm as cm
 
 
 # === ramps ===
-ramps_w = pd.read_csv("ramps2_grid_300_20250415.csv")
+ramps_w = pd.read_csv("ramps_whole_20250612.csv")
 F_slip_w = ramps_w["F_slip"]
 F_yield_w = ramps_w["F_yield"]
 
-ramps = pd.read_csv("ramps2_grid_300_corner_20250504.csv")
+ramps = pd.read_csv("ramps_whole_20250612.csv")
 slopeL_r = ramps["slopeL"]
 slopeH_r = ramps["slopeH"]
 F_slip_r = ramps["F_slip"]
 F_yield_r = ramps["F_yield"]
 #dG_r = ramps['dG']
 
-bump = pd.read_csv('BestBump_alpha0_corner_20250611.csv')
+bump = pd.read_csv('BestBump_alpha0_whole_20250611.csv')
 slopeL_b = bump['slopeL']
 slopeH_b = bump['slopeH']
 F_slip_b = bump["F_slip"]
@@ -38,9 +38,9 @@ F_yield_b = bump["F_yield"]
 
 '''
 # === color by dG === 
-all_dG = pd.concat([dG_r, dG_b])
-vmin = -all_dG.max()
-vmax = -all_dG.min()
+#all_dG = pd.concat([dG_r, dG_b])
+#vmin = -all_dG.max()
+#vmax = -all_dG.min()
 
 # Base grid plot
 plt.figure(figsize=(8, 6))
@@ -49,7 +49,7 @@ cbar = plt.colorbar(sc)
 cbar.set_label(r'Energy loss (-$\Delta\mathrm{G}$)', fontsize=12)
 
 # overlay bump points
-plt.scatter(slopeL_b, slopeH_b, c=-dG_b, cmap='viridis', marker='o', edgecolor='black', linewidths=0.5, vmin=-0.5, vmax=0.5)
+#plt.scatter(slopeL_b, slopeH_b, c=-dG_b, cmap='viridis', marker='o', edgecolor='black', linewidths=0.5, vmin=-0.5, vmax=0.5)
 
 # labels
 plt.suptitle(r'Energy loss (-$\Delta\mathrm{G}$) by ET branch slopes')
@@ -70,10 +70,7 @@ norm = LogNorm(vmin=vmin, vmax=vmax)
 
 # Base grid plot
 plt.figure(figsize=(8, 6))
-sc = plt.scatter(
-    slopeL_r, slopeH_r, c=F_slip_r, cmap='viridis',
-    s=60, edgecolor='none', norm=norm
-)
+sc = plt.scatter(slopeL_r, slopeH_r, c=F_slip_r, cmap='viridis', s=60, edgecolor='none', norm=norm)
 cbar = plt.colorbar(sc)
 cbar.set_label(r'$\mathrm{F}_{\mathrm{slip}}$', fontsize=12)
 
@@ -91,10 +88,7 @@ plt.show()
 
 # Base grid plot
 plt.figure(figsize=(8, 6))
-sc = plt.scatter(
-    slopeL_r, slopeH_r, c=F_yield_r, cmap='viridis',
-    s=60, edgecolor='none', norm=norm
-)
+sc = plt.scatter(slopeL_r, slopeH_r, c=F_yield_r, cmap='viridis', s=60, edgecolor='none', norm=norm)
 cbar = plt.colorbar(sc)
 cbar.set_label(r'$\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
 
