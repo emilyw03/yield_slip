@@ -15,9 +15,11 @@ import matplotlib.colors as mcolors
 from matplotlib.colors import Normalize
 from matplotlib.colors import LogNorm, PowerNorm
 import matplotlib.cm as cm
+import seaborn as sns
 
 
 # === ramps ===
+'''
 ramps_w = pd.read_csv("ramps_whole_20250612.csv")
 F_slip_w = ramps_w["F_slip"]
 F_yield_w = ramps_w["F_yield"]
@@ -29,12 +31,12 @@ F_slip_r = ramps["F_slip"]
 F_yield_r = ramps["F_yield"]
 #dG_r = ramps['dG']
 
-bump = pd.read_csv('BestBump_alpha0_whole_20250611.csv')
+bump = pd.read_csv('BestBump_alpha1_whole_20250612.csv')
 slopeL_b = bump['slopeL']
 slopeH_b = bump['slopeH']
 F_slip_b = bump["F_slip"]
 F_yield_b = bump["F_yield"]
-#dG_b = bump['dG']
+#dG_b = bump['dG']'''
 
 '''
 # === color by dG === 
@@ -60,7 +62,7 @@ plt.tight_layout()
 plt.legend()
 plt.show()
 '''
-
+'''
 # === color by F_slip and F_yield ===
 # color by F_slip
 # color bar is based on the ranges of F_slip and F_yield for ramps whole square
@@ -79,7 +81,7 @@ plt.scatter(slopeL_b, slopeH_b, c=F_slip_b, cmap='viridis', norm=norm, marker='o
 
 # labels
 plt.suptitle(r'$\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
-plt.title(r'Overlay bump optimization for $\alpha=0$', fontsize=10)
+plt.title(r'Overlay bump optimization for $\alpha=1$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
@@ -97,12 +99,12 @@ plt.scatter(slopeL_b, slopeH_b, c=F_yield_b, cmap='viridis', norm=norm, marker='
 
 # labels
 plt.suptitle(r'$\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes')
-plt.title(r'Overlay bump optimization for $\alpha=0$', fontsize=10)
+plt.title(r'Overlay bump optimization for $\alpha=1$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
 plt.legend()
-plt.show()
+plt.show()'''
 
 '''
 # color by fluxH
@@ -175,9 +177,9 @@ plt.show()'''
 
 
 # === bump vs ramp plots ===
-'''
-ramps = pd.read_csv("ramps2_grid_300_corner_20250504.csv")
-bump = pd.read_csv("BestBump_alpha1_corner_20250610.csv")
+
+ramps = pd.read_csv("ramps_corner_20250612.csv")
+bump = pd.read_csv("BestBump_alpha1_corner_20250611.csv")
 ramps_coords = ramps[["slopeL", "slopeH"]].to_numpy()
 bump_coords = bump[["slopeL", "slopeH"]].to_numpy()
 
@@ -193,24 +195,42 @@ pH1_disp = pH1_b - pH1_r
 
 F_slip_b = bump["F_slip"].to_numpy()
 F_slip_r = ramps["F_slip"].to_numpy()[indices]
-
-F_yield_b = bump["F_yield"].to_numpy()
-F_yield_r = ramps["F_yield"].to_numpy()[indices]
-
 F_slip_diff = F_slip_b / F_slip_r
-F_yield_diff = F_yield_b / F_yield_r'''
+
+# bin data
+df = pd.DataFrame({"pH1_disp": pH1_disp, "F_slip_diff": F_slip_diff})
+N = 20
+df["bin"] = pd.cut(df["pH1_disp"], bins=N)
+
+# Group by bin and compute statistics
+grouped = df.groupby("bin").agg(
+    mean_disp=("pH1_disp", "mean"),
+    mean_diff=("F_slip_diff", "mean"),
+    std_diff=("F_slip_diff", "std")
+).dropna()
+
+# Plot with error bars
+plt.errorbar(
+    grouped["mean_disp"], grouped["mean_diff"],
+    yerr=grouped["std_diff"], fmt='o', capsize=4, color='blue'
+)
+
+plt.axhline(1, linestyle='--', color='gray')  # Reference line: no improvement
+plt.xlabel('H1 displacement (bump - ramp) (eV)')
+plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ (bump/ramp)')
+plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Displacement')
+plt.tight_layout()
+plt.show()
 
 '''
 plt.figure(figsize=(8, 6))
 plt.scatter(pH1_disp, F_slip_diff, color='blue')
 plt.yscale('log')
-plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Displacement')
-plt.title(r'(bump, $\alpha=1$)/(ramp)', fontsize=10)
+plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Displacement')
 plt.xlabel('H1 displacement (bump - ramp) (eV)')
-plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$')
+plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ (bump/ramp)')
 plt.tight_layout()
-plt.show()
-'''
+plt.show()'''
 
 '''
 plt.figure(figsize=(8, 6))
