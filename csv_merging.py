@@ -9,7 +9,8 @@ Use for merging csv's after parallelized slurm tasks
 import pandas as pd
 import glob
 
-
+'''
+# === merged parallelized files ===
 # Find all matching CSV files
 csv_files = sorted(glob.glob("BestBump_alpha1_whole_*_20250612.csv"))
 
@@ -19,11 +20,11 @@ df_all = df_all.sort_values(by='slopeL', ascending=True)
 
 # Save to a single merged file
 df_all.to_csv("BestBump_alpha1_whole_20250612.csv", index=False)
-print("csv merged")
-
+print("csv merged")'''
 
 '''
-df = pd.read_csv("BestBump_alphapt03_corner_20250605.csv")
+# === add dG ===
+df = pd.read_csv("BestBump_alpha1_corner_20250611.csv")
 slopeL = df['slopeL']
 slopeH = df['slopeH']
 fluxLR = df['fluxLR']
@@ -36,5 +37,10 @@ eff = fluxLR / fluxHR
 
 dG = (eff * dG1) + ((1 - eff) * dG2)
 df['dG'] = dG
-df.to_csv("BestBump_alphapt03_corner_20250605.csv", index=False)
+df.to_csv("BestBump_alpha1_corner_20250611.csv", index=False)
 '''
+
+# === filter for bifurcating only (dG <= 0)
+df = pd.read_csv("ramps_corner_20250612.csv")
+filtered = df[df['dG'] <= 0]
+filtered.to_csv('ramps_corner_bif_20250612.csv')
