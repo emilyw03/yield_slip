@@ -31,7 +31,7 @@ F_slip_r = ramps["F_slip"]
 F_yield_r = ramps["F_yield"]
 #dG_r = ramps['dG']
 
-bump = pd.read_csv('BestBump_alphapt03_corner_20250612.csv')
+bump = pd.read_csv('BestBump_alpha1_corner_update_20250612.csv')
 slopeL_b = bump['slopeL']
 slopeH_b = bump['slopeH']
 F_slip_b = bump["F_slip"]
@@ -81,7 +81,7 @@ plt.scatter(slopeL_b, slopeH_b, c=F_slip_b, cmap='viridis', norm=norm, marker='o
 
 # labels
 plt.suptitle(r'$\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
-plt.title(r'Overlay bump optimization for $\alpha=0.03$', fontsize=10)
+plt.title(r'Overlay bump optimization for $\alpha=1$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
@@ -99,7 +99,7 @@ plt.scatter(slopeL_b, slopeH_b, c=F_yield_b, cmap='viridis', norm=norm, marker='
 
 # labels
 plt.suptitle(r'$\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes')
-plt.title(r'Overlay bump optimization for $\alpha=0.03$', fontsize=10)
+plt.title(r'Overlay bump optimization for $\alpha=1$', fontsize=10)
 plt.xlabel('slopeL (eV/cofactor)')
 plt.ylabel('slopeH (eV/cofactor)')
 plt.tight_layout()
@@ -197,6 +197,9 @@ F_slip_b = bump["F_slip"].to_numpy()
 F_slip_r = ramps["F_slip"].to_numpy()[indices]
 F_slip_diff = F_slip_b / F_slip_r
 
+slopeL = bump['slopeL']
+slopeH = bump['slopeH']
+
 '''
 # === Trend Plot ===
 # bin data
@@ -226,10 +229,7 @@ plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Displacement (tre
 plt.legend(loc='best')
 plt.tight_layout()
 plt.show()'''
-
-slopeL = bump['slopeL']
-slopeH = bump['slopeH']
-dG = bump['dG']
+'''
 
 # === Scatter plot ===
 plt.figure(figsize=(8, 6))
@@ -242,5 +242,14 @@ plt.yscale('log')
 plt.xlabel('H1 displacement (bump - ramp) (eV)')
 plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ (bump/ramp)')
 plt.legend()
+plt.tight_layout()
+plt.show()'''
+
+# === H1 displacement vs. slopes ===
+plt.figure(figsize=(8, 6))
+plt.scatter(pH1_disp, abs(slopeH), color='blue')
+plt.title('High Potential Branch Slope vs. H1 Displacement')
+plt.xlabel('H1 displacement (bump - ramp) (eV)')
+plt.ylabel('High Potential Branch Slope')
 plt.tight_layout()
 plt.show()
