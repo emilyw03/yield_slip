@@ -45,8 +45,8 @@ def obj_func_full(slopeL):
     D = Cofactor("D", [-0.3, 0.3])   #inverted
     L1 = Cofactor("L1", [-0.3 + slopeL*1])
     L2 = Cofactor("L2", [-0.3 + slopeL*2])
-    H1 = Cofactor("H1", [0.4])
-    H2 = Cofactor("H2", [0.1])
+    H1 = Cofactor("H1", [0.225])
+    H2 = Cofactor("H2", [0])
 
     # Telling the network about the cofactors. Naming cofactors to add to network.
     net.addCofactor(L1)
@@ -131,14 +131,14 @@ if __name__ == '__main__':
         pHR = 0.3 + 2*slopeH
         dG1 = -(pLR + pHR)
         dG2 = -(2*pHR)
-        eff = result[6] / result[5] if result[5] != 0 else 0
+        eff = result[5] / result[4] if result[4] != 0 else 0
         dG = (eff * dG1) + ((1 - eff) * dG2)
 
         result.extend([potential_H1, dG])
         results_all.append(result)
 
     # save data
-    columns = ["slopeL", "slopeH", "F_slip", "F_yield", "fluxD", "fluxHR", "fluxLR", "potential_H1", "dG"]
+    columns = ["slopeL", "F_slip", "F_yield", "fluxD", "fluxHR", "fluxLR", "potential_H1", "dG"]
     df = pd.DataFrame(results_all, columns=columns)
     df.to_csv(f"bump_constant_whole_"+timestr+".csv", index=False)
     

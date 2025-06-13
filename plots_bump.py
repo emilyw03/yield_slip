@@ -245,6 +245,7 @@ plt.legend()
 plt.tight_layout()
 plt.show()'''
 
+'''
 # === H1 displacement vs. slopes ===
 plt.figure(figsize=(8, 6))
 plt.scatter(pH1_disp, abs(slopeH), color='blue')
@@ -253,3 +254,28 @@ plt.xlabel('H1 displacement (bump - ramp) (eV)')
 plt.ylabel('High Potential Branch Slope')
 plt.tight_layout()
 plt.show()
+'''
+
+# === constant bump vs. ramp ===
+ramps = pd.read_csv("ramps_whole_bif_20250612.csv")
+bump = pd.read_csv("bump_constant_whole_bif_20250613.csv")
+ramps_filtered = ramps[ramps['slopeH'] == -0.15]
+ramps_coords = ramps[["slopeL", "slopeH"]].to_numpy()
+bump_coords = bump[["slopeL", "slopeH"]].to_numpy()
+
+pH1_disp = bump['potential_H1'] - ramps['potential_H1']
+
+# nearest neighbor matching (since grid searches aren't the same size)
+tree = cKDTree(ramps_coords)
+dists, indices = tree.query(bump_coords)
+
+pH1_b = bump['potential_H1'].to_numpy()
+pH1_r = ramps['potential_H1'].to_numpy()[indices]
+pH1_disp = pH1_b - pH1_r
+
+F_slip_b = bump["F_slip"].to_numpy()
+F_slip_r = ramps["F_slip"].to_numpy()[indices]
+F_slip_diff = F_slip_b / F_slip_r
+
+slopeL = bump['slopeL']
+slopeH = bump['slopeH']
