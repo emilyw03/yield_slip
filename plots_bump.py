@@ -183,8 +183,6 @@ bump = pd.read_csv("BestBump_alpha1_corner_bif_20250611.csv")
 ramps_coords = ramps[["slopeL", "slopeH"]].to_numpy()
 bump_coords = bump[["slopeL", "slopeH"]].to_numpy()
 
-pH1_disp = bump['potential_H1'] - ramps['potential_H1']
-
 # nearest neighbor matching (since grid searches aren't the same size)
 tree = cKDTree(ramps_coords)
 dists, indices = tree.query(bump_coords)
@@ -228,22 +226,22 @@ plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ (bump/ramp)')
 plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Displacement (trend)')
 plt.legend(loc='best')
 plt.tight_layout()
-plt.show()'''
+plt.show()
 '''
 
 # === Scatter plot ===
 plt.figure(figsize=(8, 6))
-sc = plt.scatter(pH1_disp, F_slip_diff, c=abs(slopeH))
+sc = plt.scatter(pH1_disp, F_slip_diff, c=abs(slopeL)/abs(slopeH))
 cbar = plt.colorbar(sc)
-cbar.set_label('|slopeH|', fontsize=12)
+cbar.set_label(r'$\frac{|\mathrm{slopeL}|}{|\mathrm{slopeH}|}$', fontsize=12)
 
-plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Displacement (all points)')
+plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Displacement')
 plt.yscale('log')
 plt.xlabel('H1 displacement (bump - ramp) (eV)')
 plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ (bump/ramp)')
 plt.legend()
 plt.tight_layout()
-plt.show()'''
+plt.show()
 
 '''
 # === H1 displacement vs. slopes ===
@@ -255,27 +253,30 @@ plt.ylabel('High Potential Branch Slope')
 plt.tight_layout()
 plt.show()
 '''
-
+'''
 # === constant bump vs. ramp ===
 ramps = pd.read_csv("ramps_whole_bif_20250612.csv")
 bump = pd.read_csv("bump_constant_whole_bif_20250613.csv")
 ramps_filtered = ramps[ramps['slopeH'] == -0.15]
-ramps_coords = ramps[["slopeL", "slopeH"]].to_numpy()
-bump_coords = bump[["slopeL", "slopeH"]].to_numpy()
+ramps_coords = ramps_filtered['slopeL'].to_numpy().reshape(-1, 1)
+bump_coords = bump['slopeL'].to_numpy().reshape(-1, 1)
 
-pH1_disp = bump['potential_H1'] - ramps['potential_H1']
-
-# nearest neighbor matching (since grid searches aren't the same size)
 tree = cKDTree(ramps_coords)
 dists, indices = tree.query(bump_coords)
-
-pH1_b = bump['potential_H1'].to_numpy()
-pH1_r = ramps['potential_H1'].to_numpy()[indices]
-pH1_disp = pH1_b - pH1_r
 
 F_slip_b = bump["F_slip"].to_numpy()
 F_slip_r = ramps["F_slip"].to_numpy()[indices]
 F_slip_diff = F_slip_b / F_slip_r
 
 slopeL = bump['slopeL']
-slopeH = bump['slopeH']
+
+plt.figure(figsize=(8, 6))
+plt.scatter(slopeL, F_slip_diff, color='blue')
+plt.axhline(1, linestyle='--', color='red')  # Reference line: no improvement
+plt.text(x=slopeL.max(), y=1 - 0.02, s='no improvement', ha='right', va='top', fontsize=10, color='red')
+plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. Low Potential Branch Slope')
+plt.title('slopeH = -0.15, H1 displacement = 0.075')
+plt.xlabel('Low Potential Branch Slope (meV/cofactor)')
+plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$')
+plt.tight_layout()
+plt.show()'''
