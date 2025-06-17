@@ -74,7 +74,7 @@ class Network():
         #self.beta = 116  # T = 100K
         # self.reorgE = 0.7 # unit: eV
         self.reorgE = 0.7
-        self.V = 0.1 # unit: eV
+        self.V = 0.01 # unit: eV, update 6/17/2025 for corrected prefactor
 
     def __str__(self) -> str:
         """
