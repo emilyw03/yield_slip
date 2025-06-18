@@ -179,8 +179,54 @@ def constant_bump_v_ramp(slopeL, F_slip_diff):
     plt.text(x=slopeL.max(), y=1 - 0.02, s='no improvement', ha='right', va='top', fontsize=10, color='red')
     plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. Low Potential Branch Slope')
     plt.title('slopeH = -0.15, H1 displacement = 0.075')
-    plt.xlabel('Low Potential Branch Slope (meV/cofactor)')
+    plt.xlabel('Low Potential Branch Slope (eV/cofactor)')
     plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$')
+    plt.tight_layout()
+    plt.show()
+
+def Nfn1_slopeH_slip(df_bump, df_ramp):
+    '''
+    Vary slopeH in Nfn-1 and plot to compare F_slip for bump and no bump 
+    '''
+    common_slopeH = set(df_bump['slopeH']).intersection(set(df_ramp['slopeH']))
+
+    df_bump = df_bump[df_bump["slopeH"].isin(common_slopeH)].reset_index(drop=True)
+    df_ramp = df_ramp[df_ramp["slopeH"].isin(common_slopeH)].reset_index(drop=True)
+
+    F_slip_diff = df_bump['F_slip'] / df_ramp['F_slip']
+
+    slopeH = df_bump['slopeH'] # same for both because of intersection
+
+    plt.figure(figsize=(8, 6))
+    plt.scatter(slopeH, F_slip_diff, color='blue')
+    #plt.axhline(1, linestyle='--', color='red')  # Reference line: no improvement
+    #plt.text(x=slopeH.max(), y=1 - 0.02, s='no improvement', ha='right', va='top', fontsize=10, color='red')
+    plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. Nfn-1 High Potential Branch Slope')
+    plt.xlabel('High Potential Branch Slope (eV/cofactor)')
+    plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$')
+    plt.tight_layout()
+    plt.show()
+
+def Nfn1_slopeH_yield(df_bump, df_ramp):
+    '''
+    Vary slopeH in Nfn-1 and plot to compare F_yield for bump and no bump 
+    '''
+    common_slopeH = set(df_bump['slopeH']).intersection(set(df_ramp['slopeH']))
+
+    df_bump = df_bump[df_bump["slopeH"].isin(common_slopeH)].reset_index(drop=True)
+    df_ramp = df_ramp[df_ramp["slopeH"].isin(common_slopeH)].reset_index(drop=True)
+
+    F_yield_diff = df_bump['F_yield'] / df_ramp['F_yield']
+
+    slopeH = df_bump['slopeH'] # same for both because of intersection
+
+    plt.figure(figsize=(8, 6))
+    plt.scatter(slopeH, F_yield_diff, color='blue')
+    #plt.axhline(1, linestyle='--', color='red')  # Reference line: no improvement
+    #plt.text(x=slopeL.max(), y=1 - 0.02, s='no improvement', ha='right', va='top', fontsize=10, color='red')
+    plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{yield}}$ vs. Low Potential Branch Slope')
+    plt.xlabel('High Potential Branch Slope (eV/cofactor)')
+    plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{yield}}$')
     plt.tight_layout()
     plt.show()
 
@@ -249,3 +295,9 @@ if __name__ == '__main__':
 
     constant_bump_v_ramp(slopeL, F_slip_diff)
     '''
+
+    # === Nfn-1 vary slopeH ===
+    df_bump = pd.read_csv("Nfn1_vary_slopeH_bump_20250617.csv")
+    df_ramp = pd.read_csv("Nfn1_vary_slopeH_ramp_20250617.csv")
+    Nfn1_slopeH_slip(df_bump, df_ramp)
+    Nfn1_slopeH_yield(df_bump, df_ramp)

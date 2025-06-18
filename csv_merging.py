@@ -41,7 +41,7 @@ df.to_csv("BestBump_alpha1_corner_20250611.csv", index=False)
 '''
 
 # === filter for bifurcating only (dG <= 0)
-df = pd.read_csv("Nfn1_vary_slopeH_bump_20250617.csv")
+df = pd.read_csv("Nfn1_vary_slopeH_ramp_20250617.csv")
 #filtered = df[(df['dG'] <= 0) & (df['fluxD'] < 0) & (df['fluxHR'] > 0) & (df['fluxLR'] > 0)]
-filtered = df[(df['NADPH_flux'] < 0) & (df['NAD_flux'] > 0) & (df['Fd_flux'] > 0)]
-filtered.to_csv('Nfn1_vary_slopeH_bump_20250617.csv', index=False)
+filtered = df[(df['NADPH_flux'] < 0) & (df['NAD_flux'] > 0) & (df['Fd_flux'] > 0) & (df['Fd_flux'] < df['NAD_flux'])]
+filtered.to_csv('Nfn1_vary_slopeH_ramp_20250617.csv', index=False)
