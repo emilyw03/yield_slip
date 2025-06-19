@@ -78,16 +78,21 @@ def Nfn1(mu_FeS_H1, t):
     H_flux = net.getReservoirFlux("NAD", pop_MEK)
     L_flux = net.getReservoirFlux("Fd", pop_MEK)
 
+    # short circuit pathway fluxes
+    D_to_H1_flux = net.getCofactorFlux(L_FAD, 1, FeS_H1, 1, pop_MEK)
+    L1_to_D_flux = net.getCofactorFlux(FeS_L1, 1, L_FAD, 2, pop_MEK)
+
     # ratio_HD = H_flux/D_flux
     # ratio_LD = L_flux/D_flux
 
     # print("mu_FeS_H1=", mu_FeS_H1)
     print("------","t=",t,"-------")
     print("D_flux=", D_flux, "H_flux=", H_flux, "L_flux=", L_flux)
+    print("D_to_H1_flux=", D_to_H1_flux, "L1_to_D_flux", L1_to_D_flux)
     # print("sum of flux=", D_flux+H_flux+L_flux)
 
     # return ratio_HD, ratio_LD
-    return D_flux, H_flux, L_flux
+    return D_flux, H_flux, L_flux, D_to_H1_flux, L1_to_D_flux
 
 def metrics(fluxD, fluxHR, fluxLR):
     # normalize fluxes by largest flux
@@ -119,9 +124,9 @@ dt = 9/(N-1)
 
 time = ztime*(10**(N*dt))
 print("==== with bump ====")
-NADPH, NAD, Fd = Nfn1(0.08, time)
-F_slip, F_yield = metrics(NADPH, NAD, Fd)
+NADPH, NAD, Fd, SC1, SC2 = Nfn1(0.08, time)
+#F_slip, F_yield = metrics(NADPH, NAD, Fd)
 
 print("==== ramp ====")
-NADPH, NAD, Fd = Nfn1(-0.276, time)
-F_slip, F_yield = metrics(NADPH, NAD, Fd)
+NADPH, NAD, Fd, SC1, SC2 = Nfn1(-0.276, time)
+#F_slip, F_yield = metrics(NADPH, NAD, Fd)
