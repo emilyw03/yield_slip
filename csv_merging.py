@@ -10,18 +10,18 @@ import pandas as pd
 import numpy as np
 import glob
 
-
+'''
 # === merged parallelized files ===
 # Find all matching CSV files
-csv_files = sorted(glob.glob("Nfn1_vary_slopeH_bump_*_20250619.csv"))
+csv_files = sorted(glob.glob("Nfn1_vary_slopeH_ramp_*_20250619.csv"))
 
 # Load and concatenate all CSVs
 df_all = pd.concat((pd.read_csv(f) for f in csv_files), ignore_index=True)
 df_all = df_all.sort_values(by='slopeH', ascending=True)
 
 # Save to a single merged file
-df_all.to_csv("Nfn1_vary_slopeH_bump_20250619.csv", index=False)
-print("csv merged")
+df_all.to_csv("Nfn1_vary_slopeH_ramp_all_20250619.csv", index=False)
+print("csv merged")'''
 
 '''
 # === add dG ===
@@ -41,15 +41,15 @@ df['dG'] = dG
 df.to_csv("BestBump_alpha1_corner_20250611.csv", index=False)
 '''
 
-'''
+
 # === filter for bifurcating only (dG <= 0)
-df = pd.read_csv("Nfn1_vary_slopeH_bump_20250618.csv")
-filtered = pd.read_csv("Nfn1_vary_slopeH_bump_nonbif_20250618.csv")
+df = pd.read_csv("Nfn1_vary_slopeH_ramp_all_20250619.csv")
+#filtered = pd.read_csv("Nfn1_vary_slopeH_ramp_nonbif_20250618.csv")
 #filtered = df[(df['dG'] <= 0) & (df['fluxD'] < 0) & (df['fluxHR'] > 0) & (df['fluxLR'] > 0)]
-#filtered = df[(df['NADPH_flux'] < 0) & (df['NAD_flux'] > 0) & (df['Fd_flux'] > 0) & (df['Fd_flux'] <= df['NAD_flux'])]
-#filtered.to_csv("Nfn1_vary_slopeH_bump_20250618.csv", index=False)
+filtered = df[(df['NADPH_flux'] < 0) & (df['NAD_flux'] > 0) & (df['Fd_flux'] > 0) & (df['Fd_flux'] <= df['NAD_flux'])]
+filtered.to_csv("Nfn1_vary_slopeH_ramp_20250619.csv", index=False)
 
-
+'''
 # find non-bifurcating in bifurcating range
 df = df.copy()
 filtered = filtered.copy()
