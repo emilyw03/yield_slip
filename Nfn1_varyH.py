@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 
 import time
 import pandas as pd
+import os
 
 data_points = 100
 min_time = 0
@@ -113,19 +114,23 @@ def Nfn1(mu_FeS_H1, slopeH, t):
     return D_flux, H_flux, L_flux, F_slip, F_yield
 
 if __name__ == '__main__':
+    task_id = int(os.environ.get("SLURM_ARRAY_TASK_ID", 0))
+    num_tasks = int(os.environ.get("SLURM_ARRAY_TASK_COUNT", 1))
+
     N = 100
     ztime = 10**(-6)
     # ztime = 0.000006   ## Try plotting for longer time
     dt = 9/(N-1)
 
-    results = []
-    slopeH_vals = np.linspace(-0.200, 0.200, 100) # slopes to test
+    slopeH_vals = np.linspace(-0.1950, -0.1150, 10000) # slopes to test
+    chunk = np.array_split(slopeH_vals, num_tasks)[task_id]
 
+    results = []
     time = ztime*(10**(N*dt))
-    for val in slopeH_vals:
+    for val in chunk:
         NADPH, NAD, Fd, F_slip, F_yield = Nfn1(-0.276, val, time)
         results.append([val, NADPH, NAD, Fd, F_slip, F_yield])
 
     columns = ["slopeH", "NADPH_flux", "NAD_flux", "Fd_flux", "F_slip", "F_yield"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv(f"Nfn1_vary_slopeH_ramp_20250617.csv", index=False)
+    df.to_csv(f"Nfn1_vary_slopeH_ramp_{task_id}_20250618.csv", index=False)
