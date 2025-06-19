@@ -198,7 +198,7 @@ def Nfn1_slopeH_slip(df_bump, df_ramp):
     slopeH = df_bump['slopeH'] # same for both because of intersection
 
     plt.figure(figsize=(8, 6))
-    plt.scatter(slopeH, F_slip_diff, color='blue')
+    plt.scatter(slopeH, F_slip_diff, color='blue', s = 5)
     #plt.axhline(1, linestyle='--', color='red')  # Reference line: no improvement
     #plt.text(x=slopeH.max(), y=1 - 0.02, s='no improvement', ha='right', va='top', fontsize=10, color='red')
     plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. Nfn-1 High Potential Branch Slope')
@@ -221,7 +221,7 @@ def Nfn1_slopeH_yield(df_bump, df_ramp):
     slopeH = df_bump['slopeH'] # same for both because of intersection
 
     plt.figure(figsize=(8, 6))
-    plt.scatter(slopeH, F_yield_diff, color='blue')
+    plt.scatter(slopeH, F_yield_diff, color='blue', s = 5)
     #plt.axhline(1, linestyle='--', color='red')  # Reference line: no improvement
     #plt.text(x=slopeL.max(), y=1 - 0.02, s='no improvement', ha='right', va='top', fontsize=10, color='red')
     plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{yield}}$ vs. Low Potential Branch Slope')
@@ -297,7 +297,7 @@ if __name__ == '__main__':
     '''
 
     # === Nfn-1 vary slopeH ===
-    df_bump = pd.read_csv("Nfn1_vary_slopeH_bump_20250617.csv")
-    df_ramp = pd.read_csv("Nfn1_vary_slopeH_ramp_20250617.csv")
+    df_bump = pd.read_csv("Nfn1_vary_slopeH_bump_20250618.csv")
+    df_ramp = pd.read_csv("Nfn1_vary_slopeH_ramp_20250618.csv")
     Nfn1_slopeH_slip(df_bump, df_ramp)
     Nfn1_slopeH_yield(df_bump, df_ramp)
