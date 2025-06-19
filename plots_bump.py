@@ -198,7 +198,7 @@ def Nfn1_slopeH_slip(df_bump, df_ramp):
     slopeH = df_bump['slopeH'] # same for both because of intersection
 
     plt.figure(figsize=(8, 6))
-    plt.scatter(slopeH, F_slip_diff, color='blue')
+    plt.scatter(slopeH, F_slip_diff, color='blue', s = 5)
     #plt.axhline(1, linestyle='--', color='red')  # Reference line: no improvement
     #plt.text(x=slopeH.max(), y=1 - 0.02, s='no improvement', ha='right', va='top', fontsize=10, color='red')
     plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. Nfn-1 High Potential Branch Slope')
@@ -221,12 +221,40 @@ def Nfn1_slopeH_yield(df_bump, df_ramp):
     slopeH = df_bump['slopeH'] # same for both because of intersection
 
     plt.figure(figsize=(8, 6))
-    plt.scatter(slopeH, F_yield_diff, color='blue')
+    plt.scatter(slopeH, F_yield_diff, color='blue', s = 5)
     #plt.axhline(1, linestyle='--', color='red')  # Reference line: no improvement
     #plt.text(x=slopeL.max(), y=1 - 0.02, s='no improvement', ha='right', va='top', fontsize=10, color='red')
     plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{yield}}$ vs. Low Potential Branch Slope')
     plt.xlabel('High Potential Branch Slope (eV/cofactor)')
     plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{yield}}$')
+    plt.tight_layout()
+    plt.show()
+
+def Nfn1_slopeH_Fslip_distrib(df):
+    '''
+    plot distribution of Fslip
+    '''
+    F_slip = df['F_slip']
+
+    plt.figure(figsize=(8, 6))
+    plt.hist(F_slip, bins=30, color='skyblue', edgecolor='black')
+    plt.title(r'Distribution of $\mathrm{F}_{\mathrm{slip}}$')
+    plt.xlabel(r'$\mathrm{F}_{\mathrm{slip}}$')
+    plt.ylabel('Frequency')
+    plt.tight_layout()
+    plt.show()
+
+def Nfn1_slopeH_Fyield_distrib(df):
+    '''
+    plot distribution of Fyield
+    '''
+    F_yield = df['F_yield']
+
+    plt.figure(figsize=(8, 6))
+    plt.hist(F_yield, bins=30, color='skyblue', edgecolor='black')
+    plt.title(r'Distribution of $\mathrm{F}_{\mathrm{yield}}$')
+    plt.xlabel(r'$\mathrm{F}_{\mathrm{yield}}$')
+    plt.ylabel('Frequency')
     plt.tight_layout()
     plt.show()
 
@@ -295,9 +323,16 @@ if __name__ == '__main__':
 
     constant_bump_v_ramp(slopeL, F_slip_diff)
     '''
-
+    
     # === Nfn-1 vary slopeH ===
-    df_bump = pd.read_csv("Nfn1_vary_slopeH_bump_20250617.csv")
-    df_ramp = pd.read_csv("Nfn1_vary_slopeH_ramp_20250617.csv")
-    Nfn1_slopeH_slip(df_bump, df_ramp)
-    Nfn1_slopeH_yield(df_bump, df_ramp)
+    df_bump = pd.read_csv("Nfn1_vary_slopeH_bump_20250618.csv")
+    df_ramp = pd.read_csv("Nfn1_vary_slopeH_ramp_20250618.csv")
+    #Nfn1_slopeH_slip(df_bump, df_ramp)
+    #Nfn1_slopeH_yield(df_bump, df_ramp)
+    
+    # F_slip and F_yield distribution plots
+    #Nfn1_slopeH_Fslip_distrib(df_bump)   
+    #Nfn1_slopeH_Fslip_distrib(df_ramp) 
+    #Nfn1_slopeH_Fyield_distrib(df_bump)   
+    #Nfn1_slopeH_Fyield_distrib(df_ramp) 
+
