@@ -7,6 +7,7 @@ Use for merging csv's after parallelized slurm tasks
 '''
 
 import pandas as pd
+import numpy as np
 import glob
 
 '''
@@ -42,8 +43,22 @@ df.to_csv("BestBump_alpha1_corner_20250611.csv", index=False)
 
 
 # === filter for bifurcating only (dG <= 0)
-df = pd.read_csv("Nfn1_vary_slopeH_ramp_all_20250618.csv")
+df = pd.read_csv("Nfn1_vary_slopeH_bump_20250618.csv")
+filtered = pd.read_csv("Nfn1_vary_slopeH_bump_nonbif_20250618.csv")
 #filtered = df[(df['dG'] <= 0) & (df['fluxD'] < 0) & (df['fluxHR'] > 0) & (df['fluxLR'] > 0)]
 #filtered = df[(df['NADPH_flux'] < 0) & (df['NAD_flux'] > 0) & (df['Fd_flux'] > 0) & (df['Fd_flux'] <= df['NAD_flux'])]
-filtered = df[(df['slopeH'] > -0.17099) & (df['slopeH'] < -0.152960)]
-filtered.to_csv('Nfn1_vary_slopeH_ramp_nonbif_20250618.csv', index=False)
+#filtered.to_csv("Nfn1_vary_slopeH_bump_20250618.csv", index=False)
+
+
+# find non-bifurcating in bifurcating range
+df = df.copy()
+filtered = filtered.copy()
+df["slopeH_rounded"] = df["slopeH"].round(6)
+filtered["slopeH_rounded"] = filtered["slopeH"].round(6)
+
+# Filter: keep rows in filtered whose rounded slopeH is not in df
+filtered_only = filtered[~filtered["slopeH_rounded"].isin(df["slopeH_rounded"])]
+
+# Save to CSV
+filtered_only.to_csv("Nfn1_vary_slopeH_bump_nonbif_test_20250618.csv", index=False)
+
