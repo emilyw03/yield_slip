@@ -33,17 +33,15 @@ NADPH_L_FAD_reservoir_rate = 36     # NADPH -> L-FAD rate (reservoir -> cofactor
 L2_Fdox_reservoir_rate = 100      # [4Fe-4S] -> Fdox rate  (cofactor -> reservoir)
 S_FAD_NAD_reservoir_rate = 50    # S-FAD -> NAD rate (cofactor -> reservoir)
 
-def Nfn1(mu_FeS_H1, slopeH, t): 
+def Nfn1(mu_FeS_H1, slopeL, t): 
     net = Network()
 
-    mu_S_FAD_mid = 0.04 + 2*slopeH
     L_FAD = Cofactor("L_FAD", [-0.911, 0.04]) 
     FeS_L1 = Cofactor("FeS_L1", [-0.701])
-    FeS_L2 = Cofactor("FeS_L2", [-0.529])
+    FeS_L2 = Cofactor("FeS_L2", [-0.911 + 2*slopeL])
     FeS_H1 = Cofactor("FeS_H1", [mu_FeS_H1])
-    S_FAD = Cofactor("S_FAD", [mu_S_FAD_mid-0.0245, mu_S_FAD_mid+0.0245]) # mu_S_FAD is the midpoint potential, which is varied for the slope
-                                                                # Keep distance between 1st and 2nd reduction potential same
-
+    S_FAD = Cofactor("S_FAD", [-0.3005, -0.2515]) 
+                                                                
     net.addCofactor(L_FAD)
     net.addCofactor(FeS_L1)
     net.addCofactor(FeS_L2)
@@ -126,16 +124,16 @@ if __name__ == '__main__':
     # ztime = 0.000006   ## Try plotting for longer time
     dt = 9/(N-1)
 
-    slopeH_vals = np.linspace(-0.1950, -0.1150, 10000) # slopes to test
-    chunk = np.array_split(slopeH_vals, num_tasks)[task_id]
+    slopeL_vals = np.linspace(-0.200, 0.200, 10000) # slopes to test
+    chunk = np.array_split(slopeL_vals, num_tasks)[task_id]
 
     results = []
     time = ztime*(10**(N*dt))
     for val in chunk:
-        NADPH, NAD, Fd, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux = Nfn1(-0.118, val, time)
-        S_FAD_mid = 40 + 2*val
-        results.append([val, NADPH, NAD, Fd, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux, S_FAD_mid])
+        NADPH, NAD, Fd, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux = Nfn1(0.080, val, time)
+        FeS_L2 = -0.911 + 2*val
+        results.append([val, NADPH, NAD, Fd, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux, FeS_L2])
 
-    columns = ["slopeH", "NADPH_flux", "NAD_flux", "Fd_flux", "F_slip", "F_yield", "D_to_H1_flux", "L1_to_D_flux", "S_FAD_mid_pot"]
+    columns = ["slopeL", "NADPH_flux", "NAD_flux", "Fd_flux", "F_slip", "F_yield", "D_to_H1_flux", "L1_to_D_flux", "FeS_L2_pot"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv(f"Nfn1_vary_slopeH_ramp_{task_id}_20250620.csv", index=False)
+    df.to_csv(f"Nfn1_varyL_bump_{task_id}_20250620.csv", index=False)
