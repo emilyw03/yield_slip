@@ -112,11 +112,6 @@ def metrics(fluxD, fluxHR, fluxLR):
 
     return F_slip, F_yield
 
-NADPH_flux = []
-NAD_flux = []
-Fd_flux = []
-time_list = []
-
 N = 100
 ztime = 10**(-6)
 # ztime = 0.000006   ## Try plotting for longer time
@@ -125,8 +120,8 @@ dt = 9/(N-1)
 time = ztime*(10**(N*dt))
 print("==== with bump ====")
 NADPH, NAD, Fd, SC1, SC2 = Nfn1(0.08, time)
-#F_slip, F_yield = metrics(NADPH, NAD, Fd)
+F_slip, F_yield = metrics(NADPH, NAD, Fd)
 
 print("==== ramp ====")
-NADPH, NAD, Fd, SC1, SC2 = Nfn1(-0.276, time)
-#F_slip, F_yield = metrics(NADPH, NAD, Fd)
+NADPH, NAD, Fd, SC1, SC2 = Nfn1(-0.118, time)
+F_slip, F_yield = metrics(NADPH, NAD, Fd)
