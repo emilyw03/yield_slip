@@ -157,7 +157,7 @@ def pH1_scatter(pH1_disp, F_slip_diff, slopeL, slopeH):
     Plot relative improvement in F_slip (bump/ramp) vs. displacement of H1. Plots all points colored by the ratio slopeL/slopeH
     '''
     plt.figure(figsize=(8, 6))
-    sc = plt.scatter(pH1_disp, F_slip_diff, c=abs(slopeL)/abs(slopeH))
+    sc = plt.scatter(pH1_disp, F_slip_diff, c=abs(slopeL)/abs(slopeH), s=35)
     cbar = plt.colorbar(sc)
     cbar.set_label(r'$\frac{|\mathrm{slopeL}|}{|\mathrm{slopeH}|}$', fontsize=12)
 
@@ -281,10 +281,10 @@ if __name__ == '__main__':
     grid_Fyield(F_slip_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_yield_r, F_yield_b)
     '''
     
-    '''
+    
     # === bump vs ramp plots ===
     ramps = pd.read_csv("ramps_corner_bif_20250612.csv")
-    bump = pd.read_csv("BestBump_alpha1_corner_bif_20250611.csv")
+    bump = pd.read_csv("BestBump_alpha1_corner_bif_20250618.csv")
     ramps_coords = ramps[["slopeL", "slopeH"]].to_numpy()
     bump_coords = bump[["slopeL", "slopeH"]].to_numpy()
 
@@ -303,8 +303,8 @@ if __name__ == '__main__':
     slopeL = bump['slopeL']
     slopeH = bump['slopeH']
 
-    # choose function here
-    '''
+    pH1_scatter(pH1_disp, F_slip_diff, slopeL, slopeH)
+    
 
     '''
     # === constant bump vs. ramp ===
