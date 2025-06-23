@@ -133,7 +133,7 @@ if __name__ == '__main__':
     time = ztime*(10**(N*dt))
     for val in chunk:
         NADPH, NAD, Fd, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux = Nfn1(0.080, val, time)
-        S_FAD_mid = 40 + 2*val
+        S_FAD_mid = 0.040 + 2*val
         results.append([val, NADPH, NAD, Fd, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux, S_FAD_mid])
 
     columns = ["slopeH", "NADPH_flux", "NAD_flux", "Fd_flux", "F_slip", "F_yield", "D_to_H1_flux", "L1_to_D_flux", "S_FAD_mid_pot"]
