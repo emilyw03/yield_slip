@@ -11,6 +11,9 @@ from numpy.linalg import eig
 
 #packages for plotting
 import matplotlib.pyplot as plt
+import os
+import time
+import pandas as pd
 
 data_points = 100
 min_time = 0
@@ -126,15 +129,14 @@ if __name__ == '__main__':
     dt = 9/(N-1)
 
     H1_vals = np.linspace(-0.276, 0.180, 10000)
-    chunk = np.array_split(slopeH_vals, num_tasks)[task_id]
+    chunk = np.array_split(H1_vals, num_tasks)[task_id]
 
     results = []
     time = ztime*(10**(N*dt))
     for val in chunk:
         NADPH, NAD, Fd, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux = Nfn1(val, time)
-        S_FAD_mid = 0.040 + 2*val
-        results.append([val, NADPH, NAD, Fd, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux, S_FAD_mid])
+        results.append([val, NADPH, NAD, Fd, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux])
 
-    columns = ["slopeH", "NADPH_flux", "NAD_flux", "Fd_flux", "F_slip", "F_yield", "D_to_H1_flux", "L1_to_D_flux", "S_FAD_mid_pot"]
+    columns = ["pH1", "NADPH_flux", "NAD_flux", "Fd_flux", "F_slip", "F_yield", "D_to_H1_flux", "L1_to_D_flux"]
     df = pd.DataFrame(results, columns=columns)
     df.to_csv(f"Nfn1_bump_size_{task_id}_20250623.csv", index=False)
