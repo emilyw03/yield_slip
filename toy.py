@@ -50,12 +50,15 @@ def toy(pH1, slopeL, slopeH):
     net.addReservoir("LR", L2, 1, 1, -0.109, 100)
     net.addReservoir("HR", H2, 1, 1, 0.004, 50)
 
+    net.constructStateList()
+
     net.constructAdjacencyMatrix()
     net.constructRateMatrix()
 
     # Initial condition: no electrons
-    pop_MEK_init = np.zeros(net.num_state)
+    pop_MEK_init = np.zeros(net.adj_num_state)
     pop_MEK_init[0] = 1
+
 
     # Simulate evolution
     time_val = ztime * (10 ** (N * dt))
@@ -88,7 +91,7 @@ def toy(pH1, slopeL, slopeH):
     return fluxD, fluxHR, fluxLR, F_slip, F_yield
 
 if __name__ == '__main__':
-    slopeL = 0.316
+    slopeL = 0.191
     slopeH = -0.158
     pH1_bump = 0.4755 + slopeH + 0.198
     pH1_ramp = 0.4755 + slopeH
