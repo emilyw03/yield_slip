@@ -123,7 +123,7 @@ def obj_func_full(potentials, slopes):
     D_to_H1_flux = net.getCofactorFlux(D, 1, H1, 1, pop_MEK)
     L1_to_D_flux = net.getCofactorFlux(L1, 1, D, 2, pop_MEK)
 
-    return F, F_slip, F_yield, fluxD, fluxHR, fluxLR, D_H1_flux, L1_D_flux
+    return F, F_slip, F_yield, fluxD, fluxHR, fluxLR, D_to_H1_flux, L1_to_D_flux
 
 def make_wrapped_obj(slopes):
     '''
@@ -160,8 +160,8 @@ def run_single_job(slopes):
     FluxHR = []
     FluxLR = []
     potentials = []
-    D_H1_flux = []
-    L1_D_flux = []
+    sc1 = []
+    sc2 = []
     
     # need to change the iteration count based on t test
     for t in range(300):
@@ -203,8 +203,8 @@ def run_single_job(slopes):
         FluxHR.append(fluxHR)
         FluxLR.append(fluxLR)
         potentials.append(best_potentials)
-        D_H1_flux.append(D_H1_flux)
-        L1_D_flux.append(L1_D_flux)
+        sc1.append(D_H1_flux)
+        sc2.append(L1_D_flux)
 
     # find best trial and save data
     min_idx, F_t = min(enumerate(F_output), key=lambda x: x[1])
@@ -214,11 +214,11 @@ def run_single_job(slopes):
     fluxD_best = FluxD[min_idx]
     fluxHR_best = FluxHR[min_idx]
     fluxLR_best = FluxLR[min_idx]
-    D_H1_flux_best = D_H1_flux[min_idx]
-    L1_D_flux_best = L1_D_flux[min_idx]
+    sc1_best = sc1[min_idx]
+    sc2_best = sc2[min_idx]
     best_potentials = potentials[min_idx]
 
-    return [slopes[0], slopes[1], F_t, F_slip_best, F_yield_best, fluxD_best, fluxHR_best, fluxLR_best, best_potentials[0][0], D_H1_flux_best, L1_D_flux_best]
+    return [slopes[0], slopes[1], F_t, F_slip_best, F_yield_best, fluxD_best, fluxHR_best, fluxLR_best, best_potentials[0][0], sc1_best, sc2_best]
 
 if __name__ == '__main__':
     t_start = time.time()

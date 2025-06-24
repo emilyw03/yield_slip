@@ -8,7 +8,7 @@ Basic MEK script for manual testing.
 
 # Import Modules
 # modules for MEK
-from Fncts_newresrate import *
+from MEK_public import *
 import math
 
 import numpy as np
@@ -30,23 +30,27 @@ def obj_func_full(slopeL, slopeH):
         events {float} -- number of total bifurcation events 
         flux_ {float} -- fluxes at the reservoirs
     '''
-    # run MEK
-    # fixed hyperparameters
-    res_rate = 50 # rate for cofactor --> reservoir ET; adjusted for V_0 = 0.01
+    # extract floating potentials
+    pD1 = -0.4755 # first reduction potential (negative)
+    pD2 = 0.4755 # second reduction potential is set to negative of first (positive)
+    pL1 = pD1 + slopeL
+    pL2 = pD1 + 2 * slopeL
+    pH1 = pD2 + slopeH
+    pH2 = pD2 + 2 * slopeH
         
     # Time step variables
     N = 20 # time steps
-    ztime = 0.00001 # intial time
-    dt = 7/(N-1) # controls the orders of magntidue explored (7 in this case)
+    ztime = 0.00001 # initial time
+    dt = 7/(N-1) # controls the orders of magnitude explored (7 in this case)
 
     net = Network()
 
     # Cofactor names and potentials
-    D = Cofactor("D", [-0.3, 0.3])   #inverted
-    L1 = Cofactor("L1", [-0.3 + slopeL*1])
-    L2 = Cofactor("L2", [-0.3 + slopeL*2])
-    H1 = Cofactor("H1", [0.3 + slopeH*1])
-    H2 = Cofactor("H2", [0.3 + slopeH*2])
+    L1 = Cofactor("L1", [pL1])
+    L2 = Cofactor("L2", [pL2])
+    D = Cofactor("D", [pD1, pD2])
+    H1 = Cofactor("H1", [pH1])
+    H2 = Cofactor("H2", [pH2])
 
     # Telling the network about the cofactors. Naming cofactors to add to network.
     net.addCofactor(L1)
@@ -67,12 +71,13 @@ def obj_func_full(slopeL, slopeH):
     net.addConnection(L2, H1, 30)
     net.addConnection(L2, H2, 40)
 
-
     # Infinite reservoirs
     # names, cofactor it is connected to, Redox state of the cofactor, number of electrons transferred, dG between reservoir and cofactor, rate from the cofactor to the reservoir
-    net.addReservoir("DR", D, 2, 2, 0.20, res_rate)
-    net.addReservoir("LR", L2, 1, 1, 0, res_rate)
-    net.addReservoir("HR", H2, 1, 1, 0, res_rate)
+    net.addReservoir("DR", D, 2, 2, -0.150, 36)
+    net.addReservoir("LR", L2, 1, 1, -0.109, 100)
+    net.addReservoir("HR", H2, 1, 1, 0.004, 50)
+
+    net.constructStateList()
 
     # Build matrix describing all connections and the rate matrix
     net.constructAdjacencyMatrix()
@@ -80,7 +85,7 @@ def obj_func_full(slopeL, slopeH):
 
     # Set initial conditions (P_0(t))
     # currently set up so there are no electrons in system
-    pop_MEK_init = np.zeros(net.num_state)
+    pop_MEK_init = np.zeros(net.adj_num_state)
     pop_MEK_init[0] = 1
 
     # KINETICS
@@ -109,7 +114,14 @@ def obj_func_full(slopeL, slopeH):
     # numerator selected so that events is of similar magnitude to SSR
     F_yield = 1 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
 
-    return [slopeL, slopeH, F_slip, F_yield, fluxD, fluxHR, fluxLR]
+    alpha = 1
+    F = alpha * F_slip + (1-alpha) * F_yield
+
+    # short circuit pathway fluxes
+    D_to_H1_flux = net.getCofactorFlux(D, 1, H1, 1, pop_MEK)
+    L1_to_D_flux = net.getCofactorFlux(L1, 1, D, 2, pop_MEK)
+
+    return [slopeL, slopeH, F_slip, F_yield, fluxD, fluxHR, fluxLR, D_to_H1_flux, L1_to_D_flux]
 
 if __name__ == '__main__':
     t_start = time.time()
@@ -129,21 +141,14 @@ if __name__ == '__main__':
         result = obj_func_full(slopeL, slopeH)
 
         # adding two extra columns for pH1 and dG
-        potential_H1 = 0.300 + slopeH
-        pLR = -0.3 + 2*slopeL
-        pHR = 0.3 + 2*slopeH
-        dG1 = -(pLR + pHR)
-        dG2 = -(2*pHR)
-        eff = result[6] / result[5] if result[5] != 0 else 0
-        dG = (eff * dG1) + ((1 - eff) * dG2)
-
-        result.extend([potential_H1, dG])
+        potential_H1 = 0.4755 + slopeH
+        result.extend([potential_H1])
         results_all.append(result)
 
     # save data
-    columns = ["slopeL", "slopeH", "F_slip", "F_yield", "fluxD", "fluxHR", "fluxLR", "potential_H1", "dG"]
+    columns = ["slopeL", "slopeH", "F_slip", "F_yield", "fluxD", "fluxHR", "fluxLR", "D_H1_flux", "L1_D_flux", "potential_H1"]
     df = pd.DataFrame(results_all, columns=columns)
-    df.to_csv(f"ramps_whole_{task_id}_"+timestr+".csv", index=False)
+    df.to_csv(f"ramps_whole_likeNfn1_{task_id}_"+timestr+".csv", index=False)
     
     t_end = time.time()
     runtime = t_end - t_start
