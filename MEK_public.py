@@ -717,6 +717,7 @@ class Network():
     def getCofactorFlux(self, cof_i: Cofactor, red_i: int, cof_f: Cofactor, red_f: int, pop: np.array) -> float:
         """
         Calculate the instantaneous NET flux from initial cofactor(state) to final cofactor(state), by calling getCofactorRate() twice
+        getCofactorRate() gives instantaneous forward rate. This function does forward - reverse for the net flux. 
         Arguments:
             cof_i {Cofactor} -- Cofactor object for initial cofactor
             red_i {int} -- Redox state for initial cofactor before ET
