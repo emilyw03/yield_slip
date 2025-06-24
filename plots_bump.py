@@ -281,7 +281,7 @@ if __name__ == '__main__':
     grid_Fyield(F_slip_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_yield_r, F_yield_b)
     '''
     
-    
+    '''
     # === bump vs ramp plots ===
     ramps = pd.read_csv("ramps_corner_bif_20250612.csv")
     bump = pd.read_csv("BestBump_alpha1_corner_bif_20250618.csv")
@@ -304,7 +304,7 @@ if __name__ == '__main__':
     slopeH = bump['slopeH']
 
     pH1_scatter(pH1_disp, F_slip_diff, slopeL, slopeH)
-    
+    '''
 
     '''
     # === constant bump vs. ramp ===
@@ -325,16 +325,12 @@ if __name__ == '__main__':
 
     constant_bump_v_ramp(slopeL, F_slip_diff)
     '''
-    '''
-    # === Nfn-1 vary slopeH ===
-    df_bump = pd.read_csv("Nfn1_vary_slopeH_bump_20250618.csv")
-    df_ramp = pd.read_csv("Nfn1_vary_slopeH_ramp_20250618.csv")
-    #Nfn1_slopeH_slip(df_bump, df_ramp)
-    #Nfn1_slopeH_yield(df_bump, df_ramp)
     
-    # F_slip and F_yield distribution plots
-    #Nfn1_slopeH_Fslip_distrib(df_bump)   
-    #Nfn1_slopeH_Fslip_distrib(df_ramp) 
-    #Nfn1_slopeH_Fyield_distrib(df_bump)   
-    #Nfn1_slopeH_Fyield_distrib(df_ramp) 
-    '''
+    # === Nfn-1 vary slopeH ===
+    df_bump = pd.read_csv("Nfn1_varyL_bump_bif_20250620.csv")
+    #df_bump = df_bump[(df_bump['slopeH'] > -0.159) & (df_bump['slopeH'] < -0.157)]
+    df_ramp = pd.read_csv("Nfn1_varyL_ramp_bif_20250620.csv")
+    #df_ramp = df_ramp[(df_ramp['slopeH'] > -0.159) & (df_ramp['slopeH'] < -0.157)]
+    Nfn1_slopeH_slip(df_bump, df_ramp)
+    Nfn1_slopeH_yield(df_bump, df_ramp)
+    

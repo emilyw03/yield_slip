@@ -13,14 +13,14 @@ import glob
 '''
 # === merged parallelized files ===
 # Find all matching CSV files
-csv_files = sorted(glob.glob("Nfn1_varyL_ramp_*_20250620.csv"))
+csv_files = sorted(glob.glob("ramps_whole_likeNfn1_*_20250624.csv"))
 
 # Load and concatenate all CSVs
 df_all = pd.concat((pd.read_csv(f) for f in csv_files), ignore_index=True)
 df_all = df_all.sort_values(by='slopeL', ascending=True)
 
 # Save to a single merged file
-df_all.to_csv("Nfn1_varyL_ramp_all_20250620.csv", index=False)
+df_all.to_csv("ramps_whole_likeNfn1_20250624.csv", index=False)
 print("csv merged")'''
 
 '''
@@ -41,14 +41,14 @@ df['dG'] = dG
 df.to_csv("BestBump_alpha1_corner_20250618.csv", index=False)
 '''
 
-'''
+
 # === filter for bifurcating only (dG <= 0)
 df = pd.read_csv("Nfn1_varyL_ramp_all_20250620.csv")
-#filtered = pd.read_csv("Nfn1_vary_slopeH_ramp_nonbif_20250618.csv")
-#filtered = df[(df['dG'] <= 0) & (df['fluxD'] < 0) & (df['fluxHR'] > 0) & (df['fluxLR'] > 0)]
-filtered = df[(df['NADPH_flux'] < 0) & (df['NAD_flux'] > 0) & (df['Fd_flux'] > 0) & (df['Fd_flux'] <= df['NAD_flux'])]
+#filtered = df[(df['fluxD'] < 0) & (df['fluxHR'] > 0) & (df['fluxLR'] > 0)]
+filtered = df[(df['NADPH_flux'] < 0) & (df['NAD_flux'] > 0) & (df['Fd_flux'] > 0)]
 filtered.to_csv("Nfn1_varyL_ramp_bif_20250620.csv", index=False)
-'''
+
+
 '''
 # find non-bifurcating in bifurcating range
 df = df.copy()
@@ -62,7 +62,9 @@ filtered_only = filtered[~filtered["slopeH_rounded"].isin(df["slopeH_rounded"])]
 # Save to CSV
 filtered_only.to_csv("Nfn1_vary_slopeH_bump_nonbif_test_20250618.csv", index=False)
 '''
-
-df = pd.read_csv("Nfn1_varyH_ramp_all_20250620.csv")
-df['S_FAD_mid_pot'] = 0.040 + 2 * df['slopeH']
-df.to_csv('Nfn1_varyH_ramp_all_20250620.csv', index=False)
+'''
+df = pd.read_csv("Nfn1_varyH_ramp_bif_20250620.csv")
+print('=== F_slip ===')
+print(min(df['F_slip']), max(df['F_slip']))
+print('=== F_yield ===')
+print(min(df['F_yield']), max(df['F_yield']))'''
