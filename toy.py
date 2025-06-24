@@ -46,9 +46,9 @@ def toy(pH1, slopeL, slopeH):
     net.addConnection(L2, H2, 40)
 
     # Add reservoirs
-    net.addReservoir("DR", D, 2, 2, 2*-0.0755, 36)
-    net.addReservoir("LR", L2, 1, 1, -0.109, 100)
-    net.addReservoir("HR", H2, 1, 1, 0.004, 50)
+    net.addReservoir("DR", D, 2, 2, -0.15, res_rate)
+    net.addReservoir("LR", L2, 1, 1, -0.109, res_rate)
+    net.addReservoir("HR", H2, 1, 1, 0, res_rate)
 
     net.constructStateList()
 
