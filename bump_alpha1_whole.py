@@ -8,7 +8,7 @@ Selected alpha = 0.03 for objective function.
 
 # Import Modules
 # modules for MEK
-from Fncts_newresrate import *
+from MEK_public import *
 import math
 
 import numpy as np
@@ -34,15 +34,11 @@ def obj_func_full(potentials, slopes):
     pH1 = potentials[0][0]
 
     # extract floating potentials
-    pD1 = -0.300 # first reduction potential (negative)
-    pD2 = -pD1 # second reduction potential is set to negative of first (positive)
-    pL1 = -0.25
+    pD1 = -0.4755 # first reduction potential (negative)
+    pD2 = 0.4755 # second reduction potential is set to negative of first (positive)
+    pL1 = pD1 + slopes[0]
     pL2 = pD1 + 2 * slopes[0]
     pH2 = pD2 + 2 * slopes[1]
-
-    # run MEK - currently set to open conformation for open flow to low potential branch
-    # fixed hyperparameters
-    res_rate = 50 # Ortiz JBC 2023
         
     # Time step variables
     N = 20 # time steps
@@ -79,9 +75,11 @@ def obj_func_full(potentials, slopes):
 
     # Infinite reservoirs
     # names, cofactor it is connected to, Redox state of the cofactor, number of electrons transferred, dG between reservoir and cofactor, rate from the cofactor to the reservoir
-    net.addReservoir("DR", D, 2, 2, 0.20, res_rate)
-    net.addReservoir("LR", L2, 1, 1, 0, res_rate)
-    net.addReservoir("HR", H2, 1, 1, 0, res_rate)
+    net.addReservoir("DR", D, 2, 2, -0.150, 36)
+    net.addReservoir("LR", L2, 1, 1, -0.109, 100)
+    net.addReservoir("HR", H2, 1, 1, 0.004, 50)
+
+    net.constructStateList()
 
     # Build matrix describing all connections and the rate matrix
     net.constructAdjacencyMatrix()
@@ -89,7 +87,7 @@ def obj_func_full(potentials, slopes):
 
     # Set initial conditions (P_0(t))
     # currently set up so there are no electrons in system
-    pop_MEK_init = np.zeros(net.num_state)
+    pop_MEK_init = np.zeros(net.adj_num_state)
     pop_MEK_init[0] = 1
 
     # KINETICS
@@ -121,7 +119,11 @@ def obj_func_full(potentials, slopes):
     alpha = 1
     F = alpha * F_slip + (1-alpha) * F_yield
 
-    return F, F_slip, F_yield, fluxD, fluxHR, fluxLR
+    # short circuit pathway fluxes
+    D_to_H1_flux = net.getCofactorFlux(D, 1, H1, 1, pop_MEK)
+    L1_to_D_flux = net.getCofactorFlux(L1, 1, D, 2, pop_MEK)
+
+    return F, F_slip, F_yield, fluxD, fluxHR, fluxLR, D_H1_flux, L1_D_flux
 
 def make_wrapped_obj(slopes):
     '''
@@ -158,6 +160,8 @@ def run_single_job(slopes):
     FluxHR = []
     FluxLR = []
     potentials = []
+    D_H1_flux = []
+    L1_D_flux = []
     
     # need to change the iteration count based on t test
     for t in range(300):
@@ -189,7 +193,7 @@ def run_single_job(slopes):
 
         # Evaluate the fluxes using the optimized parameters
         best_potentials = [optimizer.x_opt]
-        F_val, F_slip_val, F_yield_val, fluxD, fluxHR, fluxLR = obj_func_full(best_potentials, slopes)
+        F_val, F_slip_val, F_yield_val, fluxD, fluxHR, fluxLR, D_H1_flux, L1_D_flux = obj_func_full(best_potentials, slopes)
 
         # add data to storage vectors
         F_output.append(F_val) # F for t-th iteration
@@ -199,6 +203,8 @@ def run_single_job(slopes):
         FluxHR.append(fluxHR)
         FluxLR.append(fluxLR)
         potentials.append(best_potentials)
+        D_H1_flux.append(D_H1_flux)
+        L1_D_flux.append(L1_D_flux)
 
     # find best trial and save data
     min_idx, F_t = min(enumerate(F_output), key=lambda x: x[1])
@@ -208,9 +214,11 @@ def run_single_job(slopes):
     fluxD_best = FluxD[min_idx]
     fluxHR_best = FluxHR[min_idx]
     fluxLR_best = FluxLR[min_idx]
+    D_H1_flux_best = D_H1_flux[min_idx]
+    L1_D_flux_best = L1_D_flux[min_idx]
     best_potentials = potentials[min_idx]
 
-    return [slopes[0], slopes[1], F_t, F_slip_best, F_yield_best, fluxD_best, fluxHR_best, fluxLR_best, best_potentials[0][0]]
+    return [slopes[0], slopes[1], F_t, F_slip_best, F_yield_best, fluxD_best, fluxHR_best, fluxLR_best, best_potentials[0][0], D_H1_flux_best, L1_D_flux_best]
 
 if __name__ == '__main__':
     t_start = time.time()
@@ -228,9 +236,9 @@ if __name__ == '__main__':
     results = [run_single_job(slopes) for slopes in chunk]
 
     # save data
-    columns = ["slopeL", "slopeH", "F_t", "F_slip", "F_yield", "fluxD", "fluxHR", "fluxLR", "potential_H1"]
+    columns = ["slopeL", "slopeH", "F_t", "F_slip", "F_yield", "fluxD", "fluxHR", "fluxLR", "potential_H1", "D_H1_flux", "L1_D_flux"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv(f"BestBump_alpha1_whole_{task_id}_"+timestr+".csv", index=False)
+    df.to_csv(f"bump_alpha1_likeNfn1_whole_{task_id}_"+timestr+".csv", index=False)
     
     t_end = time.time()
     runtime = t_end - t_start
