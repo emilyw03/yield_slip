@@ -187,7 +187,7 @@ def run_single_job(slopes):
 
         # Evaluate the fluxes using the optimized parameters
         best_potentials = [optimizer.x_opt]
-        F_val, F_slip_val, F_yield_val, fluxD, fluxHR, fluxLR = obj_func_full(best_potentials, slopes)
+        F_val, F_slip_val, F_yield_val, fluxD, fluxHR, fluxLR, D_H1_flux, L1_D_flux = obj_func_full(best_potentials, slopes)
 
         # add data to storage vectors
         F_output.append(F_val) # F for t-th iteration
@@ -197,6 +197,8 @@ def run_single_job(slopes):
         FluxHR.append(fluxHR)
         FluxLR.append(fluxLR)
         potentials.append(best_potentials)
+        sc1.append(D_H1_flux)
+        sc2.append(L1_D_flux)
 
     # find best trial and save data
     min_idx, F_t = min(enumerate(F_output), key=lambda x: x[1])
@@ -206,9 +208,11 @@ def run_single_job(slopes):
     fluxD_best = FluxD[min_idx]
     fluxHR_best = FluxHR[min_idx]
     fluxLR_best = FluxLR[min_idx]
+    sc1_best = sc1[min_idx]
+    sc2_best = sc2[min_idx]
     best_potentials = potentials[min_idx]
 
-    return [slopes[0], slopes[1], F_t, F_slip_best, F_yield_best, fluxD_best, fluxHR_best, fluxLR_best, best_potentials[0][0]]
+    return [slopes[0], slopes[1], F_t, F_slip_best, F_yield_best, fluxD_best, fluxHR_best, fluxLR_best, best_potentials[0][0], sc1_best, sc2_best]
 
 if __name__ == '__main__':
     t_start = time.time()
