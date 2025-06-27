@@ -260,18 +260,18 @@ def Nfn1_slopeH_Fyield_distrib(df):
 
 if __name__ == '__main__':
     # === ramps w/ bump overlay ===
-    '''
-    ramps_w = pd.read_csv("ramps_whole_20250612.csv")
+    
+    ramps_w = pd.read_csv("ramps_whole_likeNfn1_20250624.csv")
     F_slip_w = ramps_w["F_slip"]
     F_yield_w = ramps_w["F_yield"]
 
-    ramps = pd.read_csv("ramps_whole_20250612.csv")
+    ramps = pd.read_csv("ramps_whole_likeNfn1_20250624.csv")
     slopeL_r = ramps["slopeL"]
     slopeH_r = ramps["slopeH"]
     F_slip_r = ramps["F_slip"]
     F_yield_r = ramps["F_yield"]
 
-    bump = pd.read_csv('BestBump_alpha1_whole_20250618.csv')
+    bump = pd.read_csv('bump_alpha1_likeNfn1_whole_20250624.csv')
     slopeL_b = bump['slopeL']
     slopeH_b = bump['slopeH']
     F_slip_b = bump["F_slip"]
@@ -279,7 +279,7 @@ if __name__ == '__main__':
    
     grid_Fslip(F_slip_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_slip_r, F_slip_b)
     grid_Fyield(F_slip_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_yield_r, F_yield_b)
-    '''
+    
     
     '''
     # === bump vs ramp plots ===
@@ -326,6 +326,7 @@ if __name__ == '__main__':
     constant_bump_v_ramp(slopeL, F_slip_diff)
     '''
     
+    '''
     # === Nfn-1 vary slopeH ===
     df_bump = pd.read_csv("Nfn1_varyL_bump_bif_20250620.csv")
     #df_bump = df_bump[(df_bump['slopeH'] > -0.159) & (df_bump['slopeH'] < -0.157)]
@@ -333,4 +334,4 @@ if __name__ == '__main__':
     #df_ramp = df_ramp[(df_ramp['slopeH'] > -0.159) & (df_ramp['slopeH'] < -0.157)]
     Nfn1_slopeH_slip(df_bump, df_ramp)
     Nfn1_slopeH_yield(df_bump, df_ramp)
-    
+    '''

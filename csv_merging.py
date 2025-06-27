@@ -13,14 +13,14 @@ import glob
 '''
 # === merged parallelized files ===
 # Find all matching CSV files
-csv_files = sorted(glob.glob("ramps_whole_likeNfn1_*_20250624.csv"))
+csv_files = sorted(glob.glob("bump_alpha1_likeNfn1_whole_*_20250624.csv"))
 
 # Load and concatenate all CSVs
 df_all = pd.concat((pd.read_csv(f) for f in csv_files), ignore_index=True)
 df_all = df_all.sort_values(by='slopeL', ascending=True)
 
 # Save to a single merged file
-df_all.to_csv("ramps_whole_likeNfn1_20250624.csv", index=False)
+df_all.to_csv("bump_alpha1_likeNfn1_whole_20250624.csv", index=False)
 print("csv merged")'''
 
 '''
@@ -43,10 +43,10 @@ df.to_csv("BestBump_alpha1_corner_20250618.csv", index=False)
 
 
 # === filter for bifurcating only (dG <= 0)
-df = pd.read_csv("Nfn1_varyL_ramp_all_20250620.csv")
-#filtered = df[(df['fluxD'] < 0) & (df['fluxHR'] > 0) & (df['fluxLR'] > 0)]
-filtered = df[(df['NADPH_flux'] < 0) & (df['NAD_flux'] > 0) & (df['Fd_flux'] > 0)]
-filtered.to_csv("Nfn1_varyL_ramp_bif_20250620.csv", index=False)
+df = pd.read_csv("bump_alpha1_likeNfn1_whole_20250624.csv")
+filtered = df[(df['fluxD'] < 0) & (df['fluxHR'] > 0) & (df['fluxLR'] > 0)]
+#filtered = df[(df['NADPH_flux'] < 0) & (df['NAD_flux'] > 0) & (df['Fd_flux'] > 0)]
+filtered.to_csv("bump_alpha1_likeNfn1_whole_bif_20250624.csv", index=False)
 
 
 '''
