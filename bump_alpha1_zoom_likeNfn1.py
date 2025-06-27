@@ -156,6 +156,8 @@ def run_single_job(slopes):
     FluxHR = []
     FluxLR = []
     potentials = []
+    sc1 = []
+    sc2 = []
     
     # need to change the iteration count based on t test
     for t in range(300):
