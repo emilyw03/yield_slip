@@ -69,7 +69,7 @@ def obj_func_full(slopeL, slopeH):
 
     # Infinite reservoirs
     # names, cofactor it is connected to, Redox state of the cofactor, number of electrons transferred, dG between reservoir and cofactor, rate from the cofactor to the reservoir
-    net.addReservoir("DR", D, 2, 2, -0.150, 36)
+    net.addReservoir("DR", D, 2, 2, -0.072, 36)
     net.addReservoir("LR", L2, 1, 1, -0.109, 100)
     net.addReservoir("HR", H2, 1, 1, 0.004, 50)
 
