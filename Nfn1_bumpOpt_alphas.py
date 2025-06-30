@@ -98,10 +98,10 @@ def obj_func_full(potentials, alpha):
     L1_to_D2 = net.getCofactorFlux(FeS_L1, 1, L_FAD, 2, pop_MEK)
 
     # compute bifurcation metrics
-    F_sc = 1 / (D1_to_H1 + L1_to_D2) # inverse of sum of short circuit fluxes
-    F_yield = 1 / (abs(D_flux) + abs(H_flux) + abs(L_flux))
+    F_sc = D1_to_H1 + L1_to_D2 # inverse of sum of short circuit fluxes
+    F_yield = abs(D_flux) + abs(H_flux) + abs(L_flux)
 
-    F = alpha * F_sc + (1-alpha) * F_yield
+    F = alpha * F_sc - (1-alpha) * F_yield
 
     return F, F_sc, F_yield, D_flux, H_flux, L_flux, D1_to_H1, L1_to_D2
 
@@ -135,7 +135,7 @@ def run_single_job(alpha):
     alphas = []
     
     # need to change the iteration count based on t test
-    for t in range(300):
+    for t in range(100):
         seed(t * 100 + 500)
         bounds = [{'name': 'H1', 'type': 'continuous', 'domain': (-0.160, 0.240)}]
 
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     task_id = int(os.environ.get("SLURM_ARRAY_TASK_ID", 0))
     num_tasks = int(os.environ.get("SLURM_ARRAY_TASK_COUNT", 1))
 
-    alphas = np.linspace(0, 1, 500)
+    alphas = np.linspace(0, 1, 3)
     chunk = np.array_split(alphas, num_tasks)[task_id]
     results = [run_single_job(alpha) for alpha in chunk]
 
