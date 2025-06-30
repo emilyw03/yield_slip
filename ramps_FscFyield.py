@@ -9,7 +9,7 @@ updated metrics: F_sc and F_yield
 
 # Import Modules
 # modules for MEK
-from Fncts_newresrate import *
+from MEK_public import *
 import math
 
 import numpy as np
