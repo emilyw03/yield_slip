@@ -66,9 +66,10 @@ def obj_func_full(slopeL, slopeH):
 
     # Infinite reservoirs
     # names, cofactor it is connected to, Redox state of the cofactor, number of electrons transferred, dG between reservoir and cofactor, rate from the cofactor to the reservoir
-    net.addReservoir("DR", D, 2, 2, -0.072, 36)
-    net.addReservoir("LR", L2, 1, 1, -0.109, 100)
-    net.addReservoir("HR", H2, 1, 1, 0.004, 50)
+    res_rate = 50
+    net.addReservoir("DR", D, 2, 2, -0.072, res_rate)
+    net.addReservoir("LR", L2, 1, 1, -0.109, res_rate)
+    net.addReservoir("HR", H2, 1, 1, 0.004, res_rate)
 
     # Build matrix describing all connections and the rate matrix
     net.constructAdjacencyMatrix()
@@ -96,7 +97,7 @@ def obj_func_full(slopeL, slopeH):
     L1_to_D2 = net.getCofactorFlux(L1, 1, D, 2, pop_MEK) 
 
     # compute bifurcation metrics
-    F_sc = 1 / (D1_to_H1 + L1_to_D2) # inverse of sum of short circuit fluxes
+    F_sc = D1_to_H1 + L1_to_D2 # inverse of sum of short circuit fluxes
     F_yield = 1 / (abs(D_flux) + abs(H_flux) + abs(L_flux))
 
     return [slopeL, slopeH, F_sc, F_yield, D_flux, H_flux, L_flux, D1_to_H1, L1_to_D2]
