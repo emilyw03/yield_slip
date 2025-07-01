@@ -135,7 +135,7 @@ def run_single_job(alpha):
     alphas = []
     
     # need to change the iteration count based on t test
-    for t in range(100):
+    for t in range(300):
         seed(t * 100 + 500)
         bounds = [{'name': 'H1', 'type': 'continuous', 'domain': (-0.160, 0.240)}]
 
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     task_id = int(os.environ.get("SLURM_ARRAY_TASK_ID", 0))
     num_tasks = int(os.environ.get("SLURM_ARRAY_TASK_COUNT", 1))
 
-    alphas = np.linspace(0, 1, 3)
+    alphas = np.linspace(0, 1, 500)
     chunk = np.array_split(alphas, num_tasks)[task_id]
     results = [run_single_job(alpha) for alpha in chunk]
 

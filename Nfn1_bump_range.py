@@ -91,15 +91,12 @@ def Nfn1(mu_FeS_H1, t):
     fluxHR_norm = H_flux / abs(max_flux)
     fluxLR_norm = L_flux / abs(max_flux)
 
-    # metric for efficiency: SSR from 100% efficient bifurcation flux ratio -1:0.5:0.5
     F_slip = math.sqrt((fluxD_norm + 1) ** 2 + (fluxHR_norm - 0.5) ** 2 + (fluxLR_norm - 0.5) ** 2)
-
-    # metric for bifurcation amount: 1000 / (# of events)
-    # numerator selected so that events is of similar magnitude to SSR
     F_yield = 1 / (abs(D_flux) + abs(H_flux) + abs(L_flux))
+    F_sc = D_to_H1_flux + L1_to_D_flux
 
     # return ratio_HD, ratio_LD
-    return D_flux, H_flux, L_flux, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux
+    return D_flux, H_flux, L_flux, F_slip, F_yield, F_sc, D_to_H1_flux, L1_to_D_flux
 
 def metrics(fluxD, fluxHR, fluxLR):
     # normalize fluxes by largest flux
@@ -123,20 +120,15 @@ if __name__ == '__main__':
     task_id = int(os.environ.get("SLURM_ARRAY_TASK_ID", 0))
     num_tasks = int(os.environ.get("SLURM_ARRAY_TASK_COUNT", 1))
 
-    N = 100
-    ztime = 10**(-6)
-    # ztime = 0.000006   ## Try plotting for longer time
-    dt = 9/(N-1)
-
     H1_vals = np.linspace(-0.276, 0.180, 10000)
     chunk = np.array_split(H1_vals, num_tasks)[task_id]
 
     results = []
-    time = ztime*(10**(N*dt))
+    time = 10**4
     for val in chunk:
-        NADPH, NAD, Fd, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux = Nfn1(val, time)
-        results.append([val, NADPH, NAD, Fd, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux])
+        NADPH, NAD, Fd, F_slip, F_yield, F_sc, D_to_H1_flux, L1_to_D_flux = Nfn1(val, time)
+        results.append([val, NADPH, NAD, Fd, F_slip, F_yield, F_sc, D_to_H1_flux, L1_to_D_flux])
 
-    columns = ["pH1", "NADPH_flux", "NAD_flux", "Fd_flux", "F_slip", "F_yield", "D_to_H1_flux", "L1_to_D_flux"]
+    columns = ["pH1", "NADPH_flux", "NAD_flux", "Fd_flux", "F_slip", "F_yield", "F_sc", "D_to_H1_flux", "L1_to_D_flux"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv(f"Nfn1_bump_size_{task_id}_20250623.csv", index=False)
+    df.to_csv(f"Nfn1_varybump_metrics_{task_id}_20250630.csv", index=False)
