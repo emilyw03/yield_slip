@@ -71,6 +71,8 @@ def obj_func_full(slopeL, slopeH):
     net.addReservoir("LR", L2, 1, 1, -0.109, res_rate)
     net.addReservoir("HR", H2, 1, 1, 0.004, res_rate)
 
+    net.constructStateList()
+    
     # Build matrix describing all connections and the rate matrix
     net.constructAdjacencyMatrix()
     net.constructRateMatrix()

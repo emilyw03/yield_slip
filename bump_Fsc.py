@@ -96,13 +96,11 @@ def obj_func_full(potentials, slopes):
     D1_to_H1 = net.getCofactorFlux(D, 1, H1, 1, pop_MEK)
     L1_to_D2 = net.getCofactorFlux(L1, 1, D, 2, pop_MEK)
 
-    alpha = 1
-
     # compute bifurcation metrics
-    F_sc = 1 / (D1_to_H1 + L1_to_D2) # inverse of sum of short circuit fluxes
+    F_sc = D1_to_H1 + L1_to_D2 # inverse of sum of short circuit fluxes
     F_yield = 1 / (abs(D_flux) + abs(H_flux) + abs(L_flux))
 
-    F = alpha * F_sc + (1-alpha) * F_yield
+    F = F_sc
 
     return F, F_sc, F_yield, D_flux, H_flux, L_flux, D1_to_H1, L1_to_D2
 
