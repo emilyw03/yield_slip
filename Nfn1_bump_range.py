@@ -1,8 +1,8 @@
 '''
 MEK.py
-Date: June 13, 2025
+Updated: June 30, 2025
 Author: Emily Wang
-Nfn-1 modeled with infinite reservoir MEK
+Nfn-1 modeled with infinite reservoir MEK. Iterate through a range of bump sizes.
 '''
 from MEK_public import *
 
