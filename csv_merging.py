@@ -10,18 +10,19 @@ import pandas as pd
 import numpy as np
 import glob
 
-'''
+
 # === merged parallelized files ===
 # Find all matching CSV files
-csv_files = sorted(glob.glob("bump_alpha1_likeNfn1_whole_*_20250624.csv"))
+csv_files = sorted(glob.glob("bump_Fsc_*_20250630.csv"))
 
 # Load and concatenate all CSVs
 df_all = pd.concat((pd.read_csv(f) for f in csv_files), ignore_index=True)
-df_all = df_all.sort_values(by='slopeL', ascending=True)
+df_all = df_all.sort_values(by=['slopeL', 'slopeH'], ascending=True)
 
 # Save to a single merged file
-df_all.to_csv("bump_alpha1_likeNfn1_whole_20250624.csv", index=False)
-print("csv merged")'''
+df_all.to_csv("bump_Fsc_20250630.csv", index=False)
+print("csv merged")
+
 
 '''
 # === add dG ===
@@ -41,13 +42,13 @@ df['dG'] = dG
 df.to_csv("BestBump_alpha1_corner_20250618.csv", index=False)
 '''
 
-
+'''
 # === filter for bifurcating only (dG <= 0)
-df = pd.read_csv("bump_alpha1_likeNfn1_whole_20250624.csv")
+df = pd.read_csv("bump_Fyield_20250629.csv")
 filtered = df[(df['fluxD'] < 0) & (df['fluxHR'] > 0) & (df['fluxLR'] > 0)]
 #filtered = df[(df['NADPH_flux'] < 0) & (df['NAD_flux'] > 0) & (df['Fd_flux'] > 0)]
-filtered.to_csv("bump_alpha1_likeNfn1_whole_bif_20250624.csv", index=False)
-
+filtered.to_csv("bump_Fyield_bif_20250629.csv", index=False)
+'''
 
 '''
 # find non-bifurcating in bifurcating range
@@ -68,3 +69,9 @@ print('=== F_slip ===')
 print(min(df['F_slip']), max(df['F_slip']))
 print('=== F_yield ===')
 print(min(df['F_yield']), max(df['F_yield']))'''
+
+'''
+df = pd.read_csv('ramps_FscFyield_20250629.csv')
+df['F_sc_inv'] = 1 / df['F_sc']
+df.to_csv('ramps_FscFyield_20250629.csv', index = False)
+'''

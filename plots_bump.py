@@ -17,41 +17,41 @@ from matplotlib.colors import LogNorm, PowerNorm
 import matplotlib.cm as cm
 import seaborn as sns
 
-def grid_Fslip(F_slip_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_slip_r, F_slip_b):
+def grid_Fsc(F_sc_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_sc_r, F_sc_b):
     '''
     plot grid search with bump points overlayed on ramps, color by F_slip
     Arguments:
-        F_slip_w (vector): Vector of F_slip data for ramps, whole square
+        F_sc_w (vector): Vector of F_sc data for ramps, whole square
         F_yield_w (vector): Vector of F_yield data for ramps, whole square
         slopeL_* (vector): Vector of slopeL data for ramps or bumps
         slopeH_* (vector): Vector of slopeH data for ramps or bumps
-        F_slip_* (vector): Vector of F_slip data for ramps or bumps
+        F_sc_* (vector): Vector of F_sc data for ramps or bumps
     '''
 
     # color bar is based on the ranges of F_slip and F_yield for ramps whole square
-    vmin = min(np.min(F_slip_w), np.min(F_yield_w))
-    vmax = max(np.max(F_slip_w), np.max(F_yield_w))
+    vmin = min(np.min(F_sc_w), np.min(F_yield_w))
+    vmax = max(np.max(F_sc_w), np.max(F_yield_w))
     norm = LogNorm(vmin=vmin, vmax=vmax)
 
     # Base grid plot
     plt.figure(figsize=(8, 6))
-    sc = plt.scatter(slopeL_r, slopeH_r, c=F_slip_r, cmap='viridis', s=60, edgecolor='none', norm=norm)
+    sc = plt.scatter(slopeL_r, slopeH_r, c=F_sc_r, cmap='viridis', s=60, edgecolor='none', norm=norm)
     cbar = plt.colorbar(sc)
-    cbar.set_label(r'$\mathrm{F}_{\mathrm{slip}}$', fontsize=12)
+    cbar.set_label(r'$\mathrm{F}_{\mathrm{sc}}$', fontsize=12)
 
     # overlay bump points
-    plt.scatter(slopeL_b, slopeH_b, c=F_slip_b, cmap='viridis', s=20, norm=norm, marker='o', edgecolor='black', linewidths=0.5)
+    plt.scatter(slopeL_b, slopeH_b, c=F_sc_b, cmap='viridis', s=20, norm=norm, marker='o', edgecolor='black', linewidths=0.5)
 
     # labels
-    plt.suptitle(r'$\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
-    plt.title(r'Overlay bump optimization for $\alpha=1$', fontsize=10)
+    plt.suptitle(r'$\mathrm{F}_{\mathrm{sc}}$ by ET branch slopes')
+    plt.title(r'Overlay bump optimization for F_yield', fontsize=10)
     plt.xlabel('slopeL (eV/cofactor)')
     plt.ylabel('slopeH (eV/cofactor)')
     plt.tight_layout()
     plt.legend()
     plt.show()
 
-def grid_Fyield(F_slip_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_yield_r, F_yield_b):
+def grid_Fyield(F_sc_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_yield_r, F_yield_b):
     '''
     plot grid search with bump points overlayed on ramps, color by F_yield
     Arguments:
@@ -62,8 +62,8 @@ def grid_Fyield(F_slip_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_y
         F_slip_* (vector): Vector of F_slip data for ramps or bumps
     '''
     # color bar is based on the ranges of F_slip and F_yield for ramps whole square
-    vmin = min(np.min(F_slip_w), np.min(F_yield_w))
-    vmax = max(np.max(F_slip_w), np.max(F_yield_w))
+    vmin = min(np.min(F_sc_w), np.min(F_yield_w))
+    vmax = max(np.max(F_sc_w), np.max(F_yield_w))
     norm = LogNorm(vmin=vmin, vmax=vmax)
 
     # Base grid plot
@@ -77,7 +77,7 @@ def grid_Fyield(F_slip_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_y
 
     # labels
     plt.suptitle(r'$\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes')
-    plt.title(r'Overlay bump optimization for $\alpha=1$', fontsize=10)
+    plt.title(r'Overlay bump optimization for F_yield', fontsize=10)
     plt.xlabel('slopeL (eV/cofactor)')
     plt.ylabel('slopeH (eV/cofactor)')
     plt.tight_layout()
@@ -258,27 +258,82 @@ def Nfn1_slopeH_Fyield_distrib(df):
     plt.tight_layout()
     plt.show()
 
+def Nfn1_bump_Fslip(df):
+    '''
+    Plot ratio Fslip (bump) / F_slip (ramp) for a range of bump sizes
+    '''
+    pH1 = df['pH1']
+    F_slip_b = df['F_slip']
+    F_slip_r = 0.03346239204029306
+
+    F_slip_ratio = F_slip_b / F_slip_r
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(pH1, F_slip_ratio, color='blue', lw = 4)
+    plt.title(r'$\mathrm{F}_{\mathrm{slip}}$ ratio vs. potential on H1')
+    plt.xlabel('Potential on H1 (eV)')
+    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{slip}} \mathrm{bump}}{\mathrm{F}_{\mathrm{slip}} \mathrm{ramp}}$')
+    plt.tight_layout()
+    plt.show()
+
+def Nfn1_bump_Fyield(df):
+    '''
+    Plot ratio Fyield (bump) / F_yield (ramp) for a range of bump sizes
+    '''
+    pH1 = df['pH1']
+    F_yield_b = df['F_yield']
+    F_yield_r = 46.74095979300153
+
+    F_yield_ratio = F_yield_b / F_yield_r
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(pH1, F_yield_ratio, color='blue', lw = 4)
+    plt.title(r'$\mathrm{F}_{\mathrm{yield}}$ ratio vs. potential on H1')
+    plt.xlabel('Potential on H1 (eV)')
+    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{yield}} \mathrm{bump}}{\mathrm{F}_{\mathrm{yield}} \mathrm{ramp}}$')
+    plt.tight_layout()
+    plt.show()
+
+def Nfn1_bump_Fsc(df):
+    '''
+    Plot ratio Fslip (bump) / F_slip (ramp) for a range of bump sizes
+    '''
+    pH1 = df['pH1']
+    F_sc_b = df['F_sc']
+    F_sc_r = 1.1945713514691109e-05
+
+    F_sc_ratio = F_sc_b / F_sc_r
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(pH1, F_sc_ratio, color='blue', lw = 4)
+    plt.title(r'$\mathrm{F}_{\mathrm{sc}}$ ratio vs. potential on H1')
+    plt.xlabel('Potential on H1 (eV)')
+    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{sc}} \mathrm{bump}}{\mathrm{F}_{\mathrm{sc}} \mathrm{ramp}}$')
+    plt.tight_layout()
+    plt.show()
+
 if __name__ == '__main__':
+    
     # === ramps w/ bump overlay ===
     
-    ramps_w = pd.read_csv("ramps_whole_likeNfn1_20250624.csv")
-    F_slip_w = ramps_w["F_slip"]
+    ramps_w = pd.read_csv("ramps_FscFyield_20250630.csv")
+    F_sc_w = ramps_w["F_sc"]
     F_yield_w = ramps_w["F_yield"]
 
-    ramps = pd.read_csv("ramps_whole_likeNfn1_20250624.csv")
+    ramps = pd.read_csv("ramps_FscFyield_20250630.csv")
     slopeL_r = ramps["slopeL"]
     slopeH_r = ramps["slopeH"]
-    F_slip_r = ramps["F_slip"]
+    F_sc_r = ramps["F_sc"]
     F_yield_r = ramps["F_yield"]
 
-    bump = pd.read_csv('bump_alpha1_likeNfn1_whole_20250624.csv')
+    bump = pd.read_csv('bump_Fsc_20250630.csv')
     slopeL_b = bump['slopeL']
     slopeH_b = bump['slopeH']
-    F_slip_b = bump["F_slip"]
+    F_sc_b = bump["F_sc"]
     F_yield_b = bump["F_yield"]
    
-    grid_Fslip(F_slip_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_slip_r, F_slip_b)
-    grid_Fyield(F_slip_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_yield_r, F_yield_b)
+    grid_Fsc(F_sc_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_sc_r, F_sc_b)
+    grid_Fyield(F_sc_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_yield_r, F_yield_b)
     
     
     '''
@@ -334,4 +389,11 @@ if __name__ == '__main__':
     #df_ramp = df_ramp[(df_ramp['slopeH'] > -0.159) & (df_ramp['slopeH'] < -0.157)]
     Nfn1_slopeH_slip(df_bump, df_ramp)
     Nfn1_slopeH_yield(df_bump, df_ramp)
+    '''
+    '''
+    # === Nfn-1 metrics for range of bump sizes vs. ramp ====
+    df = pd.read_csv('Nfn1_varybump_metrics_20250630.csv')
+    #Nfn1_bump_Fslip(df)
+    Nfn1_bump_Fyield(df)
+    Nfn1_bump_Fsc(df)
     '''
