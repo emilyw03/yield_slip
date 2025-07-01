@@ -313,7 +313,7 @@ def Nfn1_bump_Fsc(df):
     plt.show()
 
 if __name__ == '__main__':
-    
+    '''
     # === ramps w/ bump overlay ===
     
     ramps_w = pd.read_csv("ramps_FscFyield_20250630.csv")
@@ -334,7 +334,7 @@ if __name__ == '__main__':
    
     grid_Fsc(F_sc_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_sc_r, F_sc_b)
     grid_Fyield(F_sc_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_yield_r, F_yield_b)
-    
+    '''
     
     '''
     # === bump vs ramp plots ===

@@ -74,17 +74,16 @@ plt.show()
 
 # === 50alphas ===
 
-df = pd.read_csv("2cof_float3_interval_20250603.csv")
+df = pd.read_csv("Nfn1alphas_20250630.csv")
 
 alphas = df["alpha"]
-F = df['F_t']
-fluxD = df["abs(fluxD)"]
+fluxD = abs(df["fluxD"])
 fluxHR = df["fluxHR"]
 fluxLR = df["fluxLR"]
-pD1 = df["potential_D1"]
-pD2 = -pD1
-pL2 = df["potential_L2"]
-pH2 = df["potential_H2"]
+#pD1 = df["potential_D1"]
+#pD2 = -pD1
+#pL2 = df["potential_L2"]
+#pH2 = df["potential_H2"]
 
 '''# fluxes vs. partitioning
 ratio = fluxLR / fluxHR
@@ -136,7 +135,7 @@ plt.title(r'LR:HR Electron Partitioning vs. $\alpha$', fontsize=22)
 plt.xticks(fontsize = 16)
 plt.yticks(fontsize = 16)
 plt.show()'''
-'''
+
 # Plot of fluxes vs. alpha
 plt.figure(figsize=(8, 6))
 plt.plot(alphas, fluxD, label='|DR|', linestyle='-', color='green', linewidth = 3)
@@ -150,7 +149,7 @@ plt.yticks(fontsize = 16)
 plt.legend(fontsize = 16)
 #plt.grid(True)
 plt.show()
-'''
+
 '''
 # plot potentials vs. alpha
 plt.figure(figsize=(8, 6))
