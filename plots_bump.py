@@ -13,111 +13,188 @@ from scipy.interpolate import griddata
 from scipy.spatial import cKDTree
 import matplotlib.colors as mcolors
 from matplotlib.colors import Normalize
-from matplotlib.colors import LogNorm, PowerNorm
+from matplotlib.colors import LogNorm, SymLogNorm
 import matplotlib.cm as cm
 import seaborn as sns
 
-def grid_Fsc(F_sc_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_sc_r, F_sc_b):
+def grid_Fsc(ramp, ramp_c, bump_Fsc, bump_Fsc_c, bump_Fyield, bump_Fyield_c):
     '''
+    *** need to modify the function based on which data set is being plotted 
     plot grid search with bump points overlayed on ramps, color by F_slip
     Arguments:
-        F_sc_w (vector): Vector of F_sc data for ramps, whole square
-        F_yield_w (vector): Vector of F_yield data for ramps, whole square
-        slopeL_* (vector): Vector of slopeL data for ramps or bumps
-        slopeH_* (vector): Vector of slopeH data for ramps or bumps
-        F_sc_* (vector): Vector of F_sc data for ramps or bumps
+        ramp: data frame for ramps
+        bump_Fsc: data frame for bump, optimizing for Fsc
+        bump_Fyield: data frame for bump, optimizing for Fyield
+        ramp_c: data frame for ramps, corner zoom
+        bump_Fsc_c: data frame for bump_Fsc, corner zoom
+        bump_Fyield_c: data frame for bump_Fyield, corner zoom
     '''
 
-    # color bar is based on the ranges of F_slip and F_yield for ramps whole square
-    vmin = min(np.min(F_sc_w), np.min(F_yield_w))
-    vmax = max(np.max(F_sc_w), np.max(F_yield_w))
+    # color bar 
+    vmin = min(np.min(ramp['F_sc']), np.min(bump_Fsc['F_sc']), np.min(bump_Fyield['F_sc']), np.min(ramp_c['F_sc']), np.min(bump_Fsc_c['F_sc']), np.min(bump_Fyield_c['F_sc']))
+    vmax = max(np.max(ramp['F_sc']), np.max(bump_Fsc['F_sc']), np.max(bump_Fyield['F_sc']), np.max(ramp_c['F_sc']), np.max(bump_Fsc_c['F_sc']), np.max(bump_Fyield_c['F_sc']))
     norm = LogNorm(vmin=vmin, vmax=vmax)
 
     # Base grid plot
     plt.figure(figsize=(8, 6))
-    sc = plt.scatter(slopeL_r, slopeH_r, c=F_sc_r, cmap='viridis', s=60, edgecolor='none', norm=norm)
+    sc = plt.scatter(ramp_c['slopeL'], ramp_c['slopeH'], c=ramp_c['F_sc'], cmap='viridis', s=60, edgecolor='none', norm=norm)
     cbar = plt.colorbar(sc)
     cbar.set_label(r'$\mathrm{F}_{\mathrm{sc}}$', fontsize=12)
 
     # overlay bump points
-    plt.scatter(slopeL_b, slopeH_b, c=F_sc_b, cmap='viridis', s=20, norm=norm, marker='o', edgecolor='black', linewidths=0.5)
+    plt.scatter(bump_Fyield_c['slopeL'], bump_Fyield_c['slopeH'], c=bump_Fyield_c['F_sc'], cmap='viridis', s=20, marker='o', edgecolor='black', linewidths=0.5, norm=norm)
 
     # labels
-    plt.suptitle(r'$\mathrm{F}_{\mathrm{sc}}$ by ET branch slopes')
-    plt.title(r'Overlay bump optimization for F_yield', fontsize=10)
-    plt.xlabel('slopeL (eV/cofactor)')
-    plt.ylabel('slopeH (eV/cofactor)')
+    plt.suptitle(r'$\mathrm{F}_{\mathrm{sc}}$ by ET branch slopes', fontsize=16)
+    plt.title(r'Overlay bump optimization for $\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
+    plt.xlabel('slopeL (eV/cofactor)', fontsize=16)
+    plt.ylabel('slopeH (eV/cofactor)', fontsize=16)
+    plt.xticks(fontsize = 12)
+    plt.yticks(fontsize = 12)
+    plt.legend(fontsize = 12)
     plt.tight_layout()
-    plt.legend()
     plt.show()
 
-def grid_Fyield(F_sc_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_yield_r, F_yield_b):
+def grid_Fyield(ramp, ramp_c, bump_Fsc, bump_Fsc_c, bump_Fyield, bump_Fyield_c):
     '''
     plot grid search with bump points overlayed on ramps, color by F_yield
     Arguments:
-        F_slip_w (vector): Vector of F_slip data for ramps, whole square
-        F_yield_w (vector): Vector of F_yield data for ramps, whole square
-        slopeL_* (vector): Vector of slopeL data for ramps or bumps
-        slopeH_* (vector): Vector of slopeH data for ramps or bumps
-        F_slip_* (vector): Vector of F_slip data for ramps or bumps
+        ramp: data frame for ramps
+        bump_Fsc: data frame for bump, optimizing for Fsc
+        bump_Fyield: data frame for bump, optimizing for Fyield
+        ramp_c: data frame for ramps, corner zoom
+        bump_Fsc_c: data frame for bump_Fsc, corner zoom
+        bump_Fyield_c: data frame for bump_Fyield, corner zoom
     '''
-    # color bar is based on the ranges of F_slip and F_yield for ramps whole square
-    vmin = min(np.min(F_sc_w), np.min(F_yield_w))
-    vmax = max(np.max(F_sc_w), np.max(F_yield_w))
-    norm = LogNorm(vmin=vmin, vmax=vmax)
+    # take positive of F_yield values to make log scale work
+    ramp_pos = -ramp['F_yield']
+    bump_Fsc_pos = -bump_Fsc['F_yield']
+    bump_Fyield_pos = -bump_Fyield['F_yield']
+    ramp_c_pos = -ramp_c['F_yield']
+    bump_Fsc_c_pos = -bump_Fsc_c['F_yield']
+    bump_Fyield_c_pos = -bump_Fyield_c['F_yield']
+
+    #print(np.min(ramp_pos), np.min(bump_Fsc_pos), np.min(bump_Fyield_pos), np.min(ramp_c_pos), np.min(bump_Fsc_c_pos), np.min(bump_Fyield_c_pos))
+    #print(np.max(ramp_pos), np.max(bump_Fsc_pos), np.max(bump_Fyield_pos), np.max(ramp_c_pos), np.max(bump_Fsc_c_pos), np.max(bump_Fyield_c_pos))
+    
+    # get min and max of color bar for consistent color bar across all data sets
+    #vmin = min(np.min(ramp_pos), np.min(bump_Fsc_pos), np.min(bump_Fyield_pos), np.min(ramp_c_pos), np.min(bump_Fsc_c_pos), np.min(bump_Fyield_c_pos))
+    vmin = 1e-8
+    vmax = max(np.max(ramp_pos), np.max(bump_Fsc_pos), np.max(bump_Fyield_pos), np.max(ramp_c_pos), np.max(bump_Fsc_c_pos), np.max(bump_Fyield_c_pos))
+    norm = LogNorm(vmin=vmin, vmax=vmax) # log scale
 
     # Base grid plot
     plt.figure(figsize=(8, 6))
-    sc = plt.scatter(slopeL_r, slopeH_r, c=F_yield_r, cmap='viridis', s=60, edgecolor='none', norm=norm)
-    cbar = plt.colorbar(sc)
-    cbar.set_label(r'$\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
+    sc = plt.scatter(ramp['slopeL'], ramp['slopeH'], c=ramp_pos, cmap='viridis', s=60, edgecolor='none', norm=norm)
 
     # overlay bump points
-    plt.scatter(slopeL_b, slopeH_b, c=F_yield_b, cmap='viridis', s=20, norm=norm, marker='o', edgecolor='black', linewidths=0.5)
+    plt.scatter(bump_Fyield['slopeL'], bump_Fyield['slopeH'], c=bump_Fyield_pos, cmap='viridis', s=20, marker='o', edgecolor='black', linewidths=0.5, norm=norm)
+
+    cbar = plt.colorbar(sc)
+
+    # choose tick values
+    min_exp = int(np.floor(np.log10(vmin)))
+    max_exp = int(np.ceil(np.log10(vmax)))
+    tick_exponents = np.arange(min_exp, max_exp)
+    tick_values = 10.0 ** tick_exponents
+
+    # Set ticks and labels
+    cbar.set_ticks(tick_values)
+    tick_labels = [fr"$-10^{{{e}}}$" for e in tick_exponents]
+    cbar.set_ticklabels(tick_labels)
+    cbar.set_label(r'$\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
 
     # labels
-    plt.suptitle(r'$\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes')
-    plt.title(r'Overlay bump optimization for F_yield', fontsize=10)
-    plt.xlabel('slopeL (eV/cofactor)')
-    plt.ylabel('slopeH (eV/cofactor)')
+    plt.suptitle(r'$\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes', fontsize=16)
+    plt.title(r'Overlay bump optimization for $\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
+    plt.xlabel('slopeL (eV/cofactor)', fontsize=16)
+    plt.ylabel('slopeH (eV/cofactor)', fontsize=16)
+    plt.xticks(fontsize = 12)
+    plt.yticks(fontsize = 12)
+    plt.legend(fontsize = 12)
     plt.tight_layout()
-    plt.legend()
     plt.show()
 
-def grid_Fslip_ratio(slopeL, slopeH, F_slip_diff):
+def grid_Fsc_ratio(ramp, bump):
     '''
-    plot grid search with points colored by the relative change in F_slip (bump/ramp)
+    plot grid search with points colored by the relative change in F_sc (bump/ramp)
+    ramp: df for ramp
+    bump: df for bump
     '''
+    # nearest neighbor search
+    ramp_coords = ramp[['slopeL', 'slopeH']].to_numpy()
+    bump_coords = bump[['slopeL', 'slopeH']].to_numpy()
+    tree = cKDTree(ramp_coords)
+    dists, indices = tree.query(bump_coords)
+
+    F_sc_b = bump["F_sc"].to_numpy()
+    F_sc_r = ramp["F_sc"].to_numpy()[indices]
+    F_sc_ratio = F_sc_b / F_sc_r
+
+    slopeL = bump['slopeL']
+    slopeH = bump['slopeH']
+
+    # log color bar
+    vmin = 0.2
+    vmax = 22.2
+    norm = LogNorm(vmin=vmin, vmax=vmax)
+
+    # make plot
     plt.figure(figsize=(8, 6))
-    sc = plt.scatter(slopeL, slopeH, c=F_slip_diff, cmap='viridis', s=60, edgecolor='none', vmin = 0, vmax = 1)
+    sc = plt.scatter(slopeL, slopeH, c=F_sc_ratio, cmap='viridis', s=60, edgecolor='none', norm=norm)
     cbar = plt.colorbar(sc)
-    cbar.set_label(r'Relative $\Delta \mathrm{F}_{\mathrm{slip}}$', fontsize=12)
+    cbar.set_label(r'$\frac{\mathrm{F}_{\mathrm{sc}} \, \mathrm{bump}}{\mathrm{F}_{\mathrm{sc}} \, \mathrm{ramp}}$', fontsize=12)
 
     # labels
-    plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ by ET branch slopes')
-    plt.title(r'$(\alpha=1) / (\alpha=0)$', fontsize=10)
-    plt.xlabel('slopeL (eV/cofactor)')
-    plt.ylabel('slopeH (eV/cofactor)')
+    plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{sc}}$ by ET branch slopes', fontsize=16)
+    plt.title(r'bump optimized for $\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
+    plt.xlabel('slopeL (eV/cofactor)', fontsize=14)
+    plt.ylabel('slopeH (eV/cofactor)', fontsize=14)
+    plt.xticks(fontsize = 12)
+    plt.yticks(fontsize = 12)
     plt.tight_layout()
-    plt.legend()
+    plt.legend(fontsize=12)
     plt.show()
 
-def grid_Fyield_ratio(slopeL, slopeH, F_yield_diff):
+def grid_Fyield_ratio(ramp, bump):
     '''
-    plot grid search with points colored by the relative change in F_slip (bump/ramp)
+    plot grid search with points colored by the relative change in F_yield (bump/ramp)
+    ramp: df for ramp
+    bump: df for bump
     '''
+    # nearest neighbor search
+    ramp_coords = ramp[['slopeL', 'slopeH']].to_numpy()
+    bump_coords = bump[['slopeL', 'slopeH']].to_numpy()
+    tree = cKDTree(ramp_coords)
+    dists, indices = tree.query(bump_coords)
+
+    F_yield_b = bump["F_yield"].to_numpy()
+    F_yield_r = ramp["F_yield"].to_numpy()[indices]
+    F_yield_ratio = F_yield_b / F_yield_r
+
+    slopeL = bump['slopeL']
+    slopeH = bump['slopeH']
+
+    # log color bar
+    vmin = 0.2
+    vmax = 22.2
+    norm = LogNorm(vmin=vmin, vmax=vmax)
+
+    # make plot
     plt.figure(figsize=(8, 6))
-    sc = plt.scatter(slopeL, slopeH, c=F_yield_diff, cmap='viridis', s=60, edgecolor='none', vmin = 1, vmax = 2)
+    sc = plt.scatter(slopeL, slopeH, c=F_yield_ratio, cmap='viridis', s=60, edgecolor='none', norm=norm)
     cbar = plt.colorbar(sc)
-    cbar.set_label(r'$\Delta \mathrm{F}_{\mathrm{yield}}$', fontsize=12)
+    cbar.set_label(r'$\frac{\mathrm{F}_{\mathrm{yield}} \, \mathrm{bump}}{\mathrm{F}_{\mathrm{yield}} \, \mathrm{ramp}}$', fontsize=12)
 
     # labels
-    plt.suptitle(r'$\Delta\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes')
-    plt.title(r'$(\alpha=1) / (\alpha=0)$', fontsize=10)
-    plt.xlabel('slopeL (eV/cofactor)')
-    plt.ylabel('slopeH (eV/cofactor)')
+    plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes', fontsize=16)
+    plt.title(r'bump optimized for $\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
+    plt.xlabel('slopeL (eV/cofactor)', fontsize=14)
+    plt.ylabel('slopeH (eV/cofactor)', fontsize=14)
+    plt.xticks(fontsize = 12)
+    plt.yticks(fontsize = 12)
     plt.tight_layout()
-    plt.legend()
+    plt.legend(fontsize=12)
     plt.show()
 
 def pH1_trend(pH1_disp, F_slip_diff):
@@ -152,19 +229,19 @@ def pH1_trend(pH1_disp, F_slip_diff):
     plt.tight_layout()
     plt.show()
 
-def pH1_scatter(pH1_disp, F_slip_diff, slopeL, slopeH):
+def pH1_scatter(pH1_disp, F_sc_diff, slopeL, slopeH):
     '''
-    Plot relative improvement in F_slip (bump/ramp) vs. displacement of H1. Plots all points colored by the ratio slopeL/slopeH
+    Plot relative improvement in F_sc (bump/ramp) vs. displacement of H1. Plots all points colored by the ratio slopeL/slopeH
     '''
     plt.figure(figsize=(8, 6))
-    sc = plt.scatter(pH1_disp, F_slip_diff, c=abs(slopeL)/abs(slopeH), s=35)
+    sc = plt.scatter(pH1_disp, F_sc_diff, c=slopeL/slopeH, s=35)
     cbar = plt.colorbar(sc)
-    cbar.set_label(r'$\frac{|\mathrm{slopeL}|}{|\mathrm{slopeH}|}$', fontsize=12)
+    cbar.set_label(r'$\frac{\mathrm{slopeL}}{\mathrm{slopeH}}$', fontsize=12)
 
-    plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. H1 Displacement')
+    plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{sc}}$ vs. H1 Displacement')
     plt.yscale('log')
     plt.xlabel('H1 displacement (bump - ramp) (eV)')
-    plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ (bump/ramp)')
+    plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{sc}}$ (bump/ramp)')
     plt.legend()
     plt.tight_layout()
     plt.show()
@@ -270,9 +347,13 @@ def Nfn1_bump_Fslip(df):
 
     plt.figure(figsize=(8, 6))
     plt.plot(pH1, F_slip_ratio, color='blue', lw = 4)
-    plt.title(r'$\mathrm{F}_{\mathrm{slip}}$ ratio vs. potential on H1')
-    plt.xlabel('Potential on H1 (eV)')
-    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{slip}} \mathrm{bump}}{\mathrm{F}_{\mathrm{slip}} \mathrm{ramp}}$')
+    plt.title(r'$\mathrm{F}_{\mathrm{slip}}$ ratio vs. potential on H1', fontsize=22)
+    plt.xlabel('Potential on H1 (eV)', fontsize=22)
+    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{slip}} \mathrm{bump}}{\mathrm{F}_{\mathrm{slip}} \mathrm{ramp}}$', fontsize=22)
+    plt.yscale('log')
+    plt.xticks(fontsize = 16)
+    plt.yticks(fontsize = 16)
+    plt.legend(fontsize = 16)
     plt.tight_layout()
     plt.show()
 
@@ -282,15 +363,19 @@ def Nfn1_bump_Fyield(df):
     '''
     pH1 = df['pH1']
     F_yield_b = df['F_yield']
-    F_yield_r = 46.74095979300153
+    F_yield_r = - 1 / 46.74095979300153
 
     F_yield_ratio = F_yield_b / F_yield_r
 
     plt.figure(figsize=(8, 6))
     plt.plot(pH1, F_yield_ratio, color='blue', lw = 4)
-    plt.title(r'$\mathrm{F}_{\mathrm{yield}}$ ratio vs. potential on H1')
-    plt.xlabel('Potential on H1 (eV)')
-    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{yield}} \mathrm{bump}}{\mathrm{F}_{\mathrm{yield}} \mathrm{ramp}}$')
+    plt.title(r'$\mathrm{F}_{\mathrm{yield}}$ ratio vs. potential on H1', fontsize=22)
+    plt.xlabel('Potential on H1 (eV)', fontsize=22)
+    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{yield}} \mathrm{bump}}{\mathrm{F}_{\mathrm{yield}} \mathrm{ramp}}$', fontsize=22)
+    plt.yscale('log')
+    plt.xticks(fontsize = 16)
+    plt.yticks(fontsize = 16)
+    plt.legend(fontsize = 16)
     plt.tight_layout()
     plt.show()
 
@@ -306,40 +391,42 @@ def Nfn1_bump_Fsc(df):
 
     plt.figure(figsize=(8, 6))
     plt.plot(pH1, F_sc_ratio, color='blue', lw = 4)
-    plt.title(r'$\mathrm{F}_{\mathrm{sc}}$ ratio vs. potential on H1')
-    plt.xlabel('Potential on H1 (eV)')
-    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{sc}} \mathrm{bump}}{\mathrm{F}_{\mathrm{sc}} \mathrm{ramp}}$')
+    plt.title(r'$\mathrm{F}_{\mathrm{sc}}$ ratio vs. potential on H1', fontsize=22)
+    plt.xlabel('Potential on H1 (eV)', fontsize=22)
+    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{sc}} \mathrm{bump}}{\mathrm{F}_{\mathrm{sc}} \mathrm{ramp}}$', fontsize=22)
+    plt.yscale('log')
+    plt.xticks(fontsize = 16)
+    plt.yticks(fontsize = 16)
+    plt.legend(fontsize = 16)
     plt.tight_layout()
     plt.show()
 
 if __name__ == '__main__':
-    '''
-    # === ramps w/ bump overlay ===
     
-    ramps_w = pd.read_csv("ramps_FscFyield_20250630.csv")
-    F_sc_w = ramps_w["F_sc"]
-    F_yield_w = ramps_w["F_yield"]
-
-    ramps = pd.read_csv("ramps_FscFyield_20250630.csv")
-    slopeL_r = ramps["slopeL"]
-    slopeH_r = ramps["slopeH"]
-    F_sc_r = ramps["F_sc"]
-    F_yield_r = ramps["F_yield"]
-
-    bump = pd.read_csv('bump_Fsc_20250630.csv')
-    slopeL_b = bump['slopeL']
-    slopeH_b = bump['slopeH']
-    F_sc_b = bump["F_sc"]
-    F_yield_b = bump["F_yield"]
+    # === ramps w/ bump overlay ===
+    ramp = pd.read_csv("ramps_FscFyield_20250630.csv")
+    ramp_c = pd.read_csv('ramps_FscFyield_corner_20250702.csv')
+    bump_Fsc = pd.read_csv('bump_Fsc_20250630.csv')
+    bump_Fsc_c = pd.read_csv('bump_Fsc_corner_20250701.csv')
+    bump_Fyield = pd.read_csv('bump_Fyield_20250629.csv')
+    bump_Fyield_c = pd.read_csv('bump_Fyield_corner_20250701.csv')
    
-    grid_Fsc(F_sc_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_sc_r, F_sc_b)
-    grid_Fyield(F_sc_w, F_yield_w, slopeL_r, slopeH_r, slopeL_b, slopeH_b, F_yield_r, F_yield_b)
-    '''
+    # overlay plots
+    #grid_Fsc(ramp, ramp_c, bump_Fsc, bump_Fsc_c, bump_Fyield, bump_Fyield_c)
+    #grid_Fyield(ramp, ramp_c, bump_Fsc, bump_Fsc_c, bump_Fyield, bump_Fyield_c)
+
+    # ratio plots 
+    # for bump opt by Fsc vmin = 6e-3, vmax = 1.3
+    grid_Fsc_ratio(ramp, bump_Fyield)
+    grid_Fyield_ratio(ramp, bump_Fyield)
+    grid_Fsc_ratio(ramp_c, bump_Fyield_c)
+    grid_Fyield_ratio(ramp_c, bump_Fyield_c)
+    
     
     '''
     # === bump vs ramp plots ===
-    ramps = pd.read_csv("ramps_corner_bif_20250612.csv")
-    bump = pd.read_csv("BestBump_alpha1_corner_bif_20250618.csv")
+    ramps = pd.read_csv("ramps_FscFyield_bif_20250630.csv")
+    bump = pd.read_csv("bump_Fsc_bif_20250630.csv")
     ramps_coords = ramps[["slopeL", "slopeH"]].to_numpy()
     bump_coords = bump[["slopeL", "slopeH"]].to_numpy()
 
@@ -351,14 +438,14 @@ if __name__ == '__main__':
     pH1_r = ramps['potential_H1'].to_numpy()[indices]
     pH1_disp = pH1_b - pH1_r
 
-    F_slip_b = bump["F_slip"].to_numpy()
-    F_slip_r = ramps["F_slip"].to_numpy()[indices]
-    F_slip_diff = F_slip_b / F_slip_r
+    F_sc_b = bump["F_sc"].to_numpy()
+    F_sc_r = ramps["F_sc"].to_numpy()[indices]
+    F_sc_diff = F_sc_b / F_sc_r
 
     slopeL = bump['slopeL']
     slopeH = bump['slopeH']
 
-    pH1_scatter(pH1_disp, F_slip_diff, slopeL, slopeH)
+    pH1_scatter(pH1_disp, F_sc_diff, slopeL, slopeH)
     '''
 
     '''
@@ -393,7 +480,7 @@ if __name__ == '__main__':
     '''
     # === Nfn-1 metrics for range of bump sizes vs. ramp ====
     df = pd.read_csv('Nfn1_varybump_metrics_20250630.csv')
-    #Nfn1_bump_Fslip(df)
+    Nfn1_bump_Fslip(df)
     Nfn1_bump_Fyield(df)
     Nfn1_bump_Fsc(df)
     '''
