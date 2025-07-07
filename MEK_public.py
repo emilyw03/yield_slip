@@ -658,6 +658,33 @@ class Network():
                 ans += pop[i]
 
         return ans
+    
+    def population_multi(self, pop: np.array, cofactors: list, redox_states: list) -> float:
+        """
+        Calculate the joint population (probability) that each specified cofactor
+        is in its corresponding redox state.
+
+        Arguments:
+            pop {np.array} -- Population vector of the system states.
+            cofactors {list[Cofactor]} -- List of cofactor objects.
+            redox_states {list[int]} -- List of corresponding redox states.
+                                        (Must be the same length as cofactors.)
+
+        Returns:
+            float -- Total population of states satisfying the redox conditions for all specified cofactors.
+        """
+        if len(cofactors) != len(redox_states):
+            raise ValueError("cofactors and redox_states must be of equal length.")
+
+        cof_ids = [self.cofactor2id[cof] for cof in cofactors]
+        total = 0
+
+        for i in range(len(pop)):
+            state = self.idx2state(self.allow[i])  # full redox state vector for all cofactors
+            if all(state[cof_ids[j]] == redox_states[j] for j in range(len(cofactors))):
+                total += pop[i]
+
+        return total
 
     def gillespie_pop2hopping_pop(self, gillespie_pop, t):
         """
