@@ -94,8 +94,8 @@ NAD_flux = []
 Fd_flux = []
 time_list = []
 
-N = 100
-ztime = 10**(-6)
+N = 50
+ztime = 10**(-2)
 # ztime = 0.000006   ## Try plotting for longer time
 dt = 9/(N-1)
 
@@ -115,10 +115,13 @@ for n in range(N):
         NAD_flux.append(NAD)
         Fd_flux.append(Fd)
 
+filtered_time_list = [t for t in time_list if t > 0.17]
+truncate_len = len(time_list) - len(filtered_time_list)
+
 fig = plt.figure()
-plt.plot(time_list, NADPH_flux, label="$J_{NADPH}$", color="darkviolet")
-plt.plot(time_list, NAD_flux, label="$J_{NAD^{+}}$", color="blue")
-plt.plot(time_list, Fd_flux, label="$J_{Fd_{ox}}$", color="red")
+plt.plot(filtered_time_list, NADPH_flux[truncate_len:], label="$J_{NADPH}$", color="darkviolet")
+plt.plot(filtered_time_list, NAD_flux[truncate_len:], label="$J_{NAD^{+}}$", color="blue")
+plt.plot(filtered_time_list, Fd_flux[truncate_len:], label="$J_{Fd_{ox}}$", color="red")
 plt.ylabel("Flux (s$^{-1}$)", size="x-large")
 plt.xlabel("Time (s)", size="x-large")
 plt.xscale("log")

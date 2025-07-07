@@ -8,17 +8,13 @@ from MEK_public import *
 import math
 import numpy as np
 
-def toy(pH1, slopeL, slopeH):
+def toy(pH1, slopeL, slopeH, time_val):
     pL1 = -0.4755 + slopeL
     pL2 = -0.4755 + 2*slopeL
     pH1 = pH1
     pH2 = 0.4755 + 2*slopeH
 
-    # Hyperparameters
-    res_rate = 50  # Ortiz JBC 2023
-    N = 20
-    ztime = 0.00001
-    dt = 7 / (N - 1)
+    res_rate = 50
 
     net = Network()
 
@@ -46,9 +42,9 @@ def toy(pH1, slopeL, slopeH):
     net.addConnection(L2, H2, 40)
 
     # Add reservoirs
-    net.addReservoir("DR", D, 2, 2, -0.15, res_rate)
+    net.addReservoir("DR", D, 2, 2, -0.072, res_rate)
     net.addReservoir("LR", L2, 1, 1, -0.109, res_rate)
-    net.addReservoir("HR", H2, 1, 1, 0, res_rate)
+    net.addReservoir("HR", H2, 1, 1, 0.004, res_rate)
 
     net.constructStateList()
 
@@ -61,7 +57,6 @@ def toy(pH1, slopeL, slopeH):
 
 
     # Simulate evolution
-    time_val = ztime * (10 ** (N * dt))
     pop_MEK = net.evolve(time_val, pop_MEK_init)
 
     # Compute fluxes
@@ -69,34 +64,62 @@ def toy(pH1, slopeL, slopeH):
     fluxHR = net.getReservoirFlux("HR", pop_MEK)
     fluxLR = net.getReservoirFlux("LR", pop_MEK)
 
-    fluxes = np.array([fluxD, fluxHR, fluxLR])
-    max_flux = np.max(np.absolute(fluxes))
-    if max_flux == 0:
-        fluxD_norm = 0
-        fluxHR_norm = 0
-        fluxLR_norm = 0
-        F_slip = 0
-        F_yield = 0
-    else:
-        fluxD_norm = fluxD / abs(max_flux)
-        fluxHR_norm = fluxHR / abs(max_flux)
-        fluxLR_norm = fluxLR / abs(max_flux)
-        F_slip = math.sqrt((fluxD_norm + 1) ** 2 + (fluxHR_norm - 0.5) ** 2 + (fluxLR_norm - 0.5) ** 2)
-        F_yield = 1 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
+    # short circuit pathway fluxes
+    D1_to_H1 = net.getCofactorFlux(D, 1, H1, 1, pop_MEK)
+    L1_to_D2 = net.getCofactorFlux(L1, 1, D, 2, pop_MEK)
 
-        F_slip = math.sqrt((fluxD_norm + 1) ** 2 + (fluxHR_norm - 0.5) ** 2 + (fluxLR_norm - 0.5) ** 2)
-        F_yield = 1 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
+    # compute bifurcation metrics
+    F_sc = D1_to_H1 + L1_to_D2 # inverse of sum of short circuit fluxes
+    F_yield = 1 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
 
-
-    return fluxD, fluxHR, fluxLR, F_slip, F_yield
+    return fluxD, fluxHR, fluxLR, F_sc, F_yield
 
 if __name__ == '__main__':
-    slopeL = 0.191
-    slopeH = -0.158
+    slopeL = 0.192
+    slopeH = -0.160
     pH1_bump = 0.4755 + slopeH + 0.198
     pH1_ramp = 0.4755 + slopeH
-    fluxD, fluxHR, fluxLR, F_slip, F_yield = toy(pH1_bump, slopeL, slopeH)
-    print(fluxD, fluxHR, fluxLR, F_slip, F_yield)
+    fluxD, fluxHR, fluxLR, F_sc, F_yield = toy(pH1_bump, slopeL, slopeH, 10**4)
+    print(fluxD, fluxHR, fluxLR, F_sc, F_yield)
 
-    fluxD, fluxHR, fluxLR, F_slip, F_yield = toy(pH1_ramp, slopeL, slopeH)
-    print(fluxD, fluxHR, fluxLR, F_slip, F_yield)
+    fluxD, fluxHR, fluxLR, F_sc, F_yield = toy(pH1_ramp, slopeL, slopeH, 10**4)
+    print(fluxD, fluxHR, fluxLR, F_sc, F_yield)
+
+    '''
+    fluxD = []
+    fluxH = []
+    fluxL = []
+    time_list = []
+
+    N = 50
+    ztime = 10**(-5)
+    # ztime = 0.000006   ## Try plotting for longer time
+    dt = 9/(N-1)
+
+    for n in range(N):
+        if n == 0:
+            time = 0.0
+            time_list.append(time)
+            D, H, L = toy(pH1_bump, slopeL, slopeH, time)
+            fluxD.append(D)
+            fluxH.append(H)
+            fluxL.append(L)
+        else:
+            time = ztime*(10**(n*dt))
+            time_list.append(time)
+            D, H, L = toy(pH1_bump, slopeL, slopeH, time)
+            fluxD.append(D)
+            fluxH.append(H)
+            fluxL.append(L)
+
+    fig = plt.figure()
+    plt.plot(time_list, fluxD, label="$J_{D}$", color="darkviolet")
+    plt.plot(time_list, fluxH, label="$J_{H}$", color="blue")
+    plt.plot(time_list, fluxL, label="$J_{L}$", color="red")
+    plt.ylabel("Flux (s$^{-1}$)", size="x-large")
+    plt.xlabel("Time (s)", size="x-large")
+    plt.xscale("log")
+    plt.legend()
+    # plt.show()
+    fig.savefig("toy_flux.pdf")
+    '''

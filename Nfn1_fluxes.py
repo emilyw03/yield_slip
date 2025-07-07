@@ -105,7 +105,7 @@ def Nfn1(mu_FeS_H1, t):
     # return ratio_HD, ratio_LD
     return D_flux, H_flux, L_flux, D1_to_L1, L1_to_L2, D2_to_H1, H1_to_SFAD_1, H1_to_SFAD_2, D1_to_H1, L1_to_D2
 
-def metrics(fluxD, fluxHR, fluxLR):
+def metrics(fluxD, fluxHR, fluxLR, D1_to_H1, L1_to_D2):
     # normalize fluxes by largest flux
     fluxes = np.array([fluxD, fluxHR, fluxLR])
     max_flux = np.max(np.absolute(fluxes))
@@ -113,15 +113,12 @@ def metrics(fluxD, fluxHR, fluxLR):
     fluxHR_norm = fluxHR / abs(max_flux)
     fluxLR_norm = fluxLR / abs(max_flux)
 
-    # metric for efficiency: SSR from 100% efficient bifurcation flux ratio -1:0.5:0.5
     F_slip = math.sqrt((fluxD_norm + 1) ** 2 + (fluxHR_norm - 0.5) ** 2 + (fluxLR_norm - 0.5) ** 2)
-
-    # metric for bifurcation amount: 1000 / (# of events)
-    # numerator selected so that events is of similar magnitude to SSR
     F_yield = 1 / (abs(fluxD) + abs(fluxHR) + abs(fluxLR))
-    print("F_slip=", F_slip, "F_yield=", F_yield)
+    F_sc = D1_to_H1 + L1_to_D2
+    print("F_slip=", F_slip, "F_yield=", F_yield, "F_sc=", F_sc)
 
-    return F_slip, F_yield
+    return F_slip, F_yield, F_sc
 
 N = 100
 ztime = 10**(-5)
@@ -131,9 +128,9 @@ dt = 9/(N-1)
 time = ztime*(10**(N*dt))
 print(time)
 print("==== with bump ====")
-Nfn1(0.08, time)
-#F_slip, F_yield = metrics(NADPH, NAD, Fd)
+D_flux, H_flux, L_flux, D1_to_L1, L1_to_L2, D2_to_H1, H1_to_SFAD_1, H1_to_SFAD_2, D1_to_H1, L1_to_D2 = Nfn1(0.08, time)
+F_slip, F_yield, F_sc = metrics(D_flux, H_flux, L_flux, D1_to_H1, L1_to_D2)
 
 print("==== ramp ====")
-Nfn1(-0.118, time)
-#F_slip, F_yield = metrics(NADPH, NAD, Fd)
+D_flux, H_flux, L_flux, D1_to_L1, L1_to_L2, D2_to_H1, H1_to_SFAD_1, H1_to_SFAD_2, D1_to_H1, L1_to_D2 = Nfn1(-0.118, time)
+F_slip, F_yield, F_sc = metrics(D_flux, H_flux, L_flux, D1_to_H1, L1_to_D2)
