@@ -27,8 +27,8 @@ print("csv merged")
 
 
 # === filter for bifurcating only fluxD < 0, fluxH, fluxL > 0
-df = pd.read_csv("Nfn1_varyH_bump_fixDist_20250711.csv")
-filtered = df[(df['NADPH_flux'] < 0) & (df['NAD_flux'] > 0) & (df['Fd_flux'] > 0)]
+df = pd.read_csv("bump_Fyield_20250629.csv")
+filtered = df[(df['fluxD'] < 0) & (df['fluxHR'] > 0) & (df['fluxLR'] > 0)]
 #filtered = df[(df['NADPH_flux'] < 0) & (df['NAD_flux'] > 0) & (df['Fd_flux'] > 0)]
-filtered.to_csv("Nfn1_varyH_bump_fixDist_bif_20250711.csv", index=False)
+filtered.to_csv("bump_Fyield_bif_20250629.csv", index=False)
 

@@ -262,6 +262,7 @@ def pH1_scatter(pH1_disp, F_sc_diff, slopeL, slopeH):
     Plot relative improvement in F_sc (bump/ramp) vs. displacement of H1. Plots all points colored by the ratio slopeL/slopeH
     '''
     plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
     plt.figure(figsize=(8, 6))
     sc = plt.scatter(pH1_disp, F_sc_diff, c=slopeL/slopeH, s=35)
     cbar = plt.colorbar(sc)
@@ -275,20 +276,22 @@ def pH1_scatter(pH1_disp, F_sc_diff, slopeL, slopeH):
     plt.tight_layout()
     plt.show()
 
-def constant_bump_v_ramp(slopeL, F_slip_diff):
+def pH1_scatter_noRatio(pH1_disp, metric_ratio, slopeL, slopeH):
     '''
-    Plot relative change in F_slip with fixed HPB at varying slopeL
+    Plot relative improvement in F_sc (bump/ramp) vs. displacement of H1. Plots all points colored by the ratio slopeL/slopeH
     '''
     plt.rcParams['font.family'] = 'serif'
-
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
     plt.figure(figsize=(8, 6))
-    plt.scatter(slopeL, F_slip_diff, color='blue')
-    plt.axhline(1, linestyle='--', color='red')  # Reference line: no improvement
-    plt.text(x=slopeL.max(), y=1 - 0.02, s='no improvement', ha='right', va='top', fontsize=10, color='red')
-    plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. Low Potential Branch Slope')
-    plt.title('slopeH = -0.15, H1 displacement = 0.075')
-    plt.xlabel('Low Potential Branch Slope (eV/cofactor)')
-    plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$')
+    sc = plt.scatter(pH1_disp, metric_ratio, c=slopeL, s=35)
+    cbar = plt.colorbar(sc)
+    cbar.set_label(r'$\mathrm{slopeL}$', fontsize=12)
+
+    plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{sc}}$ vs. H1 Displacement')
+    plt.yscale('log')
+    plt.xlabel('H1 displacement (bump - ramp) (eV)')
+    plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{sc}}$ (bump/ramp)')
+    plt.legend()
     plt.tight_layout()
     plt.show()
 
@@ -511,7 +514,7 @@ def Nfn1_bump_Fsc(df):
     plt.show()
 
 if __name__ == '__main__':
-    
+    '''
     # === ramps w/ bump overlay ===
     ramp = pd.read_csv("ramps_FscFyield_20250630.csv")
     ramp_c = pd.read_csv('ramps_FscFyield_corner_20250702.csv')
@@ -531,12 +534,12 @@ if __name__ == '__main__':
     grid_Fyield_ratio(ramp, bump_Fsc)
     #grid_Fsc_ratio(ramp_c, bump_Fsc_c)
     #grid_Fyield_ratio(ramp_c, bump_Fyield_c)
-    
-    
     '''
+    
+    
     # === bump vs ramp plots ===
     ramps = pd.read_csv("ramps_FscFyield_bif_20250630.csv")
-    bump = pd.read_csv("bump_Fsc_bif_20250630.csv")
+    bump = pd.read_csv("bump_Fyield_bif_20250629.csv")
     ramps_coords = ramps[["slopeL", "slopeH"]].to_numpy()
     bump_coords = bump[["slopeL", "slopeH"]].to_numpy()
 
@@ -555,8 +558,8 @@ if __name__ == '__main__':
     slopeL = bump['slopeL']
     slopeH = bump['slopeH']
 
-    pH1_scatter(pH1_disp, F_sc_diff, slopeL, slopeH)
-    '''
+    pH1_scatter_noRatio(pH1_disp, F_sc_diff, slopeL, slopeH)
+    
 
     '''
     # === constant bump vs. ramp ===
