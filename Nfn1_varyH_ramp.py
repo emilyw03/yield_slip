@@ -109,33 +109,26 @@ def Nfn1(mu_FeS_H1, slopeH, t):
         fluxHR_norm = H_flux / abs(max_flux)
         fluxLR_norm = L_flux / abs(max_flux)
         F_slip = math.sqrt((fluxD_norm + 1) ** 2 + (fluxHR_norm - 0.5) ** 2 + (fluxLR_norm - 0.5) ** 2)
-        F_yield = 1 / (abs(D_flux) + abs(H_flux) + abs(L_flux))
-
-        F_slip = math.sqrt((fluxD_norm + 1) ** 2 + (fluxHR_norm - 0.5) ** 2 + (fluxLR_norm - 0.5) ** 2)
-        F_yield = 1 / (abs(D_flux) + abs(H_flux) + abs(L_flux))
+        F_yield = -(abs(D_flux) + abs(H_flux) + abs(L_flux))
+        F_sc = D_to_H1_flux + L1_to_D_flux
 
     # return ratio_HD, ratio_LD
-    return D_flux, H_flux, L_flux, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux
+    return D_flux, H_flux, L_flux, F_slip, F_yield, F_sc, D_to_H1_flux, L1_to_D_flux
 
 if __name__ == '__main__':
     task_id = int(os.environ.get("SLURM_ARRAY_TASK_ID", 0))
     num_tasks = int(os.environ.get("SLURM_ARRAY_TASK_COUNT", 1))
 
-    N = 100
-    ztime = 10**(-6)
-    # ztime = 0.000006   ## Try plotting for longer time
-    dt = 9/(N-1)
-
-    slopeH_vals = np.linspace(-0.1950, -0.1150, 10000) # slopes to test
+    slopeH_vals = np.linspace(-0.200, 0, 10000) # slopes to test
     chunk = np.array_split(slopeH_vals, num_tasks)[task_id]
 
     results = []
-    time = ztime*(10**(N*dt))
+    time = 10**4
     for val in chunk:
-        NADPH, NAD, Fd, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux = Nfn1(-0.118, val, time)
+        NADPH, NAD, Fd, F_slip, F_yield, F_sc, D_to_H1_flux, L1_to_D_flux = Nfn1(-0.118, val, time)
         S_FAD_mid = 0.040 + 2*val
-        results.append([val, NADPH, NAD, Fd, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux, S_FAD_mid])
+        results.append([val, NADPH, NAD, Fd, F_slip, F_yield, F_sc, D_to_H1_flux, L1_to_D_flux, S_FAD_mid])
 
-    columns = ["slopeH", "NADPH_flux", "NAD_flux", "Fd_flux", "F_slip", "F_yield", "D_to_H1_flux", "L1_to_D_flux", "S_FAD_mid_pot"]
+    columns = ["slopeH", "NADPH_flux", "NAD_flux", "Fd_flux", "F_slip", "F_yield", "F_sc", "D_to_H1_flux", "L1_to_D_flux", "S_FAD_mid_pot"]
     df = pd.DataFrame(results, columns=columns)
-    df.to_csv(f"Nfn1_vary_slopeH_ramp_{task_id}_20250620.csv", index=False)
+    df.to_csv(f"Nfn1_varyH_ramp_{task_id}_20250701.csv", index=False)

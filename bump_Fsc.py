@@ -97,8 +97,8 @@ def obj_func_full(potentials, slopes):
     L1_to_D2 = net.getCofactorFlux(L1, 1, D, 2, pop_MEK)
 
     # compute bifurcation metrics
-    F_sc = D1_to_H1 + L1_to_D2 # inverse of sum of short circuit fluxes
-    F_yield = 1 / (abs(D_flux) + abs(H_flux) + abs(L_flux))
+    F_sc = D1_to_H1 + L1_to_D2 # sum of short circuit fluxes
+    F_yield = -(abs(D_flux) + abs(H_flux) + abs(L_flux))
 
     F = F_sc
 
@@ -199,8 +199,8 @@ if __name__ == '__main__':
     num_tasks = int(os.environ.get("SLURM_ARRAY_TASK_COUNT", 1))
 
     grid_size = 25  # 25x25 grid for 625 points
-    slopeL_vals = np.linspace(-0.200, 0.200, grid_size)
-    slopeH_vals = np.linspace(-0.200, 0.200, grid_size)
+    slopeL_vals = np.linspace(0, 0.200, grid_size)
+    slopeH_vals = np.linspace(-0.200, 0, grid_size)
     slopeL_grid, slopeH_grid = np.meshgrid(slopeL_vals, slopeH_vals)
     slope_pairs = np.column_stack([slopeL_grid.ravel(), slopeH_grid.ravel()])
     chunk = np.array_split(slope_pairs, num_tasks)[task_id]

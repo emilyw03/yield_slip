@@ -129,7 +129,7 @@ if __name__ == '__main__':
     # save data
     columns = ["slopeL", "slopeH", "F_sc", "F_yield", "fluxD", "fluxHR", "fluxLR", "D_H1_flux", "L1_D_flux", "potential_H1"]
     df = pd.DataFrame(results_all, columns=columns)
-    df.to_csv(f"ramps_FscFyield_{task_id}_"+timestr+".csv", index=False)
+    df.to_csv(f"ramps_FscFyield_corner_{task_id}_"+timestr+".csv", index=False)
     
     t_end = time.time()
     runtime = t_end - t_start

@@ -92,7 +92,7 @@ def Nfn1(mu_FeS_H1, t):
     fluxLR_norm = L_flux / abs(max_flux)
 
     F_slip = math.sqrt((fluxD_norm + 1) ** 2 + (fluxHR_norm - 0.5) ** 2 + (fluxLR_norm - 0.5) ** 2)
-    F_yield = 1 / (abs(D_flux) + abs(H_flux) + abs(L_flux))
+    F_yield = - (abs(D_flux) + abs(H_flux) + abs(L_flux))
     F_sc = D_to_H1_flux + L1_to_D_flux
 
     # return ratio_HD, ratio_LD

@@ -6,6 +6,6 @@
 #SBATCH -n 1                # 1 task per job
 pwd; hostname; date
 
-~/Software/python_virtualenv/bin/python3.11 ramps_corner.py > ramps_corner.out
+~/Software/python_virtualenv/bin/python3.11 ramps_FscFyield_corner.py > ramps_FscFyield_corner.out
 
 date
