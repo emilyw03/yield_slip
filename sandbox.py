@@ -1,16 +1,21 @@
 # sandbox.py
 # for testing
 
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+import os
+import matplotlib
 
-df = pd.read_csv('Nfn1_bump_size_20250623.csv')
-plt.scatter(df['pH1'], df['F_slip'], s=20)
-plt.title('F_slip vs. potential on H1', fontsize=10)
-plt.xlabel('Potential on H1 (eV)')
-plt.ylabel('F_slip')
-plt.tight_layout()
-plt.legend()
-plt.show()
+# Get the cache directory
+cache_dir = matplotlib.get_cachedir()
+print("Matplotlib cache:", cache_dir)
+
+# Delete the font cache file
+font_cache = os.path.join(cache_dir, 'fontlist-v330.json')  # Adjust version if needed
+
+if os.path.exists(font_cache):
+    os.remove(font_cache)
+    print("Font cache removed.")
+else:
+    print("Font cache file not found.")
+
+
 

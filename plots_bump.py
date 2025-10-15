@@ -29,6 +29,8 @@ def grid_Fsc(ramp, ramp_c, bump_Fsc, bump_Fsc_c, bump_Fyield, bump_Fyield_c):
         bump_Fsc_c: data frame for bump_Fsc, corner zoom
         bump_Fyield_c: data frame for bump_Fyield, corner zoom
     '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
 
     # color bar 
     vmin = min(np.min(ramp['F_sc']), np.min(bump_Fsc['F_sc']), np.min(bump_Fyield['F_sc']), np.min(ramp_c['F_sc']), np.min(bump_Fsc_c['F_sc']), np.min(bump_Fyield_c['F_sc']))
@@ -39,14 +41,14 @@ def grid_Fsc(ramp, ramp_c, bump_Fsc, bump_Fsc_c, bump_Fyield, bump_Fyield_c):
     plt.figure(figsize=(8, 6))
     sc = plt.scatter(ramp_c['slopeL'], ramp_c['slopeH'], c=ramp_c['F_sc'], cmap='viridis', s=60, edgecolor='none', norm=norm)
     cbar = plt.colorbar(sc)
-    cbar.set_label(r'$\mathrm{F}_{\mathrm{sc}}$', fontsize=12)
+    cbar.set_label(r'$\mathit{F}_{\mathit{sc}}$', fontsize=12)
 
     # overlay bump points
     plt.scatter(bump_Fyield_c['slopeL'], bump_Fyield_c['slopeH'], c=bump_Fyield_c['F_sc'], cmap='viridis', s=20, marker='o', edgecolor='black', linewidths=0.5, norm=norm)
 
     # labels
     plt.suptitle(r'$\mathrm{F}_{\mathrm{sc}}$ by ET branch slopes', fontsize=16)
-    plt.title(r'Overlay bump optimization for $\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
+    plt.title(r'Overlay bump optimization for $\mathrm{F}_{\mathrm{flow}}$', fontsize=12)
     plt.xlabel('slopeL (eV/cofactor)', fontsize=16)
     plt.ylabel('slopeH (eV/cofactor)', fontsize=16)
     plt.xticks(fontsize = 12)
@@ -66,6 +68,15 @@ def grid_Fyield(ramp, ramp_c, bump_Fsc, bump_Fsc_c, bump_Fyield, bump_Fyield_c):
         bump_Fsc_c: data frame for bump_Fsc, corner zoom
         bump_Fyield_c: data frame for bump_Fyield, corner zoom
     '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams['text.usetex'] = True
+    plt.rcParams['text.latex.preamble'] = r'''
+    \usepackage{helvet}  % Use Helvetica for sans-serif if you want that
+    \usepackage{mathptmx}  % Times Roman font
+    \renewcommand{\rmdefault}{ptm}  % Ensure serif roman
+    \renewcommand{\sfdefault}{phv}  % Ensure Helvetica sans
+    '''
+
     # take positive of F_yield values to make log scale work
     ramp_pos = -ramp['F_yield']
     bump_Fsc_pos = -bump_Fsc['F_yield']
@@ -102,11 +113,11 @@ def grid_Fyield(ramp, ramp_c, bump_Fsc, bump_Fsc_c, bump_Fyield, bump_Fyield_c):
     cbar.set_ticks(tick_values)
     tick_labels = [fr"$-10^{{{e}}}$" for e in tick_exponents]
     cbar.set_ticklabels(tick_labels)
-    cbar.set_label(r'$\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
+    cbar.set_label(r'$\mathrm{F}_{\mathrm{flow}}$', fontsize=12)
 
     # labels
-    plt.suptitle(r'$\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes', fontsize=16)
-    plt.title(r'Overlay bump optimization for $\mathrm{F}_{\mathrm{yield}}$', fontsize=12)
+    plt.suptitle(r'$\mathrm{F}_{\mathrm{flow}}$ by ET branch slopes', fontsize=16)
+    plt.title(r'Overlay bump optimization for $\mathrm{F}_{\mathrm{flow}}$', fontsize=12)
     plt.xlabel('slopeL (eV/cofactor)', fontsize=16)
     plt.ylabel('slopeH (eV/cofactor)', fontsize=16)
     plt.xticks(fontsize = 12)
@@ -121,6 +132,9 @@ def grid_Fsc_ratio(ramp, bump):
     ramp: df for ramp
     bump: df for bump
     '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
+
     # nearest neighbor search
     ramp_coords = ramp[['slopeL', 'slopeH']].to_numpy()
     bump_coords = bump[['slopeL', 'slopeH']].to_numpy()
@@ -152,6 +166,11 @@ def grid_Fsc_ratio(ramp, bump):
     plt.ylabel('slopeH (eV/cofactor)', fontsize=14)
     plt.xticks(fontsize = 12)
     plt.yticks(fontsize = 12)
+
+    # annotate Nfn-1 position
+    plt.plot(0.198, -0.158, marker='*', color='gold', markersize=15)
+    plt.text(0.180, -0.140, 'Nfn-1', color='black', fontsize=12, verticalalignment='center')
+
     plt.tight_layout()
     plt.legend(fontsize=12)
     plt.show()
@@ -162,6 +181,9 @@ def grid_Fyield_ratio(ramp, bump):
     ramp: df for ramp
     bump: df for bump
     '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
+
     # nearest neighbor search
     ramp_coords = ramp[['slopeL', 'slopeH']].to_numpy()
     bump_coords = bump[['slopeL', 'slopeH']].to_numpy()
@@ -184,15 +206,20 @@ def grid_Fyield_ratio(ramp, bump):
     plt.figure(figsize=(8, 6))
     sc = plt.scatter(slopeL, slopeH, c=F_yield_ratio, cmap='viridis', s=60, edgecolor='none', norm=norm)
     cbar = plt.colorbar(sc)
-    cbar.set_label(r'$\frac{\mathrm{F}_{\mathrm{yield}} \, \mathrm{bump}}{\mathrm{F}_{\mathrm{yield}} \, \mathrm{ramp}}$', fontsize=12)
+    cbar.set_label(r'$\frac{\mathrm{F}_{\mathrm{flow}} \, \mathrm{bump}}{\mathrm{F}_{\mathrm{flow}} \, \mathrm{ramp}}$', fontsize=12)
 
     # labels
-    plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{yield}}$ by ET branch slopes', fontsize=16)
+    plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{flow}}$ by ET branch slopes', fontsize=16)
     plt.title(r'bump optimized for $\mathrm{F}_{\mathrm{sc}}$', fontsize=12)
     plt.xlabel('slopeL (eV/cofactor)', fontsize=14)
     plt.ylabel('slopeH (eV/cofactor)', fontsize=14)
     plt.xticks(fontsize = 12)
     plt.yticks(fontsize = 12)
+
+    # annotate Nfn-1 position
+    plt.plot(0.198, -0.158, marker='*', color='gold', markersize=15)
+    plt.text(0.180, -0.140, 'Nfn-1', color='black', fontsize=12, verticalalignment='center')
+
     plt.tight_layout()
     plt.legend(fontsize=12)
     plt.show()
@@ -201,6 +228,7 @@ def pH1_trend(pH1_disp, F_slip_diff):
     '''
     Plot relative improvement in F_slip (bump/ramp) vs. displacement of H1. Plots mean and error bars
     '''
+    plt.rcParams['font.family'] = 'serif'
     # bin data
     df = pd.DataFrame({"pH1_disp": pH1_disp, "F_slip_diff": F_slip_diff})
     N = 20
@@ -233,6 +261,8 @@ def pH1_scatter(pH1_disp, F_sc_diff, slopeL, slopeH):
     '''
     Plot relative improvement in F_sc (bump/ramp) vs. displacement of H1. Plots all points colored by the ratio slopeL/slopeH
     '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
     plt.figure(figsize=(8, 6))
     sc = plt.scatter(pH1_disp, F_sc_diff, c=slopeL/slopeH, s=35)
     cbar = plt.colorbar(sc)
@@ -246,18 +276,22 @@ def pH1_scatter(pH1_disp, F_sc_diff, slopeL, slopeH):
     plt.tight_layout()
     plt.show()
 
-def constant_bump_v_ramp(slopeL, F_slip_diff):
+def pH1_scatter_noRatio(pH1_disp, metric_ratio, slopeL, slopeH):
     '''
-    Plot relative change in F_slip with fixed HPB at varying slopeL
+    Plot relative improvement in F_sc (bump/ramp) vs. displacement of H1. Plots all points colored by the ratio slopeL/slopeH
     '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
     plt.figure(figsize=(8, 6))
-    plt.scatter(slopeL, F_slip_diff, color='blue')
-    plt.axhline(1, linestyle='--', color='red')  # Reference line: no improvement
-    plt.text(x=slopeL.max(), y=1 - 0.02, s='no improvement', ha='right', va='top', fontsize=10, color='red')
-    plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. Low Potential Branch Slope')
-    plt.title('slopeH = -0.15, H1 displacement = 0.075')
-    plt.xlabel('Low Potential Branch Slope (eV/cofactor)')
-    plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$')
+    sc = plt.scatter(pH1_disp, metric_ratio, c=slopeL, s=35)
+    cbar = plt.colorbar(sc)
+    cbar.set_label(r'$\mathrm{slopeL}$', fontsize=12)
+
+    plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{sc}}$ vs. H1 Displacement')
+    plt.yscale('log')
+    plt.xlabel('H1 displacement (bump - ramp) (eV)')
+    plt.ylabel(r'Relative $\Delta\mathrm{F}_{\mathrm{sc}}$ (bump/ramp)')
+    plt.legend()
     plt.tight_layout()
     plt.show()
 
@@ -265,6 +299,9 @@ def Nfn1_slopeH_slip(df_bump, df_ramp):
     '''
     Vary slopeH in Nfn-1 and plot to compare F_slip for bump and no bump 
     '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
+
     common_slopeH = set(df_bump['slopeH']).intersection(set(df_ramp['slopeH']))
 
     df_bump = df_bump[df_bump["slopeH"].isin(common_slopeH)].reset_index(drop=True)
@@ -276,6 +313,9 @@ def Nfn1_slopeH_slip(df_bump, df_ramp):
 
     plt.figure(figsize=(8, 6))
     plt.scatter(slopeH, F_slip_diff, color='blue', s = 10)
+    if -0.158 >= slopeH.min() and -0.158 <= slopeH.max():
+        y_star = np.interp(-0.158, slopeH, F_slip_diff)
+        plt.plot(-0.158, y_star, marker='*', color='gold', markersize=15, label='Nfn-1')
     #plt.axhline(1, linestyle='--', color='red')  # Reference line: no improvement
     #plt.text(x=slopeH.max(), y=1 - 0.02, s='no improvement', ha='right', va='top', fontsize=10, color='red')
     plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{slip}}$ vs. High Potential Branch Slope', fontsize=16)
@@ -283,6 +323,7 @@ def Nfn1_slopeH_slip(df_bump, df_ramp):
     plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{slip}} \, \mathrm{bump}}{\mathrm{F}_{\mathrm{slip}} \, \mathrm{ramp}}$', fontsize=14)
     plt.xticks(fontsize = 12)
     plt.yticks(fontsize = 12)
+    plt.legend(fontsize = 14)
     plt.tight_layout()
     plt.show()
 
@@ -290,6 +331,9 @@ def Nfn1_slopeH_yield(df_bump, df_ramp):
     '''
     Vary slopeH in Nfn-1 and plot to compare F_yield for bump and no bump 
     '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
+
     common_slopeH = set(df_bump['slopeH']).intersection(set(df_ramp['slopeH']))
 
     df_bump = df_bump[df_bump["slopeH"].isin(common_slopeH)].reset_index(drop=True)
@@ -301,13 +345,17 @@ def Nfn1_slopeH_yield(df_bump, df_ramp):
 
     plt.figure(figsize=(8, 6))
     plt.scatter(slopeH, F_yield_diff, color='blue', s = 10)
+    if -0.158 >= slopeH.min() and -0.158 <= slopeH.max():
+        y_star = np.interp(-0.158, slopeH, F_yield_diff)
+        plt.plot(-0.158, y_star, marker='*', color='gold', markersize=15, label='Nfn-1')
     #plt.axhline(1, linestyle='--', color='red')  # Reference line: no improvement
     #plt.text(x=slopeL.max(), y=1 - 0.02, s='no improvement', ha='right', va='top', fontsize=10, color='red')
-    plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{yield}}$ vs. High Potential Branch Slope', fontsize=16)
+    plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{flow}}$ vs. High Potential Branch Slope', fontsize=16)
     plt.xlabel('High Potential Branch Slope (eV/cofactor)', fontsize=14)
-    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{yield}} \, \mathrm{bump}}{\mathrm{F}_{\mathrm{yield}} \, \mathrm{ramp}}$', fontsize=14)
+    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{flow}} \, \mathrm{bump}}{\mathrm{F}_{\mathrm{flow}} \, \mathrm{ramp}}$', fontsize=14)
     plt.xticks(fontsize = 12)
     plt.yticks(fontsize = 12)
+    plt.legend(fontsize = 14)
     plt.tight_layout()
     plt.show()
 
@@ -315,17 +363,22 @@ def Nfn1_slopeH_sc(df_bump, df_ramp):
     '''
     Vary slopeH in Nfn-1 and plot to compare F_sc for bump and no bump 
     '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
     common_slopeH = set(df_bump['slopeH']).intersection(set(df_ramp['slopeH']))
 
     df_bump = df_bump[df_bump["slopeH"].isin(common_slopeH)].reset_index(drop=True)
     df_ramp = df_ramp[df_ramp["slopeH"].isin(common_slopeH)].reset_index(drop=True)
 
-    F_yield_diff = df_bump['F_sc'] / df_ramp['F_sc']
+    F_sc_diff = df_bump['F_sc'] / df_ramp['F_sc']
 
     slopeH = df_bump['slopeH'] # same for both because of intersection
 
     plt.figure(figsize=(8, 6))
-    plt.scatter(slopeH, F_yield_diff, color='blue', s = 10)
+    plt.scatter(slopeH, F_sc_diff, color='blue', s = 10)
+    if -0.158 >= slopeH.min() and -0.158 <= slopeH.max():
+        y_star = np.interp(-0.158, slopeH, F_sc_diff)
+        plt.plot(-0.158, y_star, marker='*', color='gold', markersize=15, label='Nfn-1')
     #plt.axhline(1, linestyle='--', color='red')  # Reference line: no improvement
     #plt.text(x=slopeL.max(), y=1 - 0.02, s='no improvement', ha='right', va='top', fontsize=10, color='red')
     plt.title(r'Relative $\Delta\mathrm{F}_{\mathrm{sc}}$ vs. High Potential Branch Slope', fontsize=16)
@@ -333,6 +386,7 @@ def Nfn1_slopeH_sc(df_bump, df_ramp):
     plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{sc}} \, \mathrm{bump}}{\mathrm{F}_{\mathrm{sc}} \, \mathrm{ramp}}$', fontsize=14)
     plt.xticks(fontsize = 12)
     plt.yticks(fontsize = 12)
+    plt.legend(fontsize = 14)
     plt.tight_layout()
     plt.show()
 
@@ -340,6 +394,8 @@ def Nfn1_slopeH_Fslip_distrib(df):
     '''
     plot distribution of Fslip
     '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
     F_slip = df['F_slip']
 
     plt.figure(figsize=(8, 6))
@@ -354,12 +410,14 @@ def Nfn1_slopeH_Fyield_distrib(df):
     '''
     plot distribution of Fyield
     '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
     F_yield = df['F_yield']
 
     plt.figure(figsize=(8, 6))
     plt.hist(F_yield, bins=30, color='skyblue', edgecolor='black')
-    plt.title(r'Distribution of $\mathrm{F}_{\mathrm{yield}}$')
-    plt.xlabel(r'$\mathrm{F}_{\mathrm{yield}}$')
+    plt.title(r'Distribution of $\mathrm{F}_{\mathrm{flow}}$')
+    plt.xlabel(r'$\mathrm{F}_{\mathrm{flow}}$')
     plt.ylabel('Frequency')
     plt.tight_layout()
     plt.show()
@@ -368,6 +426,8 @@ def Nfn1_bump_Fslip(df):
     '''
     Plot ratio Fslip (bump) / F_slip (ramp) for a range of bump sizes
     '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
     pH1 = df['pH1']
     F_slip_b = df['F_slip']
     F_slip_r = 0.03346239204029306
@@ -376,6 +436,12 @@ def Nfn1_bump_Fslip(df):
 
     plt.figure(figsize=(8, 6))
     plt.plot(pH1, F_slip_ratio, color='blue', lw = 4)
+    plt.axhline(y=1, color='red', linestyle=':', linewidth=2)
+    plt.text(pH1.min(), 1.1, 'No change', color='red', fontsize=14)
+    if 0.080 >= pH1.min() and 0.080 <= pH1.max():
+        y_star = np.interp(0.080, pH1, F_slip_ratio)
+        plt.plot(0.080, y_star, marker='*', color='gold', markersize=15, label='Nfn-1')
+
     plt.title(r'$\mathrm{F}_{\mathrm{slip}}$ ratio vs. potential on H1', fontsize=22)
     plt.xlabel('Potential on H1 (eV)', fontsize=22)
     plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{slip}} \mathrm{bump}}{\mathrm{F}_{\mathrm{slip}} \mathrm{ramp}}$', fontsize=22)
@@ -390,17 +456,26 @@ def Nfn1_bump_Fyield(df):
     '''
     Plot ratio Fyield (bump) / F_yield (ramp) for a range of bump sizes
     '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
     pH1 = df['pH1']
     F_yield_b = df['F_yield']
     F_yield_r = - 1 / 46.74095979300153
 
     F_yield_ratio = F_yield_b / F_yield_r
+    print(F_yield_ratio)
 
     plt.figure(figsize=(8, 6))
     plt.plot(pH1, F_yield_ratio, color='blue', lw = 4)
-    plt.title(r'$\mathrm{F}_{\mathrm{yield}}$ ratio vs. potential on H1', fontsize=22)
+    plt.axhline(y=1, color='red', linestyle=':', linewidth=2)
+    plt.text(pH1.min(), 1.1, 'No change', color='red', fontsize=14)
+    if 0.080 >= pH1.min() and 0.080 <= pH1.max():
+        y_star = np.interp(0.080, pH1, F_yield_ratio)
+        plt.plot(0.080, y_star, marker='*', color='gold', markersize=15, label='Nfn-1')
+
+    plt.title(r'$\mathrm{F}_{\mathrm{flow}}$ ratio vs. potential on H1', fontsize=22)
     plt.xlabel('Potential on H1 (eV)', fontsize=22)
-    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{yield}} \mathrm{bump}}{\mathrm{F}_{\mathrm{yield}} \mathrm{ramp}}$', fontsize=22)
+    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{flow}} \mathrm{bump}}{\mathrm{F}_{\mathrm{flow}} \mathrm{ramp}}$', fontsize=22)
     plt.yscale('log')
     plt.xticks(fontsize = 16)
     plt.yticks(fontsize = 16)
@@ -412,6 +487,8 @@ def Nfn1_bump_Fsc(df):
     '''
     Plot ratio Fslip (bump) / F_slip (ramp) for a range of bump sizes
     '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
     pH1 = df['pH1']
     F_sc_b = df['F_sc']
     F_sc_r = 1.1945713514691109e-05
@@ -420,6 +497,12 @@ def Nfn1_bump_Fsc(df):
 
     plt.figure(figsize=(8, 6))
     plt.plot(pH1, F_sc_ratio, color='blue', lw = 4)
+    plt.axhline(y=1, color='red', linestyle=':', linewidth=2)
+    plt.text(pH1.min(), 1.1, 'No change', color='red', fontsize=14)
+    if 0.080 >= pH1.min() and 0.080 <= pH1.max():
+        y_star = np.interp(0.080, pH1, F_sc_ratio)
+        plt.plot(0.080, y_star, marker='*', color='gold', markersize=15, label='Nfn-1')
+
     plt.title(r'$\mathrm{F}_{\mathrm{sc}}$ ratio vs. potential on H1', fontsize=22)
     plt.xlabel('Potential on H1 (eV)', fontsize=22)
     plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{sc}} \mathrm{bump}}{\mathrm{F}_{\mathrm{sc}} \mathrm{ramp}}$', fontsize=22)
@@ -449,14 +532,14 @@ if __name__ == '__main__':
     # for bump opt by Fyield vmin = 0.2, vmax = 22.2
     grid_Fsc_ratio(ramp, bump_Fsc)
     grid_Fyield_ratio(ramp, bump_Fsc)
-    grid_Fsc_ratio(ramp_c, bump_Fsc_c)
-    grid_Fyield_ratio(ramp_c, bump_Fsc_c)
+    #grid_Fsc_ratio(ramp_c, bump_Fsc_c)
+    #grid_Fyield_ratio(ramp_c, bump_Fyield_c)
     '''
     
-    '''
+    
     # === bump vs ramp plots ===
     ramps = pd.read_csv("ramps_FscFyield_bif_20250630.csv")
-    bump = pd.read_csv("bump_Fsc_bif_20250630.csv")
+    bump = pd.read_csv("bump_Fyield_bif_20250629.csv")
     ramps_coords = ramps[["slopeL", "slopeH"]].to_numpy()
     bump_coords = bump[["slopeL", "slopeH"]].to_numpy()
 
@@ -475,8 +558,8 @@ if __name__ == '__main__':
     slopeL = bump['slopeL']
     slopeH = bump['slopeH']
 
-    pH1_scatter(pH1_disp, F_sc_diff, slopeL, slopeH)
-    '''
+    pH1_scatter_noRatio(pH1_disp, F_sc_diff, slopeL, slopeH)
+    
 
     '''
     # === constant bump vs. ramp ===
@@ -497,16 +580,16 @@ if __name__ == '__main__':
 
     constant_bump_v_ramp(slopeL, F_slip_diff)
     '''
-    
+    '''
     # === Nfn-1 vary slopeH ===
     df_bump = pd.read_csv("Nfn1_varyH_bump_bif_20250701.csv")
-    df_bump = df_bump[(df_bump['slopeH'] > -0.163) & (df_bump['slopeH'] < -0.153)]
+    #df_bump = df_bump[(df_bump['slopeH'] > -0.163) & (df_bump['slopeH'] < -0.153)]
     df_ramp = pd.read_csv("Nfn1_varyH_ramp_bif_20250701.csv")
-    df_ramp = df_ramp[(df_ramp['slopeH'] > -0.163) & (df_ramp['slopeH'] < -0.153)]
+    #df_ramp = df_ramp[(df_ramp['slopeH'] > -0.163) & (df_ramp['slopeH'] < -0.153)]
     Nfn1_slopeH_slip(df_bump, df_ramp)
     Nfn1_slopeH_yield(df_bump, df_ramp)
     Nfn1_slopeH_sc(df_bump, df_ramp)
-    
+    '''
     '''
     # === Nfn-1 metrics for range of bump sizes vs. ramp ====
     df = pd.read_csv('Nfn1_varybump_metrics_20250630.csv')
@@ -514,3 +597,4 @@ if __name__ == '__main__':
     Nfn1_bump_Fyield(df)
     Nfn1_bump_Fsc(df)
     '''
+    

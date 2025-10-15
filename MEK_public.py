@@ -662,7 +662,8 @@ class Network():
     def population_multi(self, pop: np.array, cofactors: list, redox_states: list) -> float:
         """
         Calculate the joint population (probability) that each specified cofactor
-        is in its corresponding redox state.
+        is in its corresponding redox state. Since microstate probabilities are disjoint,
+        this probability is calculated by summing the populations of all microstates that satisfy the specified cofactor redox states.
 
         Arguments:
             pop {np.array} -- Population vector of the system states.
