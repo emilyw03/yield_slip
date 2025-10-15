@@ -157,22 +157,22 @@ def grid_Fsc_ratio(ramp, bump):
     plt.figure(figsize=(8, 6))
     sc = plt.scatter(slopeL, slopeH, c=F_sc_ratio, cmap='viridis', s=60, edgecolor='none', norm=norm)
     cbar = plt.colorbar(sc)
-    cbar.set_label(r'$\frac{\mathrm{F}_{\mathrm{sc}} \, \mathrm{bump}}{\mathrm{F}_{\mathrm{sc}} \, \mathrm{ramp}}$', fontsize=12)
+    cbar.set_label(r'$\frac{\mathrm{F}_{\mathrm{sc}} \, \mathrm{bump}}{\mathrm{F}_{\mathrm{sc}} \, \mathrm{ramp}}$', fontsize=18)
 
     # labels
-    plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{sc}}$ by ET branch slopes', fontsize=16)
-    plt.title(r'bump optimized for $\mathrm{F}_{\mathrm{sc}}$', fontsize=12)
-    plt.xlabel('slopeL (eV/cofactor)', fontsize=14)
-    plt.ylabel('slopeH (eV/cofactor)', fontsize=14)
-    plt.xticks(fontsize = 12)
-    plt.yticks(fontsize = 12)
+    plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{sc}}$ by ET branch slopes', fontsize=22)
+    plt.title(r'bump optimized for $\mathrm{F}_{\mathrm{sc}}$', fontsize=18)
+    plt.xlabel('slopeL (eV/cofactor)', fontsize=18)
+    plt.ylabel('slopeH (eV/cofactor)', fontsize=18)
+    plt.xticks(fontsize = 14)
+    plt.yticks(fontsize = 14)
 
     # annotate Nfn-1 position
-    plt.plot(0.198, -0.158, marker='*', color='gold', markersize=15)
-    plt.text(0.180, -0.140, 'Nfn-1', color='black', fontsize=12, verticalalignment='center')
+    plt.plot(0.198, -0.158, marker='*', color='dodgerblue', markersize=18)
+    plt.text(0.175, -0.130, 'Nfn-1', color='dodgerblue', fontsize=18, verticalalignment='center')
 
     plt.tight_layout()
-    plt.legend(fontsize=12)
+    plt.legend(fontsize=14)
     plt.show()
 
 def grid_Fyield_ratio(ramp, bump):
@@ -206,22 +206,22 @@ def grid_Fyield_ratio(ramp, bump):
     plt.figure(figsize=(8, 6))
     sc = plt.scatter(slopeL, slopeH, c=F_yield_ratio, cmap='viridis', s=60, edgecolor='none', norm=norm)
     cbar = plt.colorbar(sc)
-    cbar.set_label(r'$\frac{\mathrm{F}_{\mathrm{flow}} \, \mathrm{bump}}{\mathrm{F}_{\mathrm{flow}} \, \mathrm{ramp}}$', fontsize=12)
+    cbar.set_label(r'$\frac{\mathrm{F}_{\mathrm{flow}} \, \mathrm{bump}}{\mathrm{F}_{\mathrm{flow}} \, \mathrm{ramp}}$', fontsize=18)
 
     # labels
-    plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{flow}}$ by ET branch slopes', fontsize=16)
-    plt.title(r'bump optimized for $\mathrm{F}_{\mathrm{sc}}$', fontsize=12)
-    plt.xlabel('slopeL (eV/cofactor)', fontsize=14)
-    plt.ylabel('slopeH (eV/cofactor)', fontsize=14)
-    plt.xticks(fontsize = 12)
-    plt.yticks(fontsize = 12)
+    plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{flow}}$ by ET branch slopes', fontsize=22)
+    plt.title(r'bump optimized for $\mathrm{F}_{\mathrm{sc}}$', fontsize=18)
+    plt.xlabel('slopeL (eV/cofactor)', fontsize=18)
+    plt.ylabel('slopeH (eV/cofactor)', fontsize=18)
+    plt.xticks(fontsize = 14)
+    plt.yticks(fontsize = 14)
 
     # annotate Nfn-1 position
-    plt.plot(0.198, -0.158, marker='*', color='gold', markersize=15)
-    plt.text(0.180, -0.140, 'Nfn-1', color='black', fontsize=12, verticalalignment='center')
+    plt.plot(0.198, -0.158, marker='*', color='dodgerblue', markersize=18)
+    plt.text(0.175, -0.130, 'Nfn-1', color='dodgerblue', fontsize=18, verticalalignment='center')
 
     plt.tight_layout()
-    plt.legend(fontsize=12)
+    plt.legend(fontsize=14)
     plt.show()
 
 def pH1_trend(pH1_disp, F_slip_diff):
@@ -390,6 +390,55 @@ def Nfn1_slopeH_sc(df_bump, df_ramp):
     plt.tight_layout()
     plt.show()
 
+def Nfn1_slopeH_combined(df_bump, df_ramp):
+    '''
+    Vary slopeH in Nfn-1 and plot relative change for F_yield and F_sc (bump/ramp) on the same axis.
+    '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
+
+    # Ensure same slopeH values in both dataframes
+    common_slopeH = set(df_bump['slopeH']).intersection(set(df_ramp['slopeH']))
+    df_bump = df_bump[df_bump["slopeH"].isin(common_slopeH)].reset_index(drop=True)
+    df_ramp = df_ramp[df_ramp["slopeH"].isin(common_slopeH)].reset_index(drop=True)
+
+    slopeH = df_bump['slopeH']  # same for both because of intersection
+
+    # Ratios
+    F_yield_diff = df_bump['F_yield'] / df_ramp['F_yield']
+    F_sc_diff = df_bump['F_sc'] / df_ramp['F_sc']
+
+    # Plot
+    plt.figure(figsize=(8, 6))
+    plt.scatter(slopeH, F_yield_diff, color='black', s=10, label=r'$\Delta \mathrm{F}_{\mathrm{flow}}$')
+    plt.scatter(slopeH, F_sc_diff, color='red', s=10, label=r'$\Delta \mathrm{F}_{\mathrm{sc}}$')
+
+    # Highlight at slopeH = -0.158 if in range
+    if -0.158 >= slopeH.min() and -0.158 <= slopeH.max():
+        y_star1 = np.interp(-0.158, slopeH, F_yield_diff)
+        y_star2 = np.interp(-0.158, slopeH, F_sc_diff)
+
+        plt.plot(-0.158, y_star1, marker='*', color='dodgerblue', markersize=24)
+        plt.plot(-0.158, y_star2, marker='*', color='dodgerblue', markersize=24)
+
+        plt.annotate("Nfn-1", (-0.158, y_star1),
+                     xytext=(18, 18), textcoords="offset points",
+                     fontsize=16, color='dodgerblue', ha='right')
+        plt.annotate("Nfn-1", (-0.158, y_star2),
+                     xytext=(18, 18), textcoords="offset points",
+                     fontsize=16, color='dodgerblue', ha='right')
+
+    # Labels and formatting
+    plt.title(r'Nfn-1: Relative change in short-circuiting'
+                '\nand flow vs. high potential branch slope', fontsize=22)
+    plt.xlabel('High Potential Branch Slope (eV/cofactor)', fontsize=18)
+    plt.ylabel('Relative change ' r'$\left(\frac{\mathrm{bump}}{\mathrm{ramp}}\right)$', fontsize=18)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.legend(fontsize=16, loc='lower right')
+    plt.tight_layout()
+    plt.show()
+
 def Nfn1_slopeH_Fslip_distrib(df):
     '''
     plot distribution of Fslip
@@ -463,23 +512,32 @@ def Nfn1_bump_Fyield(df):
     F_yield_r = - 1 / 46.74095979300153
 
     F_yield_ratio = F_yield_b / F_yield_r
-    print(F_yield_ratio)
+    #print(F_yield_ratio)
 
     plt.figure(figsize=(8, 6))
-    plt.plot(pH1, F_yield_ratio, color='blue', lw = 4)
-    plt.axhline(y=1, color='red', linestyle=':', linewidth=2)
-    plt.text(pH1.min(), 1.1, 'No change', color='red', fontsize=14)
+    plt.plot(pH1, F_yield_ratio, color='black', lw = 4)
+    #plt.axhline(y=1, color='red', linestyle=':', linewidth=2)
+    #plt.text(pH1.min(), 1.1, 'No change', color='red', fontsize=18)
     if 0.080 >= pH1.min() and 0.080 <= pH1.max():
-        y_star = np.interp(0.080, pH1, F_yield_ratio)
-        plt.plot(0.080, y_star, marker='*', color='gold', markersize=15, label='Nfn-1')
+        y_star1 = np.interp(0.080, pH1, F_yield_ratio)
+        plt.plot(0.080, y_star1, marker='*', color='dodgerblue', markersize=24)
+        plt.annotate("Nfn-1", (0.080, y_star1),
+                     xytext=(0, 17), textcoords="offset points",
+                     ha='center', fontsize=18, color='dodgerblue')
+    if -0.118 >= pH1.min() and -0.118 <= pH1.max():
+        y_star2 = np.interp(-0.118, pH1, F_yield_ratio)
+        plt.plot(-0.118, y_star2, marker='*', color='blue', markersize=24)
+        plt.annotate("Ramp", (-0.118, y_star2),
+                     xytext=(17, 17), textcoords="offset points",
+                     ha='center', fontsize=18, color='blue')
 
     plt.title(r'$\mathrm{F}_{\mathrm{flow}}$ ratio vs. potential on H1', fontsize=22)
     plt.xlabel('Potential on H1 (eV)', fontsize=22)
-    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{flow}} \mathrm{bump}}{\mathrm{F}_{\mathrm{flow}} \mathrm{ramp}}$', fontsize=22)
+    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{flow}} \mathrm{bump}}{\mathrm{F}_{\mathrm{flow}} \mathrm{ramp}}$', fontsize=24)
     plt.yscale('log')
-    plt.xticks(fontsize = 16)
-    plt.yticks(fontsize = 16)
-    plt.legend(fontsize = 16)
+    plt.xticks(fontsize = 18)
+    plt.yticks(fontsize = 18)
+    #plt.legend(fontsize = 18)
     plt.tight_layout()
     plt.show()
 
@@ -496,20 +554,82 @@ def Nfn1_bump_Fsc(df):
     F_sc_ratio = F_sc_b / F_sc_r
 
     plt.figure(figsize=(8, 6))
-    plt.plot(pH1, F_sc_ratio, color='blue', lw = 4)
-    plt.axhline(y=1, color='red', linestyle=':', linewidth=2)
-    plt.text(pH1.min(), 1.1, 'No change', color='red', fontsize=14)
+    plt.plot(pH1, F_sc_ratio, color='black', lw = 4)
+    #plt.axhline(y=1, color='red', linestyle=':', linewidth=2)
+    #plt.text(pH1.min(), 1.1, 'No change', color='red', fontsize=18)
     if 0.080 >= pH1.min() and 0.080 <= pH1.max():
-        y_star = np.interp(0.080, pH1, F_sc_ratio)
-        plt.plot(0.080, y_star, marker='*', color='gold', markersize=15, label='Nfn-1')
+        y_star1 = np.interp(0.080, pH1, F_sc_ratio)
+        plt.plot(0.080, y_star1, marker='*', color='dodgerblue', markersize=24)
+        plt.annotate("Nfn-1", (0.080, y_star1),
+                     xytext=(0, 17), textcoords="offset points",
+                     ha='center', fontsize=18, color='dodgerblue')
+    if -0.118 >= pH1.min() and -0.118 <= pH1.max():
+        y_star2 = np.interp(-0.118, pH1, F_sc_ratio)
+        plt.plot(-0.118, y_star2, marker='*', color='blue', markersize=24)
+        plt.annotate("Ramp", (-0.118, y_star2),
+                     xytext=(17, 17), textcoords="offset points",
+                     ha='center', fontsize=18, color='blue')
 
-    plt.title(r'$\mathrm{F}_{\mathrm{sc}}$ ratio vs. potential on H1', fontsize=22)
+    plt.title(r'Nfn-1: $\mathrm{F}_{\mathrm{sc}}$ ratio vs. potential on H1', fontsize=22)
     plt.xlabel('Potential on H1 (eV)', fontsize=22)
-    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{sc}} \mathrm{bump}}{\mathrm{F}_{\mathrm{sc}} \mathrm{ramp}}$', fontsize=22)
+    plt.ylabel(r'$\frac{\mathrm{F}_{\mathrm{sc}} \mathrm{bump}}{\mathrm{F}_{\mathrm{sc}} \mathrm{ramp}}$', fontsize=24)
     plt.yscale('log')
-    plt.xticks(fontsize = 16)
-    plt.yticks(fontsize = 16)
-    plt.legend(fontsize = 16)
+    plt.xticks(fontsize = 18)
+    plt.yticks(fontsize = 18)
+    #plt.legend(fontsize = 18)
+    plt.tight_layout()
+    plt.show()
+
+def Nfn1_bump_FscFlow(df):
+    '''
+    Plot both F_flow ratio and F_sc ratio vs potential on H1
+    '''
+    plt.rcParams['font.family'] = 'serif'
+    plt.rcParams["mathtext.fontset"] = "dejavuserif"
+    
+    pH1 = df['pH1']
+    
+    # F_flow ratio
+    F_flow_b = df['F_yield']
+    F_flow_r = -1 / 46.74095979300153
+    F_flow_ratio = F_flow_b / F_flow_r
+    
+    # F_sc ratio
+    F_sc_b = df['F_sc']
+    F_sc_r = 1.1945713514691109e-05
+    F_sc_ratio = F_sc_b / F_sc_r
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(pH1, F_flow_ratio, color='black', lw=3, label=r'$\mathrm{F}_{\mathrm{flow}}$')
+    plt.plot(pH1, F_sc_ratio, color='red', lw=3, label=r'$\mathrm{F}_{\mathrm{sc}}$')
+
+    # Highlight markers for both ratios
+    for ratio, color, label in [(F_flow_ratio, 'dodgerblue', "Nfn-1"),
+                                (F_sc_ratio, 'dodgerblue', "Nfn-1")]:
+        if 0.080 >= pH1.min() and 0.080 <= pH1.max():
+            y_star1 = np.interp(0.080, pH1, ratio)
+            plt.plot(0.080, y_star1, marker='*', color=color, markersize=20)
+            plt.annotate(label, (0.080, y_star1),
+                         xytext=(20, 12), textcoords="offset points",
+                         ha='center', fontsize=16, color=color)
+
+    for ratio, color, label in [(F_flow_ratio, 'blue', "Ramp"),
+                                (F_sc_ratio, 'blue', "Ramp")]:
+        if -0.118 >= pH1.min() and -0.118 <= pH1.max():
+            y_star2 = np.interp(-0.118, pH1, ratio)
+            plt.plot(-0.118, y_star2, marker='*', color=color, markersize=20)
+            plt.annotate(label, (-0.118, y_star2),
+                         xytext=(17, 17), textcoords="offset points",
+                         ha='center', fontsize=16, color=color)
+
+    plt.title(r'Nfn-1: Relative change in short-circuiting'
+                '\nand flow vs. potential on H1', fontsize=22)
+    plt.xlabel('Potential on H1 (eV)', fontsize=18)
+    plt.ylabel('Relative change ' r'$\left(\frac{\mathrm{bump}}{\mathrm{ramp}}\right)$', fontsize=18)
+    plt.yscale('log')
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.legend(fontsize=16)
     plt.tight_layout()
     plt.show()
 
@@ -536,7 +656,7 @@ if __name__ == '__main__':
     #grid_Fyield_ratio(ramp_c, bump_Fyield_c)
     '''
     
-    
+    '''
     # === bump vs ramp plots ===
     ramps = pd.read_csv("ramps_FscFyield_bif_20250630.csv")
     bump = pd.read_csv("bump_Fyield_bif_20250629.csv")
@@ -559,7 +679,7 @@ if __name__ == '__main__':
     slopeH = bump['slopeH']
 
     pH1_scatter_noRatio(pH1_disp, F_sc_diff, slopeL, slopeH)
-    
+    '''
 
     '''
     # === constant bump vs. ramp ===
@@ -580,21 +700,25 @@ if __name__ == '__main__':
 
     constant_bump_v_ramp(slopeL, F_slip_diff)
     '''
+    
     '''
     # === Nfn-1 vary slopeH ===
     df_bump = pd.read_csv("Nfn1_varyH_bump_bif_20250701.csv")
     #df_bump = df_bump[(df_bump['slopeH'] > -0.163) & (df_bump['slopeH'] < -0.153)]
     df_ramp = pd.read_csv("Nfn1_varyH_ramp_bif_20250701.csv")
     #df_ramp = df_ramp[(df_ramp['slopeH'] > -0.163) & (df_ramp['slopeH'] < -0.153)]
-    Nfn1_slopeH_slip(df_bump, df_ramp)
-    Nfn1_slopeH_yield(df_bump, df_ramp)
-    Nfn1_slopeH_sc(df_bump, df_ramp)
+    #Nfn1_slopeH_slip(df_bump, df_ramp)
+    #Nfn1_slopeH_yield(df_bump, df_ramp)
+    #Nfn1_slopeH_sc(df_bump, df_ramp)
+    Nfn1_slopeH_combined(df_bump, df_ramp)
     '''
-    '''
+
+    
     # === Nfn-1 metrics for range of bump sizes vs. ramp ====
     df = pd.read_csv('Nfn1_varybump_metrics_20250630.csv')
-    Nfn1_bump_Fslip(df)
-    Nfn1_bump_Fyield(df)
-    Nfn1_bump_Fsc(df)
-    '''
+    #Nfn1_bump_Fslip(df)
+    #Nfn1_bump_Fyield(df)
+    #Nfn1_bump_Fsc(df)
+    Nfn1_bump_FscFlow(df)
+    
     

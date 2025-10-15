@@ -125,19 +125,11 @@ if __name__ == '__main__':
     results = []
     time = 10**4
     for val in chunk:
-<<<<<<< HEAD
-        NADPH, NAD, Fd, F_slip, F_yield, F_sc, D_to_H1_flux, L1_to_D_flux = Nfn1(-0.118, val, time)
-=======
         mu_FeS_H1 = 0.04 + slopeH
         NADPH, NAD, Fd, F_slip, F_yield, D_to_H1_flux, L1_to_D_flux = Nfn1(mu_FeS_H1, val, time)
->>>>>>> c6f5811c3f0acc62231ba017ab9e2b6086aca31c
         S_FAD_mid = 0.040 + 2*val
         results.append([val, NADPH, NAD, Fd, F_slip, F_yield, F_sc, D_to_H1_flux, L1_to_D_flux, S_FAD_mid])
 
     columns = ["slopeH", "NADPH_flux", "NAD_flux", "Fd_flux", "F_slip", "F_yield", "F_sc", "D_to_H1_flux", "L1_to_D_flux", "S_FAD_mid_pot"]
     df = pd.DataFrame(results, columns=columns)
-<<<<<<< HEAD
-    df.to_csv(f"Nfn1_varyH_ramp_{task_id}_20250701.csv", index=False)
-=======
     df.to_csv(f"Nfn1_vary_slopeH_ramp_{task_id}_20251015.csv", index=False)
->>>>>>> c6f5811c3f0acc62231ba017ab9e2b6086aca31c
