@@ -149,8 +149,9 @@ def grid_Fsc_ratio(ramp, bump):
     slopeH = bump['slopeH']
 
     # log color bar
-    vmin = 1e-3
-    vmax = 1.3
+    # see note in function main; change vmin and vmax based on whether bump opt for Fsc or Fflow
+    vmin = 0.2
+    vmax = 22.2
     norm = LogNorm(vmin=vmin, vmax=vmax)
 
     # make plot
@@ -161,7 +162,7 @@ def grid_Fsc_ratio(ramp, bump):
 
     # labels
     plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{sc}}$ by ET branch slopes', fontsize=22)
-    plt.title(r'bump optimized for $\mathrm{F}_{\mathrm{sc}}$', fontsize=18)
+    plt.title(r'bump optimized for $\mathrm{F}_{\mathrm{flow}}$', fontsize=18) # change label based on what bump is opt for 
     plt.xlabel('slopeL (eV/cofactor)', fontsize=18)
     plt.ylabel('slopeH (eV/cofactor)', fontsize=18)
     plt.xticks(fontsize = 14)
@@ -198,8 +199,9 @@ def grid_Fyield_ratio(ramp, bump):
     slopeH = bump['slopeH']
 
     # log color bar
-    vmin = 1e-3
-    vmax = 1.3
+    # see note in function main; change vmin and vmax based on whether bump opt for Fsc or Fflow
+    vmin = 0.2
+    vmax = 22.2
     norm = LogNorm(vmin=vmin, vmax=vmax)
 
     # make plot
@@ -210,7 +212,7 @@ def grid_Fyield_ratio(ramp, bump):
 
     # labels
     plt.suptitle(r'Relative $\Delta\mathrm{F}_{\mathrm{flow}}$ by ET branch slopes', fontsize=22)
-    plt.title(r'bump optimized for $\mathrm{F}_{\mathrm{sc}}$', fontsize=18)
+    plt.title(r'bump optimized for $\mathrm{F}_{\mathrm{flow}}$', fontsize=18) # change label based on what bump is opt for 
     plt.xlabel('slopeL (eV/cofactor)', fontsize=18)
     plt.ylabel('slopeH (eV/cofactor)', fontsize=18)
     plt.xticks(fontsize = 14)
@@ -413,7 +415,7 @@ def Nfn1_slopeH_combined(df_bump, df_ramp):
     plt.scatter(slopeH, F_yield_diff, color='black', s=10, label=r'$\Delta \mathrm{F}_{\mathrm{flow}}$')
     plt.scatter(slopeH, F_sc_diff, color='red', s=10, label=r'$\Delta \mathrm{F}_{\mathrm{sc}}$')
 
-    # Highlight at slopeH = -0.158 if in range
+    # Highlight at slopeH = -0.158
     if -0.158 >= slopeH.min() and -0.158 <= slopeH.max():
         y_star1 = np.interp(-0.158, slopeH, F_yield_diff)
         y_star2 = np.interp(-0.158, slopeH, F_sc_diff)
@@ -430,7 +432,7 @@ def Nfn1_slopeH_combined(df_bump, df_ramp):
 
     # Labels and formatting
     plt.title(r'Nfn-1: Relative change in short-circuiting'
-                '\nand flow vs. high potential branch slope', fontsize=22)
+                '\nand flow vs. net high-potential branch slope', fontsize=22)
     plt.xlabel('High Potential Branch Slope (eV/cofactor)', fontsize=18)
     plt.ylabel('Relative change ' r'$\left(\frac{\mathrm{bump}}{\mathrm{ramp}}\right)$', fontsize=18)
     plt.xticks(fontsize=16)
@@ -634,7 +636,7 @@ def Nfn1_bump_FscFlow(df):
     plt.show()
 
 if __name__ == '__main__':
-    '''
+    
     # === ramps w/ bump overlay ===
     ramp = pd.read_csv("ramps_FscFyield_20250630.csv")
     ramp_c = pd.read_csv('ramps_FscFyield_corner_20250702.csv')
@@ -650,11 +652,11 @@ if __name__ == '__main__':
     # ratio plots 
     # for bump opt by Fsc vmin = 1e-3, vmax = 1.3
     # for bump opt by Fyield vmin = 0.2, vmax = 22.2
-    grid_Fsc_ratio(ramp, bump_Fsc)
-    grid_Fyield_ratio(ramp, bump_Fsc)
+    grid_Fsc_ratio(ramp, bump_Fyield)
+    grid_Fyield_ratio(ramp, bump_Fyield)
     #grid_Fsc_ratio(ramp_c, bump_Fsc_c)
     #grid_Fyield_ratio(ramp_c, bump_Fyield_c)
-    '''
+    
     
     '''
     # === bump vs ramp plots ===
@@ -705,7 +707,7 @@ if __name__ == '__main__':
     # === Nfn-1 vary slopeH ===
     df_bump = pd.read_csv("Nfn1_varyH_bump_bif_20250701.csv")
     #df_bump = df_bump[(df_bump['slopeH'] > -0.163) & (df_bump['slopeH'] < -0.153)]
-    df_ramp = pd.read_csv("Nfn1_varyH_ramp_bif_20250701.csv")
+    df_ramp = pd.read_csv("Nfn1_varyH_ramp_bif_20251015.csv")
     #df_ramp = df_ramp[(df_ramp['slopeH'] > -0.163) & (df_ramp['slopeH'] < -0.153)]
     #Nfn1_slopeH_slip(df_bump, df_ramp)
     #Nfn1_slopeH_yield(df_bump, df_ramp)
@@ -713,12 +715,12 @@ if __name__ == '__main__':
     Nfn1_slopeH_combined(df_bump, df_ramp)
     '''
 
-    
+    '''
     # === Nfn-1 metrics for range of bump sizes vs. ramp ====
     df = pd.read_csv('Nfn1_varybump_metrics_20250630.csv')
     #Nfn1_bump_Fslip(df)
     #Nfn1_bump_Fyield(df)
     #Nfn1_bump_Fsc(df)
     Nfn1_bump_FscFlow(df)
-    
+    '''
     
