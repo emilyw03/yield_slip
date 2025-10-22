@@ -42,8 +42,8 @@ def grid_Fsc(ramp):
 
     # labels
     plt.title(r'$\mathrm{F}_{\mathrm{sc}}$ by ET branch slopes', fontsize=16)
-    plt.xlabel('slopeL (eV/cofactor)', fontsize=16)
-    plt.ylabel('slopeH (eV/cofactor)', fontsize=16)
+    plt.xlabel('slopeL (V/cofactor)', fontsize=16)
+    plt.ylabel('slopeH (V/cofactor)', fontsize=16)
     plt.xticks(fontsize = 12)
     plt.yticks(fontsize = 12)
     plt.legend(fontsize = 12)
